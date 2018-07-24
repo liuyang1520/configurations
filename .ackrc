@@ -1,0 +1,8 @@
+--ignore-dir=.idea/
+--ignore-dir=node_modules/
+
+--ignore-dir=vendor
+--ignore-dir=log
+--ignore-dir=tmp
+
+--ignore-file=is:.byebug_history
