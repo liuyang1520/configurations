@@ -294,8 +294,8 @@ A.......Zoom (maximize/minimize) the NERDTree window.............|NERDTree-A|
 
 ## Fugitive
 ### Commands
-`:Gstatus` to view `git status`
-`:Gdiff` to view `git diff`
+- `:Gstatus` to view `git status`
+- `:Gdiff` to view `git diff`
 
 ### Operations
  * `<leader>gs` :Gstatus<CR>
@@ -340,8 +340,8 @@ set pastetoggle=<F3></F>
 `:noh`
 
 ### Paste into Mac OS
-Select in visual mode then `:w !pbcopy`
-Copy whole file `:%w !pbcopy`
+- Select in visual mode then `:w !pbcopy`
+- Copy whole file `:%w !pbcopy`
 
 ### New window
 `ctrl` + `w` then press `v`
@@ -354,8 +354,9 @@ Copy whole file `:%w !pbcopy`
 `q:`
 
 ### Delete without copy/cut
-`"_d` will do the trick
-`"_daw` delete a word only
+- `"_d` will do the trick
+- `"_daw` delete a word only
+- `"0p` copy from yank register
 
 ### Delete a block
 1. `ma` add mark `a` to starting line, go to last line, `d'a` delete to mark `a`
@@ -370,9 +371,7 @@ Copy whole file `:%w !pbcopy`
 gf      open in the same window ("goto file")
 <c-w>f  open in a new window (Ctrl-w f)
 <c-w>gf open in a new tab (Ctrl-w gf)
-```
 
-```
 ctrl + o    to return back
 ctrl + i    to go forward
 ```
