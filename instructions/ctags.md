@@ -1,13 +1,14 @@
-tags
+# Ctags Notes
+###### tags: `notes` `study`
 
-#### Install Ctags
+## Installation
 Note `Xcode` has its own `ctags`, which is the default one in Mac OS.
 ```
 $ brew install ctags
 $ alias ctags="`brew --prefix`/bin/ctags"
 ```
 
-#### Run Ctags
+## Run Ctags
 ##### Common
 ```
 $ ctags -R --exclude=.git --exclude=log .
@@ -84,7 +85,7 @@ $ cd ~/git-repo-dir
 $ git init
 ```
 
-#### Navigation
+## Navigation
 `ctrl` + `]` to goto the definition
 
 `g]` use tselect to open a list of definitions
@@ -99,7 +100,7 @@ $ git init
 
 `:pop` or `:tag` `[count]` to trace through tag stack
 
-#### Tags List
+## Tags List
 `:tag /^abc*` search tags start with "abc"
 
 `:ts[elect]` show list
@@ -112,7 +113,7 @@ $ git init
 
 `:tl[ast]` go last tag
 
-#### Tagbar
+## Tagbar
 `,tt` to open tagbar
 `p` jump to tag under the cursor, stay in the tagbar window
 `P` open tag in preview window
