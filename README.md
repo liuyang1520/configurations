@@ -26,4 +26,7 @@ ln -s ~/.liuyang1520-configurations/.ackrc ~/
 ln -s ~/.liuyang1520-configurations/.vimrc.before.local ~/
 ln -s ~/.liuyang1520-configurations/.vimrc.bundles.local ~/
 ln -s ~/.liuyang1520-configurations/.vimrc.local ~/
+
+# update vim plugins
+vim +BundleInstall! +BundleClean +q
 ```
