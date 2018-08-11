@@ -1,0 +1,5 @@
+let g:indent_guides_auto_colors = 0
+
+colorscheme molokai
+
+set nospell

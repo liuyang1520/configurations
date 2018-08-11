@@ -1,0 +1,35 @@
+" specify which plugin groups I will use
+let g:spf13_bundle_groups=['general', 'writing', 'programming', 'ruby', 'python', 'javascript', 'html', 'misc']
+
+" need to re-define leader key here
+let mapleader = ','
+
+" disable auto change dir option
+let g:spf13_no_autochdir = 1
+
+" disable auto tag completion
+let g:AutoPairs = {}
+
+" expand tabs to spaces
+set expandtab
+
+autocmd Filetype html setlocal ts=2 sts=2 sw=2
+autocmd Filetype ruby setlocal ts=2 sts=2 sw=2
+autocmd BufRead,BufNewFile *.coffee setlocal ts=2 sts=2 sw=2
+autocmd BufRead,BufNewFile *.erb setlocal ts=2 sts=2 sw=2
+autocmd BufRead,BufNewFile *.scss setlocal ts=2 sts=2 sw=2
+autocmd BufRead,BufNewFile *.jst setlocal ts=2 sts=2 sw=2
+autocmd BufRead,BufNewFile *.eco setlocal ts=2 sts=2 sw=2
+autocmd BufRead,BufNewFile *.vue setlocal ts=2 sts=2 sw=2
+autocmd BufRead,BufNewFile *.js setlocal ts=2 sts=2 sw=2
+
+autocmd QuickFixCmdPost [^l]* nested cwindow
+autocmd QuickFixCmdPost    l* nested lwindow
+
+" copy to mac
+vmap <C-x> :w !pbcopy<CR><CR>
+
+" ack shortcut
+cnoreabbrev Ack Ack!
+nnoremap <Leader>b :Ack!<CR>
+vnoremap <Leader>b y:Ack! <C-r>=fnameescape(@")<CR><CR>
