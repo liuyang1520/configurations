@@ -20,12 +20,12 @@ sh <(curl https://j.mp/spf13-vim3 -L)
 git clone https://github.com/liuyang1520/configurations.git  ~/.liuyang1520-configurations
 
 # softlink dotfiles
-ln -s ~/.liuyang1520-configurations/.tmux.conf ~/
-ln -s ~/.liuyang1520-configurations/.tag ~/
-ln -s ~/.liuyang1520-configurations/.ackrc ~/
-ln -s ~/.liuyang1520-configurations/.vimrc.before.local ~/
-ln -s ~/.liuyang1520-configurations/.vimrc.bundles.local ~/
-ln -s ~/.liuyang1520-configurations/.vimrc.local ~/
+ln -s ~/.liuyang1520-configurations/dotfiles/.tmux.conf ~/
+ln -s ~/.liuyang1520-configurations/dotfiles/.tag ~/
+ln -s ~/.liuyang1520-configurations/dotfiles/.ackrc ~/
+ln -s ~/.liuyang1520-configurations/dotfiles/.vimrc.before.local ~/
+ln -s ~/.liuyang1520-configurations/dotfiles/.vimrc.bundles.local ~/
+ln -s ~/.liuyang1520-configurations/dotfiles/.vimrc.local ~/
 
 # update vim plugins
 vim +BundleInstall! +BundleClean +q
