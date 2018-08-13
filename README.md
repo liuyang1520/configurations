@@ -7,6 +7,8 @@ This repo contains personal configuration files for local development environmen
 - vim
 - ack
 - tmux
+  - xclip (Linux)
+  - reattach-to-user-namespace (Mac OS)
 
 # Install
 ```bash
@@ -20,7 +22,7 @@ sh <(curl https://j.mp/spf13-vim3 -L)
 git clone https://github.com/liuyang1520/configurations.git  ~/.liuyang1520-configurations
 
 # softlink dotfiles
-ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux.conf ~/
+if [[ "$(uname -s)" = Darwin ]]; then ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux-osx.conf ~/.tmux.conf; else ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux.conf ~/; fi
 ln -sf ~/.liuyang1520-configurations/dotfiles/.tag ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.ackrc ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.before.local ~/
