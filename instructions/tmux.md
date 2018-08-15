@@ -72,4 +72,6 @@ t  big clock
 ?  list shortcuts
 :  prompt
 !  break the current pane out of its window (to form new window)
+~  show previous messages from tmux, if any
 ```
+[tmux man page](https://www.mankier.com/1/tmux)
