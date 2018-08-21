@@ -13,7 +13,9 @@ This repo contains personal configuration files for local development environmen
 # Install
 ```bash
 # install oh-my-zsh
-sh -c “$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)”
+apt-get install zsh
+sudo chsh $USER -s $(which zsh)
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 # install spf13-vim
 sh <(curl https://j.mp/spf13-vim3 -L)
