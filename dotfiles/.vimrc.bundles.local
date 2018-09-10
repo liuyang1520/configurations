@@ -1,5 +1,7 @@
 " add new plugins {
     Plugin 'posva/vim-vue'
+    Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    Plugin 'junegunn/fzf.vim'
 " }
 
 " remove plugins {
@@ -17,4 +19,5 @@
     UnBundle 'kana/vim-textobj-user'
     UnBundle 'kana/vim-textobj-indent'
     UnBundle 'gcmt/wildfire.vim'
+    UnBundle 'ctrlpvim/ctrlp.vim'
 " }

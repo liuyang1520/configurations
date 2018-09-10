@@ -5,7 +5,11 @@ This repo contains personal configuration files for local development environmen
 - git
 - curl
 - vim
-- ack
+- ~~~ack~~~
+- ag
+  - https://github.com/ggreer/the_silver_searcher
+  - `brew install the_silver_searcher`
+  - `apt-get install silversearcher-ag`
 - tmux
   - xclip (Linux)
   - reattach-to-user-namespace (Mac OS)
@@ -26,7 +30,7 @@ git clone https://github.com/liuyang1520/configurations.git  ~/.liuyang1520-conf
 # softlink dotfiles
 if [[ "$(uname -s)" = Darwin ]]; then ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux-osx.conf ~/.tmux.conf; else ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux.conf ~/; fi
 ln -sf ~/.liuyang1520-configurations/dotfiles/.tag ~/
-ln -sf ~/.liuyang1520-configurations/dotfiles/.ackrc ~/
+#ln -sf ~/.liuyang1520-configurations/dotfiles/.ackrc ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.before.local ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.bundles.local ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.local ~/
