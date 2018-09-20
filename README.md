@@ -7,6 +7,7 @@ This repo contains personal configuration files for local development environmen
 $ sudo passwd root
 # set up new hostname
 $ sudo hostnamectl set-hostname <hostname>
+$ sudo vim /etc/hosts
 ```
 
 # Prerequisite
