@@ -1,6 +1,14 @@
 # Description
 This repo contains personal configuration files for local development environment
 
+# For new system
+```
+# set up new root password
+$ sudo passwd root
+# set up new hostname
+$ sudo hostnamectl set-hostname <hostname>
+```
+
 # Prerequisite
 - git
 - curl
