@@ -5,9 +5,13 @@ This repo contains personal configuration files for local development environmen
 ```
 # set up new root password
 $ sudo passwd root
+
 # set up new hostname
 $ sudo hostnamectl set-hostname <hostname>
 $ sudo vim /etc/hosts
+
+# change zsh theme
+$ vim .zshrc (dst theme)
 ```
 
 # Prerequisite
@@ -19,6 +23,7 @@ $ sudo vim /etc/hosts
   - https://github.com/ggreer/the_silver_searcher
   - `brew install the_silver_searcher`
   - `apt-get install silversearcher-ag`
+- fzf
 - tmux
   - xclip (Linux)
   - reattach-to-user-namespace (Mac OS)
