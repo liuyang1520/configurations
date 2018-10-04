@@ -28,6 +28,14 @@ $ vim .zshrc (dst theme)
   - xclip (Linux)
   - reattach-to-user-namespace (Mac OS)
 
+# Install NodeJS NPM in Crostini
+```
+$ sudo apt-get update
+$ sudo apt-get install curl gnupg -y
+$ curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+$ sudo apt-get install -y nodejs
+```
+
 # Install
 ```bash
 # install oh-my-zsh
