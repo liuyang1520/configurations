@@ -1,6 +1,19 @@
 # Description
 This repo contains personal configuration files for local development environment
 
+# For new system
+```
+# set up new root password
+$ sudo passwd root
+
+# set up new hostname
+$ sudo hostnamectl set-hostname <hostname>
+$ sudo vim /etc/hosts
+
+# change zsh theme
+$ vim .zshrc (dst theme)
+```
+
 # Prerequisite
 - git
 - curl
@@ -10,9 +23,18 @@ This repo contains personal configuration files for local development environmen
   - https://github.com/ggreer/the_silver_searcher
   - `brew install the_silver_searcher`
   - `apt-get install silversearcher-ag`
+- fzf
 - tmux
   - xclip (Linux)
   - reattach-to-user-namespace (Mac OS)
+
+# Install NodeJS NPM in Crostini
+```
+$ sudo apt-get update
+$ sudo apt-get install curl gnupg -y
+$ curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+$ sudo apt-get install -y nodejs
+```
 
 # Install
 ```bash
