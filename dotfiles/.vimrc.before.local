@@ -20,6 +20,8 @@ autocmd BufRead,BufNewFile *.erb setlocal ts=2 sts=2 sw=2
 autocmd BufRead,BufNewFile *.scss setlocal ts=2 sts=2 sw=2
 autocmd BufRead,BufNewFile *.jst setlocal ts=2 sts=2 sw=2
 autocmd BufRead,BufNewFile *.eco setlocal ts=2 sts=2 sw=2
+autocmd BufRead,BufNewFile *.ejs setlocal ts=2 sts=2 sw=2
+autocmd BufRead,BufNewFile *.yml setlocal ts=2 sts=2 sw=2
 autocmd BufRead,BufNewFile *.vue setlocal ts=2 sts=2 sw=2
 autocmd BufRead,BufNewFile *.js setlocal ts=2 sts=2 sw=2
 autocmd BufRead,BufNewFile *.json setlocal ts=2 sts=2 sw=2
