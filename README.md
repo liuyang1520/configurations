@@ -24,6 +24,8 @@ $ vim .zshrc (dst theme)
   - `brew install the_silver_searcher`
   - `apt-get install silversearcher-ag`
 - fzf
+- highlight
+  - brew install highlight
 - tmux
   - xclip (Linux)
   - reattach-to-user-namespace (Mac OS)
@@ -50,12 +52,16 @@ sh <(curl https://j.mp/spf13-vim3 -L)
 git clone https://github.com/liuyang1520/configurations.git  ~/.liuyang1520-configurations
 
 # softlink dotfiles
+ln -sf ~/.liuyang1520-configurations/dotfiles/.zshrc.local ~/
 if [[ "$(uname -s)" = Darwin ]]; then ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux-osx.conf ~/.tmux.conf; else ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux.conf ~/; fi
 ln -sf ~/.liuyang1520-configurations/dotfiles/.tag ~/
 #ln -sf ~/.liuyang1520-configurations/dotfiles/.ackrc ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.before.local ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.bundles.local ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.local ~/
+
+# append `.zshrc.local`
+echo "source ~/.zshrc.local" >> ~/.zshrc
 
 # update vim plugins
 vim +BundleInstall! +BundleClean +q
