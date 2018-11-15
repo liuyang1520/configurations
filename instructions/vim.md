@@ -427,3 +427,10 @@ q                quit recording
 @{0-9a-z".=*}    Execute the contents of [register]
 :reg             output a list of [register] content
 ```
+
+### Copy current line without line-breaker
+```
+^                navigate to start of line with text
+_                navigate to end of line with text
+^vg_             select current line
+```
