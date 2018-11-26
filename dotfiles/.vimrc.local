@@ -10,11 +10,19 @@ if executable('ag')
   let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
 endif
 
-function! s:ag_with_opts(arg, bang)
-  let tokens  = split(a:arg)
-  let ag_opts = join(filter(copy(tokens), 'v:val =~ "^-"'))
-  let query   = join(filter(copy(tokens), 'v:val !~ "^-"'))
-  call fzf#vim#ag(query, ag_opts, a:bang ? {} : {'down': '40%'})
-endfunction
+" ag with options, doesn't work with the preview window
+"function! s:ag_with_opts(arg, bang)
+  "let tokens  = split(a:arg)
+  "let ag_opts = join(filter(copy(tokens), 'v:val =~ "^-"'))
+  "let query   = join(filter(copy(tokens), 'v:val !~ "^-"'))
+  "call fzf#vim#ag(query, ag_opts, a:bang ? {} : {'down': '40%'})
+"endfunction
 
-autocmd VimEnter * command! -nargs=* -bang Ag call s:ag_with_opts(<q-args>, <bang>0)
+"autocmd VimEnter * command! -nargs=* -bang Ag call s:ag_with_opts(<q-args>, <bang>0)
+
+" ag with preview
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(<q-args>,
+  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+  \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \                 <bang>0)
