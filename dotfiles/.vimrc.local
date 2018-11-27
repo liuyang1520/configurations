@@ -1,7 +1,13 @@
+" colors
+"let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+"let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+"set termguicolors
+colorscheme papercolor
+
+" global
 set regexpengine=1
 set nospell
 let g:indent_guides_auto_colors = 0
-colorscheme default
 
 " fzf configs
 let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"

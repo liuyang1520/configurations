@@ -5,7 +5,7 @@
 " }
 
 " remove plugins {
-    UnBundle 'vim-colorschemes'
+    "UnBundle 'vim-colorschemes'
     UnBundle 'tpope/vim-surround'
     UnBundle 'tpope/vim-repeat'
     UnBundle 'jiangmiao/auto-pairs'
