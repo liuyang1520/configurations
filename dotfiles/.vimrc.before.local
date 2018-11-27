@@ -42,3 +42,7 @@ vmap <C-x> :w !pbcopy<CR><CR>
 " ag shortcut
 nnoremap <Leader>b :Ag<CR>
 vnoremap <Leader>b y:Ag <C-r>=fnameescape(@")<CR><CR>
+
+" term config
+set shell=/bin/zsh
+set termwinsize=20x0
