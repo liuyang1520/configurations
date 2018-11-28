@@ -434,3 +434,16 @@ q                quit recording
 _                navigate to end of line with text
 ^vg_             select current line
 ```
+
+### Arg list
+- `:arg` to show the files in your current arglist
+- `:argdo` to run a command on your arglist
+- `:argadd` or :arga to add files to your arglist
+- `:argdelete` or :argd to remove files from your arglist
+- `:argdo` update to save all changes to your arglist
+- `:argdo` undo to undo changes to your arglist
+
+```
+:argadd *.rb
+:argdo %s/pattern/replace/ge | update
+```
