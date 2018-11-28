@@ -66,3 +66,7 @@ echo "source ~/.zshrc.local" >> ~/.zshrc
 # update vim plugins
 vim +BundleInstall! +BundleClean +q
 ```
+
+# Screenshots
+## tmux
+![image](https://user-images.githubusercontent.com/8689754/49188903-97c0be00-f329-11e8-865d-11e5081a34fd.png)
