@@ -2,6 +2,7 @@
     Plugin 'posva/vim-vue'
     Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plugin 'junegunn/fzf.vim'
+    Plugin 'itchyny/lightline.vim'
 " }
 
 " remove plugins {
@@ -20,4 +21,7 @@
     UnBundle 'kana/vim-textobj-indent'
     UnBundle 'gcmt/wildfire.vim'
     UnBundle 'ctrlpvim/ctrlp.vim'
+    UnBundle 'vim-airline/vim-airline'
+    UnBundle 'vim-airline/vim-airline-themes'
+    UnBundle 'amirh/HTML-AutoCloseTag'
 " }
