@@ -11,3 +11,8 @@
 #### Close a split
 - `ctrl-w` `q`
 - `:q`
+
+### Non-space word motion
+- `W`
+- `E`
+- `B`
