@@ -16,3 +16,7 @@
 - `W`
 - `E`
 - `B`
+
+### Navigation with search
+- `v/abc`, select until search match position
+- `v/abc ↵ n`, select until next search match position
