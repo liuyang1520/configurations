@@ -14,6 +14,9 @@ $ sudo vim /etc/hosts
 $ vim .zshrc (dst theme)
 ```
 
+# MacOS Terminal
+- Click `Use option as Meta key`
+
 # Prerequisite
 - git
 - curl
