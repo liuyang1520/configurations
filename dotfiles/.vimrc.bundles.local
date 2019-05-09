@@ -3,6 +3,7 @@
     Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plugin 'junegunn/fzf.vim'
     Plugin 'itchyny/lightline.vim'
+    Plugin 'leafgarland/typescript-vim'
 " }
 
 " remove plugins {
