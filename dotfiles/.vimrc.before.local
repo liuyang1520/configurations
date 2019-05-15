@@ -10,6 +10,11 @@ let g:spf13_no_autochdir = 1
 " disable auto tag completion
 let g:AutoPairs = {}
 
+" config gutentags
+let g:gutentags_cache_dir = '~/.cachetags'
+let g:gutentags_ctags_tagfile = '.tags'
+let g:gutentags_file_list_command = 'git ls-files'
+
 " expand tabs to spaces
 set expandtab
 
