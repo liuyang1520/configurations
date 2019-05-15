@@ -1,5 +1,10 @@
 ZSH_THEME="dst"
 
+# aliases
+alias ctags="`brew --prefix`/bin/ctags"
+alias vim-clean="rm -rv $HOME/.vimviews"
+
+# exports
 export FZF_DEFAULT_OPTS="
     --preview '(highlight -O ansi {} || cat {}) 2> /dev/null | head -500'
     --color dark,fg:249,hl:33,hl+:37,fg+:235,bg+:136,fg+:254
