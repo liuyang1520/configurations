@@ -5,6 +5,7 @@
     Plugin 'itchyny/lightline.vim'
     Plugin 'leafgarland/typescript-vim'
     Plugin 'ludovicchabant/vim-gutentags'
+    Plugin 'Quramy/tsuquyomi'
 " }
 
 " remove plugins {
