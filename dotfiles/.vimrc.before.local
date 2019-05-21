@@ -76,3 +76,8 @@ if has("gui_gtk") || has("gui_gtk2") || has("gui_gnome") || has("unix")
   " directory name (/something/src)
   nnoremap <leader>cfd :let @+=expand("%:p:h")<CR>
 endif
+
+
+" disable syntastic by default, enable by c-w E
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>

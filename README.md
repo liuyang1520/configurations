@@ -2,8 +2,8 @@
 This repo contains personal configuration files for local development environment
 
 # Preparation
-[MacOS](macos.md)
-[Linux](linux.md)
+- [MacOS](instructions/macos.md)
+- [Linux](instructions/linux.md)
 
 # Install
 ## oh-my-zsh
@@ -17,22 +17,28 @@ sh <(curl https://j.mp/spf13-vim3 -L)
 ```
 
 ## Configurations
-```bash
-# clone this repo
+### Clone this repo
+```
 git clone https://github.com/liuyang1520/configurations.git  ~/.liuyang1520-configurations
+```
 
-# softlink dotfiles
+### Create softlinks
+```
 ln -sf ~/.liuyang1520-configurations/dotfiles/.zshrc.local ~/
 if [[ "$(uname -s)" = Darwin ]]; then ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux-osx.conf ~/.tmux.conf; else ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux.conf ~/; fi
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.before.local ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.bundles.local ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.local ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.ctags.d ~/
+```
 
-# append `.zshrc.local`
+### Update `.zshrc`
+```
 echo "source ~/.zshrc.local" >> ~/.zshrc
+```
 
-# update vim plugins
+### Update vim plugins
+```
 vim +BundleInstall! +BundleClean +q
 ```
 
