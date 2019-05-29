@@ -34,3 +34,32 @@ $ git branch -r --merged |
 ```
 $ git commit --allow-empty -m "Trigger jenkins build"
 ```
+
+### Deleted files
+```
+# list deleted files
+$ git ls-files --deleted
+# revert deleted file
+$ git checkout -- <file>
+```
+
+### Rebase/squash commits
+```
+# interactively
+$ git rebase --interactive HEAD~n
+# non-interactively
+$ git reset --soft HEAD~n
+$ git commit --amend
+```
+
+### Stash
+```
+# list stashes
+$ git stash list
+# show file changes
+$ git stash show
+# show change contents
+$ git stash show -p
+# show arbitrary changes
+$ git stash show -p stash@{1}
+```
