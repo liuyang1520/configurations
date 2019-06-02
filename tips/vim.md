@@ -12,6 +12,32 @@
 - `ctrl-w` `q`
 - `:q`
 
+### Change split size
+#### Width
+- `ctrl-w <` decrease
+- `ctrl-w >` increase
+
+#### Height
+- `ctrl-w -` decrease
+- `ctrl-w +` increase
+
+### Open in new split
+#### File
+- `ctrl-w f`
+- `ctrl-w F`
+
+#### Tag
+- `ctrl-w ]`
+- `ctrl-w g]`
+
+#### Alternate file
+- `ctrl-w ^`
+
+### Open in new tab
+#### File
+- `ctrl-w gf`
+- `ctrl-w gF`
+
 ### Non-space word motion
 - `W`
 - `E`
