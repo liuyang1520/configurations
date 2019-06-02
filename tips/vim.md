@@ -51,3 +51,29 @@
 - `ctrl-xf` filenames
 - `ctrl-xn` just this file
 - `ctrl-n`/`ctrl-p` hint
+
+### Replace text
+- `shift + r`
+
+### Join two lines
+- `J`
+
+### Increate/decrease a number
+- `ctrl-a` increase
+- `ctrl-x` decrease
+
+### Fix line indent
+- `==`
+
+### ctrl-r in insert/command mode
+- `a - z` the named registers
+- `"` the unnamed register, containing the text of the last delete or yank
+- `%` the current file name
+- `#` the alternate file name
+- `*` the clipboard contents (X11: primary selection)
+- `+` the clipboard contents
+- `/` the last search pattern
+- `:` the last command-line
+- `.` the last inserted text
+- `-` the last small (less than a line) delete
+- `=5*5` insert 25 into text (mini-calculator)
