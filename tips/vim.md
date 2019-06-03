@@ -81,3 +81,14 @@
 ### Last position
 - `g;` go to last position
 - `gi` go to last position and insert
+
+### Cursorcolumn
+- `set cursorcolumn`
+- `set nocursorcolumn`
+
+### Navigation blocks
+- `[ + {(<` go to previous `{(<`
+- `] + }` go to next `}`
+- `[[`
+- `{{`
+- `((`
