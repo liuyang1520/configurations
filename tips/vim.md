@@ -77,3 +77,7 @@
 - `.` the last inserted text
 - `-` the last small (less than a line) delete
 - `=5*5` insert 25 into text (mini-calculator)
+
+### Last position
+- `g;` go to last position
+- `gi` go to last position and insert
