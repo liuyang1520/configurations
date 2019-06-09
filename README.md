@@ -30,6 +30,7 @@ ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.before.local ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.bundles.local ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.local ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.ctags.d ~/
+ln -sf ~/.liuyang1520-configurations/dotfiles/.ignore ~/
 ```
 
 ### Update `.zshrc`
