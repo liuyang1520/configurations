@@ -3,6 +3,7 @@ ZSH_THEME="dst"
 # aliases
 alias ctags="`brew --prefix`/bin/ctags"
 alias vim-clean="rm -rv $HOME/.vimviews"
+alias vim-gitdiff="vim -p `git diff --name-only`"
 
 # exports
 export FZF_DEFAULT_OPTS="

@@ -45,8 +45,8 @@ vmap <C-x> :w !pbcopy<CR><CR>
 "vnoremap <Leader>b y:Ack! <C-r>=fnameescape(@")<CR><CR>
 
 " ag shortcut
-nnoremap <Leader>b :Ag<CR>
-vnoremap <Leader>b y:Ag <C-r>=fnameescape(@")<CR><CR>
+nnoremap <Leader>b :A<CR>
+vnoremap <Leader>b y:A <C-r>=fnameescape(@")<CR><CR>
 
 " term config
 set shell=/bin/zsh
