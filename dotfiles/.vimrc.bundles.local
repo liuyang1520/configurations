@@ -1,20 +1,26 @@
 " add new plugins {
-    Plugin 'posva/vim-vue'
+    " fuzzy search
     Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plugin 'junegunn/fzf.vim'
-    Plugin 'itchyny/lightline.vim'
+
+    " javascript
     Plugin 'leafgarland/typescript-vim'
-    Plugin 'ludovicchabant/vim-gutentags'
     Plugin 'Quramy/tsuquyomi'
+    Plugin 'mxw/vim-jsx'
+    Plugin 'posva/vim-vue'
+
+    " misc
+    Plugin 'itchyny/lightline.vim'
+    Plugin 'ludovicchabant/vim-gutentags'
 " }
 
 " remove plugins {
     "UnBundle 'vim-colorschemes'
-    UnBundle 'tpope/vim-surround'
+    "UnBundle 'tpope/vim-surround'
     UnBundle 'tpope/vim-repeat'
     UnBundle 'jiangmiao/auto-pairs'
     UnBundle 'tacahiroy/ctrlp-funky'
-    UnBundle 'terryma/vim-multiple-cursors'
+    "UnBundle 'terryma/vim-multiple-cursors'
     UnBundle 'vim-scripts/sessionman.vim'
     UnBundle 'matchit.zip'
     UnBundle 'easymotion/vim-easymotion'

@@ -1,0 +1,69 @@
+" Environment {
+    " Basics {
+        set nocompatible        " Must be first line
+        set background=dark     " Assume a dark background
+    " }
+
+call plug#begin('~/.vim/plugged')
+    " fuzzy search
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    Plug 'junegunn/fzf.vim'
+
+    " misc
+    Plug 'itchyny/lightline.vim'
+    Plug 'ludovicchabant/vim-gutentags'
+    Plug 'scrooloose/nerdtree'
+    Plug 'tpope/vim-surround'
+    Plug 'tpope/vim-repeat'
+    Plug 'terryma/vim-multiple-cursors'
+    Plug 'mbbill/undotree'
+
+    " Python
+    Plug 'klen/python-mode'
+    Plug 'yssource/python.vim'
+    Plug 'python_match.vim'
+    Plug 'pythoncomplete'
+
+    " javascript
+    Plug 'leafgarland/typescript-vim'
+    Plug 'Quramy/tsuquyomi'
+    Plug 'mxw/vim-jsx'
+    Plug 'posva/vim-vue'
+    Plug 'elzr/vim-json'
+    Plug 'groenewege/vim-less'
+    Plug 'pangloss/vim-javascript'
+    Plug 'briancollins/vim-jst'
+    Plug 'kchmck/vim-coffee-script'
+
+    " html
+    Plug 'hail2u/vim-css3-syntax'
+    Plug 'gorodinskiy/vim-coloresque'
+    Plug 'tpope/vim-haml'
+    Plug 'mattn/emmet-vim'
+
+    " ruby
+    Plug 'tpope/vim-rails'
+
+    " golang
+    Plug 'fatih/vim-go'
+
+    " other langs
+    Plug 'rust-lang/rust.vim'
+    Plug 'tpope/vim-markdown'
+
+    " appearance
+    Plug 'flazz/vim-colorschemes'
+    Plug 'nathanaelkane/vim-indent-guides'
+    Plug 'mhinz/vim-signify'
+    Plug 'osyo-manga/vim-over'
+
+    " programming
+    Plug 'tpope/vim-fugitive'
+    Plug 'scrooloose/nerdcommenter'
+    Plug 'scrooloose/syntastic'
+    Plug 'tpope/vim-commentary'
+    if executable('ctags')
+        Plug 'majutsushi/tagbar'
+    endif
+    Plug 'Valloric/YouCompleteMe'
+call plug#end()
