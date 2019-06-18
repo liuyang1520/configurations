@@ -1,5 +1,5 @@
 " specify which plugin groups I will use
-let g:spf13_bundle_groups = ['general', 'programming', 'ruby', 'python', 'javascript', 'go', 'html', 'youcompleteme']
+let g:optional_plugins = ['']
 
 " need to re-define leader key here
 let mapleader = ','
