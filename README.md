@@ -11,11 +11,6 @@ This repo contains personal configuration files for local development environmen
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 ```
 
-## spf13-vim
-```bash
-sh <(curl https://j.mp/spf13-vim3 -L)
-```
-
 ## Configurations
 ### Clone this repo
 ```
@@ -26,9 +21,7 @@ git clone https://github.com/liuyang1520/configurations.git  ~/.liuyang1520-conf
 ```
 ln -sf ~/.liuyang1520-configurations/dotfiles/.zshrc.local ~/
 if [[ "$(uname -s)" = Darwin ]]; then ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux-osx.conf ~/.tmux.conf; else ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux.conf ~/; fi
-ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.before.local ~/
-ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.bundles.local ~/
-ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc.local ~/
+ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.ctags.d ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.ignore ~/
 ```
@@ -40,7 +33,10 @@ echo "source ~/.zshrc.local" >> ~/.zshrc
 
 ### Update vim plugins
 ```
-vim +BundleInstall! +BundleClean +q
+# Install vim-plug
+$ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+$ vim +PlugInstall +PlugClean! +q
 ```
 
 
