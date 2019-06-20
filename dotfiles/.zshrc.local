@@ -8,7 +8,7 @@ alias vim-clean="rm -rv $HOME/.vimviews"
 export FZF_DEFAULT_OPTS="
     --preview '(highlight -O ansi {} || cat {}) 2> /dev/null | head -500'
     --color dark,fg:249,hl:33,hl+:37,fg+:235,bg+:136,fg+:254
-    --color info:254,prompt:37,spinner:108,pointer:235,marker:235
+    --color info:254,prompt:37,spinner:108,pointer:136,marker:168
 "
 
 # fzf key bindings
