@@ -530,6 +530,12 @@
         endif
     " }
 
+    " gutentags {
+        let g:gutentags_cache_dir = '~/.cachetags'
+        let g:gutentags_ctags_tagfile = '.tags'
+        let g:gutentags_file_list_command = 'git ls-files'
+    " }
+
     " OmniComplete {
         let g:go_highlight_build_constraints = 0
         if exists('g:enable_config_for_omni_complete')
