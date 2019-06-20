@@ -1,3 +1,7 @@
+" =======================================
+" This modification is based on spf13-vim
+" =======================================
+
 " Environment {
     " Identify platform {
         silent function! OSX()
@@ -48,6 +52,12 @@
 " }
 
 " General {
+    " colors {
+        colorscheme PaperColor
+        let g:lightline = {
+              \ 'colorscheme': 'PaperColor',
+              \ }
+    " }
 
     set background=dark         " Assume a dark background
 
@@ -81,10 +91,8 @@
     endif
 
     " Most prefer to automatically switch to the current file directory when
-    " a new buffer is opened; to prevent this behavior, add the following to
-    " your .vimrc.before.local file:
-    "   let g:spf13_no_autochdir = 1
-    if !exists('g:spf13_no_autochdir')
+    " a new buffer is opened
+    if 0
         autocmd BufEnter * if bufname("") !~ "^\[A-Za-z0-9\]*://" | lcd %:p:h | endif
         " Always switch to the current file directory
     endif
@@ -94,11 +102,15 @@
     set viewoptions=folds,options,cursor,unix,slash " Better Unix / Windows compatibility
     set virtualedit=onemore             " Allow for cursor beyond last character
     set history=1000                    " Store a ton of history (default is 20)
-    set spell                           " Spell checking on
     set hidden                          " Allow buffer switching without saving
     set iskeyword-=.                    " '.' is an end of word designator
     set iskeyword-=#                    " '#' is an end of word designator
     set iskeyword-=-                    " '-' is an end of word designator
+    set regexpengine=1
+    set nospell
+
+    " expand tabs to spaces
+    set expandtab
 
     " Instead of reverting the cursor to the last position in the buffer, we
     " set it to the first line when editing a git commit message
@@ -106,21 +118,17 @@
 
     " http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
     " Restore cursor to file position in previous editing session
-    " To disable this, add the following to your .vimrc.before.local file:
-    "   let g:spf13_no_restore_cursor = 1
-    if !exists('g:spf13_no_restore_cursor')
-        function! ResCur()
-            if line("'\"") <= line("$")
-                silent! normal! g`"
-                return 1
-            endif
-        endfunction
+    function! ResCur()
+        if line("'\"") <= line("$")
+            silent! normal! g`"
+            return 1
+        endif
+    endfunction
 
-        augroup resCur
-            autocmd!
-            autocmd BufWinEnter * call ResCur()
-        augroup END
-    endif
+    augroup resCur
+        autocmd!
+        autocmd BufWinEnter * call ResCur()
+    augroup END
 
     " Setting up the directories {
         set backup                  " Backups are nice ...
@@ -130,15 +138,11 @@
             set undoreload=10000        " Maximum number lines to save for undo on a buffer reload
         endif
 
-        " To disable views add the following to your .vimrc.before.local file:
-        "   let g:spf13_no_views = 1
-        if !exists('g:spf13_no_views')
-            " Add exclusions to mkview and loadview
-            " eg: *.*, svn-commit.tmp
-            let g:skipview_files = [
-                \ '\[example pattern\]'
-                \ ]
-        endif
+        " Add exclusions to mkview and loadview
+        " eg: *.*, svn-commit.tmp
+        let g:skipview_files = [
+            \ '\[example pattern\]'
+            \ ]
     " }
 
 " }
@@ -166,9 +170,7 @@
         " Broken down into easily includeable segments
         set statusline=%<%f\                     " Filename
         set statusline+=%w%h%m%r                 " Options
-        if !exists('g:override_spf13_bundles')
-            set statusline+=%{fugitive#statusline()} " Git Hotness
-        endif
+        set statusline+=%{fugitive#statusline()} " Git Hotness
         set statusline+=\ [%{&ff}/%Y]            " Filetype
         set statusline+=\ [%{getcwd()}]          " Current dir
         set statusline+=%=%-14.(%l,%c%V%)\ %p%%  " Right aligned file nav info
@@ -207,12 +209,11 @@
     set splitbelow                  " Puts new split windows to the bottom of the current
     "set matchpairs+=<:>             " Match, to be used with %
     set pastetoggle=<F12>           " pastetoggle (sane indentation on pastes)
+    " term config
+    set shell=/bin/zsh
     "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
     " Remove trailing whitespaces and ^M chars
-    " To disable the stripping of whitespace, add the following to your
-    " .vimrc.before.local file:
-    "   let g:spf13_keep_trailing_whitespace = 1
-    autocmd FileType c,cpp,java,go,php,javascript,puppet,python,rust,twig,xml,yml,perl,sql autocmd BufWritePre <buffer> if !exists('g:spf13_keep_trailing_whitespace') | call StripTrailingWhitespace() | endif
+    autocmd FileType c,cpp,java,go,php,javascript,puppet,python,rust,twig,xml,yml,perl,sql autocmd BufWritePre <buffer> if 1 | call StripTrailingWhitespace() | endif
     "autocmd FileType go autocmd BufWritePre <buffer> Fmt
     autocmd BufNewFile,BufRead *.html.twig set filetype=html.twig
     autocmd FileType haskell,puppet,ruby,yml setlocal expandtab shiftwidth=2 softtabstop=2
@@ -225,52 +226,35 @@
     " Workaround broken colour highlighting in Haskell
     autocmd FileType haskell,rust setlocal nospell
 
+    autocmd Filetype html setlocal ts=2 sts=2 sw=2
+    autocmd Filetype ruby setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.coffee setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.erb setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.scss setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.jst setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.eco setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.ejs setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.yml setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.vue setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.js setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.css setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.html setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.json setlocal ts=2 sts=2 sw=2
+
+    autocmd QuickFixCmdPost [^l]* nested cwindow
+    autocmd QuickFixCmdPost    l* nested lwindow
 " }
 
 " Key (re)Mappings {
 
-    " The default leader is '\', but many people prefer ',' as it's in a standard
-    " location. To override this behavior and set it back to '\' (or any other
-    " character) add the following to your .vimrc.before.local file:
-    "   let g:spf13_leader='\'
-    if !exists('g:spf13_leader')
-        let mapleader = ','
-    else
-        let mapleader=g:spf13_leader
-    endif
-    if !exists('g:spf13_localleader')
-        let maplocalleader = '_'
-    else
-        let maplocalleader=g:spf13_localleader
-    endif
-
-    " The default mappings for editing and applying the spf13 configuration
-    " are <leader>ev and <leader>sv respectively. Change them to your preference
-    " by adding the following to your .vimrc.before.local file:
-    "   let g:spf13_edit_config_mapping='<leader>ec'
-    "   let g:spf13_apply_config_mapping='<leader>sc'
-    if !exists('g:spf13_edit_config_mapping')
-        let s:spf13_edit_config_mapping = '<leader>ev'
-    else
-        let s:spf13_edit_config_mapping = g:spf13_edit_config_mapping
-    endif
-    if !exists('g:spf13_apply_config_mapping')
-        let s:spf13_apply_config_mapping = '<leader>sv'
-    else
-        let s:spf13_apply_config_mapping = g:spf13_apply_config_mapping
-    endif
+    let mapleader = ','
+    let maplocalleader = '_'
 
     " Easier moving in tabs and windows
-    " The lines conflict with the default digraph mapping of <C-K>
-    " If you prefer that functionality, add the following to your
-    " .vimrc.before.local file:
-    "   let g:spf13_no_easyWindows = 1
-    if !exists('g:spf13_no_easyWindows')
-        map <C-J> <C-W>j<C-W>_
-        map <C-K> <C-W>k<C-W>_
-        map <C-L> <C-W>l<C-W>_
-        map <C-H> <C-W>h<C-W>_
-    endif
+    map <C-J> <C-W>j<C-W>_
+    map <C-K> <C-W>k<C-W>_
+    map <C-L> <C-W>l<C-W>_
+    map <C-H> <C-W>h<C-W>_
 
     " Wrapped lines goes down/up to next row, rather than next line in file.
     noremap j gj
@@ -279,68 +263,56 @@
     " End/Start of line motion keys act relative to row/wrap width in the
     " presence of `:set wrap`, and relative to line for `:set nowrap`.
     " Default vim behaviour is to act relative to text line in both cases
-    " If you prefer the default behaviour, add the following to your
-    " .vimrc.before.local file:
-    "   let g:spf13_no_wrapRelMotion = 1
-    if !exists('g:spf13_no_wrapRelMotion')
-        " Same for 0, home, end, etc
-        function! WrapRelativeMotion(key, ...)
-            let vis_sel=""
-            if a:0
-                let vis_sel="gv"
-            endif
-            if &wrap
-                execute "normal!" vis_sel . "g" . a:key
-            else
-                execute "normal!" vis_sel . a:key
-            endif
-        endfunction
+    " Same for 0, home, end, etc
+    function! WrapRelativeMotion(key, ...)
+        let vis_sel=""
+        if a:0
+            let vis_sel="gv"
+        endif
+        if &wrap
+            execute "normal!" vis_sel . "g" . a:key
+        else
+            execute "normal!" vis_sel . a:key
+        endif
+    endfunction
 
-        " Map g* keys in Normal, Operator-pending, and Visual+select
-        noremap $ :call WrapRelativeMotion("$")<CR>
-        noremap <End> :call WrapRelativeMotion("$")<CR>
-        noremap 0 :call WrapRelativeMotion("0")<CR>
-        noremap <Home> :call WrapRelativeMotion("0")<CR>
-        noremap ^ :call WrapRelativeMotion("^")<CR>
-        " Overwrite the operator pending $/<End> mappings from above
-        " to force inclusive motion with :execute normal!
-        onoremap $ v:call WrapRelativeMotion("$")<CR>
-        onoremap <End> v:call WrapRelativeMotion("$")<CR>
-        " Overwrite the Visual+select mode mappings from above
-        " to ensure the correct vis_sel flag is passed to function
-        vnoremap $ :<C-U>call WrapRelativeMotion("$", 1)<CR>
-        vnoremap <End> :<C-U>call WrapRelativeMotion("$", 1)<CR>
-        vnoremap 0 :<C-U>call WrapRelativeMotion("0", 1)<CR>
-        vnoremap <Home> :<C-U>call WrapRelativeMotion("0", 1)<CR>
-        vnoremap ^ :<C-U>call WrapRelativeMotion("^", 1)<CR>
-    endif
+    " Map g* keys in Normal, Operator-pending, and Visual+select
+    noremap $ :call WrapRelativeMotion("$")<CR>
+    noremap <End> :call WrapRelativeMotion("$")<CR>
+    noremap 0 :call WrapRelativeMotion("0")<CR>
+    noremap <Home> :call WrapRelativeMotion("0")<CR>
+    noremap ^ :call WrapRelativeMotion("^")<CR>
+    " Overwrite the operator pending $/<End> mappings from above
+    " to force inclusive motion with :execute normal!
+    onoremap $ v:call WrapRelativeMotion("$")<CR>
+    onoremap <End> v:call WrapRelativeMotion("$")<CR>
+    " Overwrite the Visual+select mode mappings from above
+    " to ensure the correct vis_sel flag is passed to function
+    vnoremap $ :<C-U>call WrapRelativeMotion("$", 1)<CR>
+    vnoremap <End> :<C-U>call WrapRelativeMotion("$", 1)<CR>
+    vnoremap 0 :<C-U>call WrapRelativeMotion("0", 1)<CR>
+    vnoremap <Home> :<C-U>call WrapRelativeMotion("0", 1)<CR>
+    vnoremap ^ :<C-U>call WrapRelativeMotion("^", 1)<CR>
 
     " The following two lines conflict with moving to top and
     " bottom of the screen
-    " If you prefer that functionality, add the following to your
-    " .vimrc.before.local file:
-    "   let g:spf13_no_fastTabs = 1
-    if !exists('g:spf13_no_fastTabs')
-        map <S-H> gT
-        map <S-L> gt
-    endif
+    map <S-H> gT
+    map <S-L> gt
 
     " Stupid shift key fixes
-    if !exists('g:spf13_no_keyfixes')
-        if has("user_commands")
-            command! -bang -nargs=* -complete=file E e<bang> <args>
-            command! -bang -nargs=* -complete=file W w<bang> <args>
-            command! -bang -nargs=* -complete=file Wq wq<bang> <args>
-            command! -bang -nargs=* -complete=file WQ wq<bang> <args>
-            command! -bang Wa wa<bang>
-            command! -bang WA wa<bang>
-            command! -bang Q q<bang>
-            command! -bang QA qa<bang>
-            command! -bang Qa qa<bang>
-        endif
-
-        cmap Tabe tabe
+    if has("user_commands")
+        command! -bang -nargs=* -complete=file E e<bang> <args>
+        command! -bang -nargs=* -complete=file W w<bang> <args>
+        command! -bang -nargs=* -complete=file Wq wq<bang> <args>
+        command! -bang -nargs=* -complete=file WQ wq<bang> <args>
+        command! -bang Wa wa<bang>
+        command! -bang WA wa<bang>
+        command! -bang Q q<bang>
+        command! -bang QA qa<bang>
+        command! -bang Qa qa<bang>
     endif
+
+    cmap Tabe tabe
 
     " Yank from the cursor to the end of the line, to be consistent with C and D.
     nnoremap Y y$
@@ -358,15 +330,8 @@
     nmap <leader>f9 :set foldlevel=9<CR>
 
     " Most prefer to toggle search highlighting rather than clear the current
-    " search results. To clear search highlighting rather than toggle it on
-    " and off, add the following to your .vimrc.before.local file:
-    "   let g:spf13_clear_search_highlight = 1
-    if exists('g:spf13_clear_search_highlight')
-        nmap <silent> <leader>/ :nohlsearch<CR>
-    else
-        nmap <silent> <leader>/ :set invhlsearch<CR>
-    endif
-
+    " search results.
+    nmap <silent> <leader>/ :nohlsearch<CR>
 
     " Find merge conflict markers
     map <leader>fc /\v^[<\|=>]{7}( .*\|$)<CR>
@@ -413,6 +378,36 @@
     " fullscreen mode for GVIM and Terminal, need 'wmctrl' in you PATH
     map <silent> <F11> :call system("wmctrl -ir " . v:windowid . " -b toggle,fullscreen")<CR>
 
+    " copy to mac
+    vmap <C-x> :w !pbcopy<CR><CR>
+
+    " ag shortcut
+    nnoremap <silent> <Leader>b :A <C-R><C-W><CR>
+    vnoremap <Leader>b y:A <C-r>=fnameescape(@")<CR><CR>
+
+    " copy current file name (relative/absolute) to system clipboard
+    if has("mac") || has("gui_macvim") || has("gui_mac")
+      " relative path  (src/foo.txt)
+      nnoremap <leader>cfr :let @*=expand("%")<CR>
+      " absolute path  (/something/src/foo.txt)
+      nnoremap <leader>cfa :let @*=expand("%:p")<CR>
+      " filename       (foo.txt)
+      nnoremap <leader>cff :let @*=expand("%:t")<CR>
+      " directory name (/something/src)
+      nnoremap <leader>cfd :let @*=expand("%:p:h")<CR>
+    endif
+    " copy current file name (relative/absolute) to system clipboard (Linux version)
+    if has("gui_gtk") || has("gui_gtk2") || has("gui_gnome") || has("unix")
+      " relative path (src/foo.txt)
+      nnoremap <leader>cfr :let @+=expand("%")<CR>
+      " absolute path (/something/src/foo.txt)
+      nnoremap <leader>cfa :let @+=expand("%:p")<CR>
+      " filename (foo.txt)
+      nnoremap <leader>cff :let @+=expand("%:t")<CR>
+      " directory name (/something/src)
+      nnoremap <leader>cfd :let @+=expand("%:p:h")<CR>
+    endif
+
 " }
 
 " Plugins {
@@ -424,17 +419,49 @@
         let g:go_highlight_operators = 1
         let g:go_highlight_build_constraints = 1
         let g:go_fmt_command = "goimports"
-        let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-        let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-        au FileType go nmap <Leader>s <Plug>(go-implements)
-        au FileType go nmap <Leader>i <Plug>(go-info)
-        au FileType go nmap <Leader>e <Plug>(go-rename)
-        au FileType go nmap <leader>r <Plug>(go-run)
-        au FileType go nmap <leader>b <Plug>(go-build)
-        au FileType go nmap <leader>t <Plug>(go-test)
-        au FileType go nmap <Leader>gd <Plug>(go-doc)
-        au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
-        au FileType go nmap <leader>co <Plug>(go-coverage)
+        "let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+        "let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+        "au FileType go nmap <Leader>s <Plug>(go-implements)
+        "au FileType go nmap <Leader>i <Plug>(go-info)
+        "au FileType go nmap <Leader>e <Plug>(go-rename)
+        "au FileType go nmap <leader>r <Plug>(go-run)
+        "au FileType go nmap <leader>b <Plug>(go-build)
+        "au FileType go nmap <leader>t <Plug>(go-test)
+        "au FileType go nmap <Leader>gd <Plug>(go-doc)
+        "au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+        "au FileType go nmap <leader>co <Plug>(go-coverage)
+    " }
+
+    " syntastic {
+        " disable syntastic by default, enable by c-w E
+        let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+        nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
+    " }
+
+    " tsuquyomi {
+        let g:tsuquyomi_disable_quickfix = 1
+        let g:syntastic_typescript_checkers = ['tsuquyomi'] " You shouldn't use 'tsc' checker.
+    " }
+
+    " FZF {
+        let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+        nnoremap <silent> <C-p> :FZF -m<CR>
+        if executable('ag')
+          let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
+        endif
+
+        " ag with preview
+        command! -bang -nargs=* Ag
+          \ call fzf#vim#ag(<q-args>,
+          \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+          \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+          \                 <bang>0)
+
+        command! -bang -nargs=* -complete=dir A
+          \ call fzf#vim#ag_raw('--path-to-ignore ~/.ignore '.<q-args>,
+          \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+          \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+          \                 <bang>0)
     " }
 
     " Misc {
@@ -444,9 +471,8 @@
     " }
 
     " OmniComplete {
-        " To disable omni complete, add the following to your .vimrc.before.local file:
-        "   let g:spf13_no_omni_complete = 1
-        if !exists('g:spf13_no_omni_complete')
+        let g:go_highlight_build_constraints = 0
+        if exists('g:enable_config_for_omni_complete')
             if has("autocmd") && exists("+omnifunc")
                 autocmd Filetype *
                     \if &omnifunc == "" |
@@ -460,9 +486,7 @@
 
             " Some convenient mappings
             "inoremap <expr> <Esc>      pumvisible() ? "\<C-e>" : "\<Esc>"
-            if exists('g:spf13_map_cr_omni_complete')
-                inoremap <expr> <CR>     pumvisible() ? "\<C-y>" : "\<CR>"
-            endif
+            inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"
             inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
             inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
             inoremap <expr> <C-d>      pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<C-d>"
@@ -482,18 +506,6 @@
         if gitroot != ''
             let &tags = &tags . ',' . gitroot . '/.git/tags'
         endif
-    " }
-
-    " AutoCloseTag {
-        " Make it so AutoCloseTag works for xml and xhtml files as well
-        au FileType xhtml,xml ru ftplugin/html/autoclosetag.vim
-        nmap <Leader>ac <Plug>ToggleAutoCloseMappings
-    " }
-
-    " SnipMate {
-        " Setting the author var
-        " If forking, please overwrite in your .vimrc.local file
-        let g:snips_author = 'Steve Francia <steve.francia@gmail.com>'
     " }
 
     " NerdTree {
@@ -556,7 +568,7 @@
     "}
 
     " YouCompleteMe {
-        if count(g:optional_plugins, 'youcompleteme')
+        if isdirectory(expand("~/.vim/plugged/tagbar/"))
             let g:acp_enableAtStartup = 0
 
             " enable completion from tags
@@ -584,10 +596,8 @@
             endif
 
             " For snippet_complete marker.
-            if !exists("g:spf13_no_conceal")
-                if has('conceal')
-                    set conceallevel=2 concealcursor=i
-                endif
+            if has('conceal')
+                set conceallevel=2 concealcursor=i
             endif
 
             " Disable the neosnippet preview candidate window
@@ -628,14 +638,12 @@
     if has('gui_running')
         set guioptions-=T           " Remove the toolbar
         set lines=40                " 40 lines of text instead of 24
-        if !exists("g:spf13_no_big_font")
-            if LINUX() && has("gui_running")
-                set guifont=Andale\ Mono\ Regular\ 12,Menlo\ Regular\ 11,Consolas\ Regular\ 12,Courier\ New\ Regular\ 14
-            elseif OSX() && has("gui_running")
-                set guifont=Andale\ Mono\ Regular:h12,Menlo\ Regular:h11,Consolas\ Regular:h12,Courier\ New\ Regular:h14
-            elseif WINDOWS() && has("gui_running")
-                set guifont=Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
-            endif
+        if LINUX() && has("gui_running")
+            set guifont=Andale\ Mono\ Regular\ 12,Menlo\ Regular\ 11,Consolas\ Regular\ 12,Courier\ New\ Regular\ 14
+        elseif OSX() && has("gui_running")
+            set guifont=Andale\ Mono\ Regular:h12,Menlo\ Regular:h11,Consolas\ Regular:h12,Courier\ New\ Regular:h14
+        elseif WINDOWS() && has("gui_running")
+            set guifont=Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
         endif
     else
         if &term == 'xterm' || &term == 'screen'
@@ -661,16 +669,7 @@
             let dir_list['undo'] = 'undodir'
         endif
 
-        " To specify a different directory in which to place the vimbackup,
-        " vimviews, vimundo, and vimswap files/directories, add the following to
-        " your .vimrc.before.local file:
-        "   let g:spf13_consolidated_directory = <full path to desired directory>
-        "   eg: let g:spf13_consolidated_directory = $HOME . '/.vim/'
-        if exists('g:spf13_consolidated_directory')
-            let common_dir = g:spf13_consolidated_directory . prefix
-        else
-            let common_dir = parent . '/.' . prefix
-        endif
+        let common_dir = parent . '/.' . prefix
 
         for [dirname, settingname] in items(dir_list)
             let directory = common_dir . dirname . '/'
@@ -745,10 +744,4 @@
     function! s:ExpandFilenameAndExecute(command, file)
         execute a:command . " " . expand(a:file, ":p")
     endfunction
-" }
-
-" Use local vimrc if available {
-    if filereadable(expand("~/.vimrc.local"))
-        source ~/.vimrc.local
-    endif
 " }
