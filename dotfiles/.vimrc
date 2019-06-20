@@ -518,7 +518,7 @@
           \                 <bang>0)
 
         command! -bang -nargs=* -complete=dir A
-          \ call fzf#vim#ag_raw('--path-to-ignore ~/.ignore '.<q-args>,
+          \ call fzf#vim#ag_raw('--hidden --path-to-ignore ~/.ignore '.<q-args>,
           \                 <bang>0 ? fzf#vim#with_preview('up:60%')
           \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
           \                 <bang>0)
