@@ -92,3 +92,18 @@
 - `[[`
 - `{{`
 - `((`
+
+### Folding
+```
+set foldmethod=
+manual		manually define folds
+indent		more indent means a higher fold level
+expr		  specify an expression to define folds
+syntax		folds defined by syntax highlighting
+diff		  folds for unchanged text
+marker		folds defined by markers in the text
+
+zfa(      folds a ()
+:mkview   save foldings
+:loadview load foldings
+```
