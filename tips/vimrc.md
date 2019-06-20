@@ -1,0 +1,8 @@
+- `,/` toggle search highlight
+- `,fc` find merge conflict markers
+- `cwd` or `cd.` change working directory
+- `:w!!` sudo write
+- `,ff` search word in current file
+- `,q` format current paragraph
+- `,jt` format json
+- `F12` toggle paste mode
