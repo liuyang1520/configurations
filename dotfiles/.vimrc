@@ -301,6 +301,8 @@
     autocmd BufRead,BufNewFile *.html setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.json setlocal ts=2 sts=2 sw=2
 
+    autocmd BufRead,BufNewFile *.tsx setlocal syntax=javascript.jsx
+
     autocmd QuickFixCmdPost [^l]* nested cwindow
     autocmd QuickFixCmdPost    l* nested lwindow
 " }
@@ -537,7 +539,7 @@
     " }
 
     " OmniComplete {
-        let g:go_highlight_build_constraints = 0
+        let g:enable_config_for_omni_complete = 1
         if exists('g:enable_config_for_omni_complete')
             if has("autocmd") && exists("+omnifunc")
                 autocmd Filetype *
