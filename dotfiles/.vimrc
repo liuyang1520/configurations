@@ -533,6 +533,7 @@
     " }
 
     " gutentags {
+        let g:gutentags_enabled = 1
         let g:gutentags_cache_dir = '~/.cachetags'
         let g:gutentags_ctags_tagfile = '.tags'
         let g:gutentags_file_list_command = 'git ls-files'
