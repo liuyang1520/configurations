@@ -107,3 +107,9 @@ zfa(      folds a ()
 :mkview   save foldings
 :loadview load foldings
 ```
+
+### Append at end of line
+`A`
+
+### Backspace
+`X`
