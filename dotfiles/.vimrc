@@ -59,6 +59,7 @@
         Plug 'tpope/vim-repeat'
         Plug 'terryma/vim-multiple-cursors'
         Plug 'mbbill/undotree'
+        Plug 'junegunn/goyo.vim'
 
         " Python
         Plug 'klen/python-mode'
