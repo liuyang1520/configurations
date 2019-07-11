@@ -100,7 +100,6 @@
 
         " programming
         Plug 'tpope/vim-fugitive'
-        Plug 'scrooloose/nerdcommenter'
         Plug 'scrooloose/syntastic'
         Plug 'tpope/vim-commentary'
         if executable('ctags')
@@ -423,6 +422,9 @@
     map <leader>ev :vsp %%
     map <leader>et :tabe %%
 
+    " Toggle cursorcolumn
+    map <Leader>cc :set cursorcolumn!<cr>
+
     " Adjust viewports to the same size
     map <Leader>= <C-w>=
 
@@ -697,7 +699,7 @@
         if isdirectory(expand("~/.vim/plugged/vim-indent-guides/"))
             let g:indent_guides_start_level = 2
             let g:indent_guides_guide_size = 1
-            let g:indent_guides_enable_on_vim_startup = 1
+            let g:indent_guides_enable_on_vim_startup = 0
         endif
     " }
 " }
