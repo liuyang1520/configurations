@@ -94,7 +94,7 @@
 
         " appearance
         Plug 'flazz/vim-colorschemes'
-        Plug 'nathanaelkane/vim-indent-guides'
+        Plug 'Yggdroot/indentLine'
         Plug 'mhinz/vim-signify'
         Plug 'osyo-manga/vim-over'
 
@@ -131,7 +131,6 @@
             set background=dark
         endif
     endfunction
-    noremap <leader>bg :call ToggleBG()<CR>
 
     " if !has('gui')
         "set term=$TERM          " Make arrow and other keys work
@@ -423,7 +422,10 @@
     map <leader>et :tabe %%
 
     " Toggle cursorcolumn
-    map <Leader>cc :set cursorcolumn!<cr>
+    nmap <Leader>cc :set cursorcolumn!<cr>
+
+    " Toggle background dark and light
+    nmap <leader>cbg :call ToggleBG()<CR>
 
     " Adjust viewports to the same size
     map <Leader>= <C-w>=
@@ -695,11 +697,10 @@
         endif
     " }
 
-    " indent_guides {
-        if isdirectory(expand("~/.vim/plugged/vim-indent-guides/"))
-            let g:indent_guides_start_level = 2
-            let g:indent_guides_guide_size = 1
-            let g:indent_guides_enable_on_vim_startup = 0
+    " indentLine {
+        if isdirectory(expand("~/.vim/plugged/indentLine/"))
+            let g:indentLine_enabled = 0
+            nmap <leader>il :IndentLinesToggle<CR>
         endif
     " }
 " }
