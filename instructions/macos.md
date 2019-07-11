@@ -3,6 +3,7 @@
 - Click `Use option as Meta key`
 
 ## Prerequisite
+- vim - `brew install --override-system-vi vim`
 - [ag](https://github.com/ggreer/the_silver_searcher) - `brew install the_silver_searcher`
 - [fzf](https://github.com/junegunn/fzf) - `brew install fzf`
 - [highlight](http://www.andre-simon.de/doku/highlight/en/highlight.php) - `brew install highlight`
