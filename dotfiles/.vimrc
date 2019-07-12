@@ -67,8 +67,7 @@
 
         " javascript
         Plug 'leafgarland/typescript-vim'
-        Plug 'Quramy/tsuquyomi'
-        Plug 'mxw/vim-jsx'
+        Plug 'peitalin/vim-jsx-typescript'
         Plug 'posva/vim-vue'
         Plug 'elzr/vim-json'
         Plug 'groenewege/vim-less'
@@ -86,7 +85,7 @@
         Plug 'tpope/vim-rails'
 
         " golang
-        Plug 'fatih/vim-go'
+        Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 
         " other langs
         Plug 'rust-lang/rust.vim'
@@ -105,6 +104,7 @@
         if executable('ctags')
             Plug 'majutsushi/tagbar'
         endif
+        Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
         " youcompleteme
         "Plug 'Valloric/YouCompleteMe'
@@ -299,8 +299,6 @@
     autocmd BufRead,BufNewFile *.css setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.html setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.json setlocal ts=2 sts=2 sw=2
-
-    autocmd BufRead,BufNewFile *.tsx setlocal syntax=javascript.jsx
 
     autocmd QuickFixCmdPost [^l]* nested cwindow
     autocmd QuickFixCmdPost    l* nested lwindow
@@ -503,11 +501,6 @@
         " disable syntastic by default, enable by c-w E
         let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
         nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
-    " }
-
-    " tsuquyomi {
-        let g:tsuquyomi_disable_quickfix = 1
-        let g:syntastic_typescript_checkers = ['tsuquyomi'] " You shouldn't use 'tsc' checker.
     " }
 
     " FZF {
