@@ -167,6 +167,7 @@
     set iskeyword-=-                    " '-' is an end of word designator
     set regexpengine=1
     set nospell
+    set updatetime=1000
 
     " expand tabs to spaces
     set expandtab
