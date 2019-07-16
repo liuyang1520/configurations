@@ -113,3 +113,11 @@ zfa(      folds a ()
 
 ### Backspace
 `X`
+
+### Search current word in file
+```
+#   search whole word up
+g#  search word up
+*   search whole word down
+g*  search word down
+```
