@@ -6,6 +6,7 @@ alias vim-clean="rm -rv $HOME/.vimviews"
 
 # exports
 export FZF_DEFAULT_OPTS="
+    --bind ctrl-d:page-down,ctrl-u:page-up,alt-j:preview-up,alt-k:preview-down,alt-d:preview-page-down,alt-u:preview-page-up
     --preview '(highlight -O ansi {} || cat {}) 2> /dev/null | head -500'
     --color dark,fg:249,hl:33,hl+:37,fg+:235,bg+:136,fg+:254
     --color info:254,prompt:37,spinner:108,pointer:136,marker:168

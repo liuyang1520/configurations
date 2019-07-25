@@ -449,7 +449,9 @@
 
     " ag shortcut
     nnoremap <silent> <Leader>b :A <C-R><C-W><CR>
+    nnoremap <silent> <Leader>B :A! <C-R><C-W><CR>
     vnoremap <Leader>b y:A <C-r>=fnameescape(@")<CR><CR>
+    vnoremap <Leader>B y:A! <C-r>=fnameescape(@")<CR><CR>
 
     " copy current file name (relative/absolute) to system clipboard
     if has("mac") || has("gui_macvim") || has("gui_mac")
