@@ -448,10 +448,10 @@
     vmap <C-x> :w !pbcopy<CR><CR>
 
     " ag shortcut
-    nnoremap <silent> <Leader>b :A <C-R><C-W><CR>
-    nnoremap <silent> <Leader>B :A! <C-R><C-W><CR>
-    vnoremap <Leader>b y:A <C-r>=fnameescape(@")<CR><CR>
-    vnoremap <Leader>B y:A! <C-r>=fnameescape(@")<CR><CR>
+    nnoremap <silent> <Leader>b :B <C-R><C-W><CR>
+    nnoremap <silent> <Leader>B :B! <C-R><C-W><CR>
+    vnoremap <Leader>b y:B <C-r>=fnameescape(@")<CR><CR>
+    vnoremap <Leader>B y:B! <C-r>=fnameescape(@")<CR><CR>
 
     " copy current file name (relative/absolute) to system clipboard
     if has("mac") || has("gui_macvim") || has("gui_mac")
@@ -520,7 +520,7 @@
           \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
           \                 <bang>0)
 
-        command! -bang -nargs=* -complete=dir A
+        command! -bang -nargs=* -complete=dir B
           \ call fzf#vim#ag_raw('--hidden --ignore .git --path-to-ignore ~/.ignore '.<q-args>,
           \                 <bang>0 ? fzf#vim#with_preview('up:60%')
           \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
