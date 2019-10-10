@@ -20,6 +20,14 @@ list sessions:
 ## Operations
 ctrl + b, then
 
+### Sessions
+```
+(   move to previous session
+)   move to next session
+$   rename session
+d   detach from session
+```
+
 ### Windows
 ```
 c  create window
