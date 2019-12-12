@@ -611,6 +611,7 @@
             let g:pymode_trim_whitespaces = 0
             let g:pymode_options = 0
             let g:pymode_rope = 0
+            let g:pymode_breakpoint = 0
         endif
     " }
 
