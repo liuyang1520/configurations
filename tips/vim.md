@@ -121,3 +121,10 @@ g#  search word up
 *   search whole word down
 g*  search word down
 ```
+
+### Search visual selection in file
+1. `y` (yank the selected text, into the " register by default)
+2. `/` (enter search mode)
+3. `(\ V)` (optional, enter "plain text instead of as a regex" mode)
+4. `Ctrl+r "` (insert text from " register)
+5. `Enter`
