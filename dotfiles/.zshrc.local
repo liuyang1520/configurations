@@ -1,7 +1,8 @@
-ZSH_THEME="dst"
-
-# aliases
-alias ctags="`brew --prefix`/bin/ctags"
+# customized aliases
+# brew related aliases
+if type brew >/dev/null 2>&1; then
+    alias ctags="`brew --prefix`/bin/ctags"
+fi
 alias vim-clean="rm -rv $HOME/.vimviews"
 
 # exports
