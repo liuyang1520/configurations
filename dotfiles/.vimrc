@@ -74,6 +74,7 @@
         Plug 'pangloss/vim-javascript'
         Plug 'briancollins/vim-jst'
         Plug 'kchmck/vim-coffee-script'
+        Plug 'mxw/vim-jsx'
 
         " html
         Plug 'hail2u/vim-css3-syntax'
