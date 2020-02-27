@@ -11,3 +11,4 @@
 - [ctags](https://github.com/universal-ctags/ctags) - `brew install --HEAD universal-ctags/universal-ctags/universal-ctags`
 - [tmux](https://github.com/tmux/tmux) - `brew install tmux`
   - reattach-to-user-namespace - `brew install reattach-to-user-namespace`
+- [tmuxinator](https://github.com/tmuxinator/tmuxinator) - `brew install tmuxinator`
