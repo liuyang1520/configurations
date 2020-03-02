@@ -128,3 +128,12 @@ g*  search word down
 3. `(\ V)` (optional, enter "plain text instead of as a regex" mode)
 4. `Ctrl+r "` (insert text from " register)
 5. `Enter`
+
+### Case
+```
+~   Toggle case (Case => cASE)
+gU  Uppercase
+gu  Lowercase
+gUU Uppercase current line (also gUgU)
+guu Lowercase current line (also gugu)
+```
