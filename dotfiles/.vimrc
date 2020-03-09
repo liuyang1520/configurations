@@ -66,15 +66,16 @@
         Plug 'yssource/python.vim'
 
         " javascript
+        Plug 'pangloss/vim-javascript'
+        " typescript
         Plug 'leafgarland/typescript-vim'
         Plug 'peitalin/vim-jsx-typescript'
+        " misc
         Plug 'posva/vim-vue'
         Plug 'elzr/vim-json'
         Plug 'groenewege/vim-less'
-        Plug 'pangloss/vim-javascript'
         Plug 'briancollins/vim-jst'
         Plug 'kchmck/vim-coffee-script'
-        Plug 'mxw/vim-jsx'
 
         " html
         Plug 'hail2u/vim-css3-syntax'
@@ -110,6 +111,14 @@
         " youcompleteme
         "Plug 'Valloric/YouCompleteMe'
     call plug#end()
+" }
+
+" Syntax Group {
+    augroup SyntaxSettings
+        autocmd!
+        autocmd BufNewFile,BufRead *.ts set filetype=typescript
+        autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescript.tsx
+    augroup END
 " }
 
 " General {
@@ -299,6 +308,9 @@
     autocmd BufRead,BufNewFile *.yml setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.vue setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.js setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.jsx setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.ts setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.tsx setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.css setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.html setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.json setlocal ts=2 sts=2 sw=2
