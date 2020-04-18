@@ -54,12 +54,12 @@
         " misc
         Plug 'itchyny/lightline.vim'
         Plug 'ludovicchabant/vim-gutentags'
-        Plug 'scrooloose/nerdtree'
+        Plug 'preservim/nerdtree'
+        Plug 'Xuyuanp/nerdtree-git-plugin'
         Plug 'tpope/vim-surround'
         Plug 'tpope/vim-repeat'
         Plug 'terryma/vim-multiple-cursors'
         Plug 'mbbill/undotree'
-        Plug 'junegunn/goyo.vim'
 
         " Python
         Plug 'klen/python-mode'
@@ -101,7 +101,6 @@
 
         " programming
         Plug 'tpope/vim-fugitive'
-        Plug 'scrooloose/syntastic'
         Plug 'tpope/vim-commentary'
         if executable('ctags')
             Plug 'majutsushi/tagbar'
@@ -514,12 +513,6 @@
         "au FileType go nmap <leader>co <Plug>(go-coverage)
     " }
 
-    " syntastic {
-        " disable syntastic by default, enable by c-w E
-        let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
-        nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
-    " }
-
     " FZF {
         let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
         nnoremap <silent> <C-p> :FZF -m<CR>
@@ -539,12 +532,6 @@
           \                 <bang>0 ? fzf#vim#with_preview('up:60%')
           \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
           \                 <bang>0)
-    " }
-
-    " Misc {
-        if isdirectory(expand("~/.vim/plugged/nerdtree"))
-            let g:NERDShutUp=1
-        endif
     " }
 
     " gutentags {
@@ -594,7 +581,7 @@
 
     " NerdTree {
         if isdirectory(expand("~/.vim/plugged/nerdtree"))
-            map <C-e> <plug>NERDTreeTabsToggle<CR>
+            map <C-e> :NERDTreeToggle<CR>
             map <leader>e :NERDTreeFind<CR>
             nmap <leader>nt :NERDTreeFind<CR>
 
@@ -604,8 +591,8 @@
             let NERDTreeQuitOnOpen=1
             let NERDTreeMouseMode=2
             let NERDTreeShowHidden=1
-            let NERDTreeKeepTreeInNewTab=1
-            let g:nerdtree_tabs_open_on_gui_startup=0
+            let NERDTreeAutoDeleteBuffer = 1
+            let NERDTreeMinimalUI = 1
         endif
     " }
 
@@ -691,14 +678,6 @@
             set completeopt-=preview
         endif
     " }
-
-    " FIXME: Isn't this for Syntastic to handle?
-    " Haskell post write lint and check with ghcmod
-    " $ `cabal install ghcmod` if missing and ensure
-    " ~/.cabal/bin is in your $PATH.
-    if !executable("ghcmod")
-        autocmd BufWritePost *.hs GhcModCheckAndLintAsync
-    endif
 
     " UndoTree {
         if isdirectory(expand("~/.vim/plugged/undotree/"))
