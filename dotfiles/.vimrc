@@ -310,6 +310,7 @@
     autocmd BufRead,BufNewFile *.jsx setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.ts setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.tsx setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.mjs setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.css setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.html setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.json setlocal ts=2 sts=2 sw=2
