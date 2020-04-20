@@ -539,6 +539,10 @@
         let g:gutentags_cache_dir = '~/.cachetags'
         let g:gutentags_ctags_tagfile = '.tags'
         let g:gutentags_file_list_command = 'git ls-files'
+        " make ctags understand jsx, mjs, tsx
+        let g:gutentags_ctags_extra_args = ['--map-javascript=.jsx']
+        let g:gutentags_ctags_extra_args += ['--map-javascript=.mjs']
+        let g:gutentags_ctags_extra_args += ['--map-typescript=.tsx']
     " }
 
     " OmniComplete {
