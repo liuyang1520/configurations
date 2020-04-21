@@ -373,6 +373,10 @@
     map <S-H> gT
     map <S-L> gt
 
+    " Reorder tabs
+    map <Leader>H :tabm -1<CR>
+    map <Leader>L :tabm +1<CR>
+
     " Stupid shift key fixes
     if has("user_commands")
         command! -bang -nargs=* -complete=file E e<bang> <args>
