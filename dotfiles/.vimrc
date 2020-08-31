@@ -545,7 +545,7 @@
           \                 <bang>0)
 
         command! -bang -nargs=* -complete=dir B
-          \ call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore '.<q-args>,
+          \ call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>,
           \                 <bang>0 ? fzf#vim#with_preview('up:60%')
           \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
           \                 <bang>0)
