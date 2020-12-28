@@ -174,7 +174,7 @@
     set iskeyword-=.                    " '.' is an end of word designator
     set iskeyword-=#                    " '#' is an end of word designator
     set iskeyword-=-                    " '-' is an end of word designator
-    set regexpengine=1
+    set regexpengine=0
     set nospell
     set updatetime=1000
 
@@ -531,6 +531,11 @@
         nmap <silent> gy <Plug>(coc-type-definition)
         nmap <silent> gi <Plug>(coc-implementation)
         nmap <silent> gr <Plug>(coc-references)
+
+        " Prettier
+        command! -nargs=0 Prettier :CocCommand prettier.formatFile
+        vmap <leader>f <Plug>(coc-format-selected)
+        nmap <leader>f <Plug>(coc-format-selected)
     " }
 
     " FZF {
