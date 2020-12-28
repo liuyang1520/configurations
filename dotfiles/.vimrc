@@ -116,7 +116,7 @@
     augroup SyntaxSettings
         autocmd!
         autocmd BufNewFile,BufRead *.ts set filetype=typescript
-        autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescript.tsx
+        autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescriptreact
     augroup END
 " }
 
@@ -288,6 +288,9 @@
     autocmd BufNewFile,BufRead *.html.twig set filetype=html.twig
     autocmd FileType haskell,puppet,ruby,yml setlocal expandtab shiftwidth=2 softtabstop=2
     " preceding line best in a plugin but here for now.
+
+    " remove some autoformat options
+    autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
     autocmd BufNewFile,BufRead *.coffee set filetype=coffee
 
