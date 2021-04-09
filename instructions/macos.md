@@ -1,6 +1,8 @@
 # MacOS
 ## Terminal
 - Click `Use option as Meta key`
+- Background color `22273E`
+- ohmyzsh theme `dst`
 
 ## Prerequisite
 ### Install packages
