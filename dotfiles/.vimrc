@@ -79,9 +79,15 @@
 
         " html
         Plug 'hail2u/vim-css3-syntax'
-        Plug 'ap/vim-css-color'
         Plug 'tpope/vim-haml'
         Plug 'mattn/emmet-vim'
+
+        " colors
+        Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
+        set termguicolors
+        let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+        let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+        let g:Hexokinase_highlighters = ['backgroundfull']
 
         " ruby
         Plug 'tpope/vim-rails'
@@ -653,7 +659,7 @@
 
     " Fugitive {
         if isdirectory(expand("~/.vim/plugged/vim-fugitive/"))
-            nnoremap <silent> <leader>gs :Gstatus<CR>
+            nnoremap <silent> <leader>gs :Git<CR>
             nnoremap <silent> <leader>gd :Gdiff<CR>
             nnoremap <silent> <leader>gc :Gcommit<CR>
             nnoremap <silent> <leader>gb :Gblame<CR>
