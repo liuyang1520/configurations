@@ -37,6 +37,10 @@
         endif
     " }
 
+    " Global let, must be put in the beginning {
+        let mapleader = ','
+        let maplocalleader = '_'
+    " }
 " }
 
 " Install plugins {
@@ -67,9 +71,11 @@
 
         " javascript
         Plug 'pangloss/vim-javascript'
+
         " typescript
         Plug 'leafgarland/typescript-vim'
         Plug 'peitalin/vim-jsx-typescript'
+
         " misc
         Plug 'posva/vim-vue'
         Plug 'elzr/vim-json'
@@ -84,10 +90,6 @@
 
         " colors
         Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
-        set termguicolors
-        let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-        let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-        let g:Hexokinase_highlighters = ['backgroundfull']
 
         " ruby
         Plug 'tpope/vim-rails'
@@ -113,9 +115,182 @@
         endif
         Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-        " youcompleteme
-        "Plug 'Valloric/YouCompleteMe'
     call plug#end()
+" }
+
+" Plugins {
+
+    " colorscheme {
+        colorscheme PaperColor
+        set background=dark         " Assume a dark background
+    " }
+
+    " GoLang {
+        let g:go_highlight_functions = 1
+        let g:go_highlight_methods = 1
+        let g:go_highlight_structs = 1
+        let g:go_highlight_operators = 1
+        let g:go_highlight_build_constraints = 1
+        let g:go_fmt_command = "goimports"
+        "let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+        "let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+        "au FileType go nmap <Leader>s <Plug>(go-implements)
+        "au FileType go nmap <Leader>i <Plug>(go-info)
+        "au FileType go nmap <Leader>e <Plug>(go-rename)
+        "au FileType go nmap <leader>r <Plug>(go-run)
+        "au FileType go nmap <leader>b <Plug>(go-build)
+        "au FileType go nmap <leader>t <Plug>(go-test)
+        "au FileType go nmap <Leader>gd <Plug>(go-doc)
+        "au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+        "au FileType go nmap <leader>co <Plug>(go-coverage)
+    " }
+
+    " coc {
+        " Use `[g` and `]g` to navigate diagnostics
+        nmap <silent> [g <Plug>(coc-diagnostic-prev)
+        nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+        " GoTo code navigation.
+        nmap <silent> gd <Plug>(coc-definition)
+        nmap <silent> gy <Plug>(coc-type-definition)
+        nmap <silent> gi <Plug>(coc-implementation)
+        nmap <silent> gr <Plug>(coc-references)
+
+        " Prettier
+        command! -nargs=0 Prettier :CocCommand prettier.formatFile
+        vmap <leader>f <Plug>(coc-format-selected)
+        nmap <leader>f <Plug>(coc-format-selected)
+    " }
+
+    " FZF {
+        let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+        nnoremap <silent> <C-p> :FZF -m<CR>
+        if executable('ag')
+          let $FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
+        endif
+
+        " ag with preview
+        command! -bang -nargs=* Ag
+          \ call fzf#vim#ag(<q-args>,
+          \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+          \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+          \                 <bang>0)
+
+        command! -bang -nargs=* -complete=dir B
+          \ call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>,
+          \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+          \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+          \                 <bang>0)
+    " }
+
+    " gutentags {
+        let g:gutentags_enabled = 1
+        let g:gutentags_cache_dir = '~/.cachetags'
+        let g:gutentags_ctags_tagfile = '.tags'
+        let g:gutentags_file_list_command = 'git ls-files'
+        " make ctags understand jsx, mjs, tsx
+        let g:gutentags_ctags_extra_args = ['--map-javascript=.jsx']
+        let g:gutentags_ctags_extra_args += ['--map-javascript=.mjs']
+        let g:gutentags_ctags_extra_args += ['--map-typescript=.tsx']
+    " }
+
+    " Ctags {
+        set tags=./tags;/,~/.vimtags
+
+        " Make tags placed in .git/tags file available in all levels of a repository
+        let gitroot = substitute(system('git rev-parse --show-toplevel'), '[\n\r]', '', 'g')
+        if gitroot != ''
+            let &tags = &tags . ',' . gitroot . '/.git/tags'
+        endif
+    " }
+
+    " NerdTree {
+        if isdirectory(expand("~/.vim/plugged/nerdtree"))
+            map <C-e> :NERDTreeToggle<CR>
+            map <leader>e :NERDTreeFind<CR>
+            nmap <leader>nt :NERDTreeFind<CR>
+
+            let NERDTreeShowBookmarks=1
+            let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
+            let NERDTreeChDirMode=0
+            let NERDTreeQuitOnOpen=1
+            let NERDTreeMouseMode=2
+            let NERDTreeShowHidden=1
+            let NERDTreeAutoDeleteBuffer = 1
+            let NERDTreeMinimalUI = 1
+        endif
+    " }
+
+    " JSON {
+        nmap <leader>jt <Esc>:%!python -m json.tool<CR><Esc>:set filetype=json<CR>
+        let g:vim_json_syntax_conceal = 0
+    " }
+
+    " PyMode {
+        " Disable if python support not present
+        if !has('python') && !has('python3')
+            let g:pymode = 0
+        endif
+
+        if isdirectory(expand("~/.vim/plugged/python-mode"))
+            let g:pymode_lint_checkers = ['pyflakes']
+            let g:pymode_trim_whitespaces = 0
+            let g:pymode_options = 0
+            let g:pymode_rope = 0
+            let g:pymode_breakpoint = 0
+        endif
+    " }
+
+    " TagBar {
+        if isdirectory(expand("~/.vim/plugged/tagbar/"))
+            nnoremap <silent> <leader>tt :TagbarToggle<CR>
+        endif
+    "}
+
+    " Fugitive {
+        if isdirectory(expand("~/.vim/plugged/vim-fugitive/"))
+            nnoremap <silent> <leader>gs :Git<CR>
+            nnoremap <silent> <leader>gd :Gdiff<CR>
+            nnoremap <silent> <leader>gc :Gcommit<CR>
+            nnoremap <silent> <leader>gb :Gblame<CR>
+            nnoremap <silent> <leader>gl :Glog<CR>
+            nnoremap <silent> <leader>gp :Git push<CR>
+            nnoremap <silent> <leader>gr :Gread<CR>
+            nnoremap <silent> <leader>gw :Gwrite<CR>
+            nnoremap <silent> <leader>ge :Gedit<CR>
+            " Mnemonic _i_nteractive
+            nnoremap <silent> <leader>gi :Git add -p %<CR>
+            nnoremap <silent> <leader>gg :SignifyToggle<CR>
+        endif
+    "}
+
+    " UndoTree {
+        if isdirectory(expand("~/.vim/plugged/undotree/"))
+            nnoremap <Leader>u :UndotreeToggle<CR>
+            " If undotree is opened, it is likely one wants to interact with it.
+            let g:undotree_SetFocusWhenToggle=1
+        endif
+    " }
+
+    " indentLine {
+        if isdirectory(expand("~/.vim/plugged/indentLine/"))
+            let g:indentLine_enabled = 0
+            nmap <leader>il :IndentLinesToggle<CR>
+        endif
+    " }
+
+    " vim-hexokinase {
+        set termguicolors
+        let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+        let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+        let g:Hexokinase_highlighters = ['backgroundfull']
+    " }
+
+    " lightline {
+        let g:lightline = {
+              \ 'colorscheme': 'PaperColor',
+              \ }
+    " }
 " }
 
 " Syntax Group {
@@ -127,26 +302,6 @@
 " }
 
 " General {
-    " colors {
-        colorscheme PaperColor
-        let g:lightline = {
-              \ 'colorscheme': 'PaperColor',
-              \ }
-    " }
-
-    set background=dark         " Assume a dark background
-
-    " Allow to trigger background
-    function! ToggleBG()
-        let s:tbg = &background
-        " Inversion
-        if s:tbg == "dark"
-            set background=light
-        else
-            set background=dark
-        endif
-    endfunction
-
     " if !has('gui')
         "set term=$TERM          " Make arrow and other keys work
     " endif
@@ -190,15 +345,6 @@
     " Instead of reverting the cursor to the last position in the buffer, we
     " set it to the first line when editing a git commit message
     au FileType gitcommit au! BufEnter COMMIT_EDITMSG call setpos('.', [0, 1, 1, 0])
-
-    " http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
-    " Restore cursor to file position in previous editing session
-    function! ResCur()
-        if line("'\"") <= line("$")
-            silent! normal! g`"
-            return 1
-        endif
-    endfunction
 
     augroup resCur
         autocmd!
@@ -331,10 +477,6 @@
 " }
 
 " Key (re)Mappings {
-
-    let mapleader = ','
-    let maplocalleader = '_'
-
     " Easier moving in tabs and windows
     map <C-J> <C-W>j
     map <C-K> <C-W>k
@@ -344,22 +486,6 @@
     " Wrapped lines goes down/up to next row, rather than next line in file.
     noremap j gj
     noremap k gk
-
-    " End/Start of line motion keys act relative to row/wrap width in the
-    " presence of `:set wrap`, and relative to line for `:set nowrap`.
-    " Default vim behaviour is to act relative to text line in both cases
-    " Same for 0, home, end, etc
-    function! WrapRelativeMotion(key, ...)
-        let vis_sel=""
-        if a:0
-            let vis_sel="gv"
-        endif
-        if &wrap
-            execute "normal!" vis_sel . "g" . a:key
-        else
-            execute "normal!" vis_sel . a:key
-        endif
-    endfunction
 
     " Map g* keys in Normal, Operator-pending, and Visual+select
     noremap $ :call WrapRelativeMotion("$")<CR>
@@ -507,233 +633,7 @@
 
 " }
 
-" Plugins {
-
-    " GoLang {
-        let g:go_highlight_functions = 1
-        let g:go_highlight_methods = 1
-        let g:go_highlight_structs = 1
-        let g:go_highlight_operators = 1
-        let g:go_highlight_build_constraints = 1
-        let g:go_fmt_command = "goimports"
-        "let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-        "let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-        "au FileType go nmap <Leader>s <Plug>(go-implements)
-        "au FileType go nmap <Leader>i <Plug>(go-info)
-        "au FileType go nmap <Leader>e <Plug>(go-rename)
-        "au FileType go nmap <leader>r <Plug>(go-run)
-        "au FileType go nmap <leader>b <Plug>(go-build)
-        "au FileType go nmap <leader>t <Plug>(go-test)
-        "au FileType go nmap <Leader>gd <Plug>(go-doc)
-        "au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
-        "au FileType go nmap <leader>co <Plug>(go-coverage)
-    " }
-
-    " coc {
-        " Use `[g` and `]g` to navigate diagnostics
-        nmap <silent> [g <Plug>(coc-diagnostic-prev)
-        nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-        " GoTo code navigation.
-        nmap <silent> gd <Plug>(coc-definition)
-        nmap <silent> gy <Plug>(coc-type-definition)
-        nmap <silent> gi <Plug>(coc-implementation)
-        nmap <silent> gr <Plug>(coc-references)
-
-        " Prettier
-        command! -nargs=0 Prettier :CocCommand prettier.formatFile
-        vmap <leader>f <Plug>(coc-format-selected)
-        nmap <leader>f <Plug>(coc-format-selected)
-    " }
-
-    " FZF {
-        let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
-        nnoremap <silent> <C-p> :FZF -m<CR>
-        if executable('ag')
-          let $FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
-        endif
-
-        " ag with preview
-        command! -bang -nargs=* Ag
-          \ call fzf#vim#ag(<q-args>,
-          \                 <bang>0 ? fzf#vim#with_preview('up:60%')
-          \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
-          \                 <bang>0)
-
-        command! -bang -nargs=* -complete=dir B
-          \ call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>,
-          \                 <bang>0 ? fzf#vim#with_preview('up:60%')
-          \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
-          \                 <bang>0)
-    " }
-
-    " gutentags {
-        let g:gutentags_enabled = 1
-        let g:gutentags_cache_dir = '~/.cachetags'
-        let g:gutentags_ctags_tagfile = '.tags'
-        let g:gutentags_file_list_command = 'git ls-files'
-        " make ctags understand jsx, mjs, tsx
-        let g:gutentags_ctags_extra_args = ['--map-javascript=.jsx']
-        let g:gutentags_ctags_extra_args += ['--map-javascript=.mjs']
-        let g:gutentags_ctags_extra_args += ['--map-typescript=.tsx']
-    " }
-
-    " OmniComplete {
-        let g:enable_config_for_omni_complete = 1
-        if exists('g:enable_config_for_omni_complete')
-            if has("autocmd") && exists("+omnifunc")
-                autocmd Filetype *
-                    \if &omnifunc == "" |
-                    \setlocal omnifunc=syntaxcomplete#Complete |
-                    \endif
-            endif
-
-            hi Pmenu  guifg=#000000 guibg=#F8F8F8 ctermfg=black ctermbg=Lightgray
-            hi PmenuSbar  guifg=#8A95A7 guibg=#F8F8F8 gui=NONE ctermfg=darkcyan ctermbg=lightgray cterm=NONE
-            hi PmenuThumb  guifg=#F8F8F8 guibg=#8A95A7 gui=NONE ctermfg=lightgray ctermbg=darkcyan cterm=NONE
-
-            " Some convenient mappings
-            "inoremap <expr> <Esc>      pumvisible() ? "\<C-e>" : "\<Esc>"
-            inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"
-            inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
-            inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
-            inoremap <expr> <C-d>      pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<C-d>"
-            inoremap <expr> <C-u>      pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<C-u>"
-
-            " Automatically open and close the popup menu / preview window
-            au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
-            set completeopt=menu,preview,longest
-        endif
-    " }
-
-    " Ctags {
-        set tags=./tags;/,~/.vimtags
-
-        " Make tags placed in .git/tags file available in all levels of a repository
-        let gitroot = substitute(system('git rev-parse --show-toplevel'), '[\n\r]', '', 'g')
-        if gitroot != ''
-            let &tags = &tags . ',' . gitroot . '/.git/tags'
-        endif
-    " }
-
-    " NerdTree {
-        if isdirectory(expand("~/.vim/plugged/nerdtree"))
-            map <C-e> :NERDTreeToggle<CR>
-            map <leader>e :NERDTreeFind<CR>
-            nmap <leader>nt :NERDTreeFind<CR>
-
-            let NERDTreeShowBookmarks=1
-            let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
-            let NERDTreeChDirMode=0
-            let NERDTreeQuitOnOpen=1
-            let NERDTreeMouseMode=2
-            let NERDTreeShowHidden=1
-            let NERDTreeAutoDeleteBuffer = 1
-            let NERDTreeMinimalUI = 1
-        endif
-    " }
-
-    " JSON {
-        nmap <leader>jt <Esc>:%!python -m json.tool<CR><Esc>:set filetype=json<CR>
-        let g:vim_json_syntax_conceal = 0
-    " }
-
-    " PyMode {
-        " Disable if python support not present
-        if !has('python') && !has('python3')
-            let g:pymode = 0
-        endif
-
-        if isdirectory(expand("~/.vim/plugged/python-mode"))
-            let g:pymode_lint_checkers = ['pyflakes']
-            let g:pymode_trim_whitespaces = 0
-            let g:pymode_options = 0
-            let g:pymode_rope = 0
-            let g:pymode_breakpoint = 0
-        endif
-    " }
-
-    " TagBar {
-        if isdirectory(expand("~/.vim/plugged/tagbar/"))
-            nnoremap <silent> <leader>tt :TagbarToggle<CR>
-        endif
-    "}
-
-    " Fugitive {
-        if isdirectory(expand("~/.vim/plugged/vim-fugitive/"))
-            nnoremap <silent> <leader>gs :Git<CR>
-            nnoremap <silent> <leader>gd :Gdiff<CR>
-            nnoremap <silent> <leader>gc :Gcommit<CR>
-            nnoremap <silent> <leader>gb :Gblame<CR>
-            nnoremap <silent> <leader>gl :Glog<CR>
-            nnoremap <silent> <leader>gp :Git push<CR>
-            nnoremap <silent> <leader>gr :Gread<CR>
-            nnoremap <silent> <leader>gw :Gwrite<CR>
-            nnoremap <silent> <leader>ge :Gedit<CR>
-            " Mnemonic _i_nteractive
-            nnoremap <silent> <leader>gi :Git add -p %<CR>
-            nnoremap <silent> <leader>gg :SignifyToggle<CR>
-        endif
-    "}
-
-    " YouCompleteMe {
-        if isdirectory(expand("~/.vim/plugged/tagbar/"))
-            let g:acp_enableAtStartup = 0
-
-            " enable completion from tags
-            let g:ycm_collect_identifiers_from_tags_files = 1
-
-            " remap Ultisnips for compatibility for YCM
-            let g:UltiSnipsExpandTrigger = '<C-j>'
-            let g:UltiSnipsJumpForwardTrigger = '<C-j>'
-            let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
-
-            " Enable omni completion.
-            autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-            autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-            autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-            autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-            autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-            autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-            autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
-
-            " Haskell post write lint and check with ghcmod
-            " $ `cabal install ghcmod` if missing and ensure
-            " ~/.cabal/bin is in your $PATH.
-            if !executable("ghcmod")
-                autocmd BufWritePost *.hs GhcModCheckAndLintAsync
-            endif
-
-            " For snippet_complete marker.
-            if has('conceal')
-                set conceallevel=2 concealcursor=i
-            endif
-
-            " Disable the neosnippet preview candidate window
-            " When enabled, there can be too much visual noise
-            " especially when splits are used.
-            set completeopt-=preview
-        endif
-    " }
-
-    " UndoTree {
-        if isdirectory(expand("~/.vim/plugged/undotree/"))
-            nnoremap <Leader>u :UndotreeToggle<CR>
-            " If undotree is opened, it is likely one wants to interact with it.
-            let g:undotree_SetFocusWhenToggle=1
-        endif
-    " }
-
-    " indentLine {
-        if isdirectory(expand("~/.vim/plugged/indentLine/"))
-            let g:indentLine_enabled = 0
-            nmap <leader>il :IndentLinesToggle<CR>
-        endif
-    " }
-" }
-
 " GUI Settings {
-
     " GVIM- (here instead of .gvimrc)
     if has('gui_running')
         set guioptions-=T           " Remove the toolbar
@@ -755,7 +655,6 @@
 " }
 
 " Functions {
-
     " Initialize directories {
     function! InitializeDirectories()
         let parent = $HOME
@@ -845,6 +744,44 @@
         execute a:command . " " . expand(a:file, ":p")
     endfunction
 
+    " End/Start of line motion keys act relative to row/wrap width in the
+    " presence of `:set wrap`, and relative to line for `:set nowrap`.
+    " Default vim behaviour is to act relative to text line in both cases
+    " Same for 0, home, end, etc
+    function! WrapRelativeMotion(key, ...)
+        let vis_sel=""
+        if a:0
+            let vis_sel="gv"
+        endif
+        if &wrap
+            execute "normal!" vis_sel . "g" . a:key
+        else
+            execute "normal!" vis_sel . a:key
+        endif
+    endfunction
+
+    " http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
+    " Restore cursor to file position in previous editing session
+    function! ResCur()
+        if line("'\"") <= line("$")
+            silent! normal! g`"
+            return 1
+        endif
+    endfunction
+
+    " Allow to trigger background
+    function! ToggleBG()
+        let s:tbg = &background
+        " Inversion
+        if s:tbg == "dark"
+            set background=light
+        else
+            set background=dark
+        endif
+    endfunction
+" }
+
+" vimrc {
     " Use local vimrc if available {
     if filereadable(expand("~/.vimrc.local"))
         source ~/.vimrc.local
