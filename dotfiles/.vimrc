@@ -97,6 +97,9 @@
         " golang
         Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 
+        " terraform
+        Plug 'hashivim/vim-terraform'
+
         " other langs
         Plug 'rust-lang/rust.vim'
         Plug 'tpope/vim-markdown'
@@ -252,7 +255,7 @@
             nnoremap <silent> <leader>gs :Git<CR>
             nnoremap <silent> <leader>gd :Gdiff<CR>
             nnoremap <silent> <leader>gc :Gcommit<CR>
-            nnoremap <silent> <leader>gb :Gblame<CR>
+            nnoremap <silent> <leader>gb :Git blame<CR>
             nnoremap <silent> <leader>gl :Glog<CR>
             nnoremap <silent> <leader>gp :Git push<CR>
             nnoremap <silent> <leader>gr :Gread<CR>
