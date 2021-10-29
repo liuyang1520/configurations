@@ -101,7 +101,7 @@
         Plug 'tpope/vim-markdown'
 
         " appearance
-        Plug 'flazz/vim-colorschemes'
+        Plug 'rafi/awesome-vim-colorschemes'
         Plug 'Yggdroot/indentLine'
         Plug 'mhinz/vim-signify'
         Plug 'osyo-manga/vim-over'
@@ -123,7 +123,7 @@
 " Plugins {
 
     " colorscheme {
-        colorscheme PaperColor
+        colorscheme one
         set background=dark         " Assume a dark background
     " }
 
@@ -299,7 +299,7 @@
 
     " lightline {
         let g:lightline = {
-              \ 'colorscheme': 'PaperColor',
+              \ 'colorscheme': 'one',
               \ }
     " }
 " }
