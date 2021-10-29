@@ -71,22 +71,18 @@
 
         " javascript
         Plug 'pangloss/vim-javascript'
-
-        " typescript
+        Plug 'posva/vim-vue'
         Plug 'leafgarland/typescript-vim'
         Plug 'peitalin/vim-jsx-typescript'
 
-        " misc
-        Plug 'posva/vim-vue'
+        " json
         Plug 'elzr/vim-json'
-        Plug 'groenewege/vim-less'
-        Plug 'briancollins/vim-jst'
-        Plug 'kchmck/vim-coffee-script'
 
         " html
         Plug 'hail2u/vim-css3-syntax'
         Plug 'tpope/vim-haml'
         Plug 'mattn/emmet-vim'
+        Plug 'groenewege/vim-less'
 
         " colors
         Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
@@ -116,7 +112,10 @@
         if executable('ctags')
             Plug 'majutsushi/tagbar'
         endif
+
+        " coc
         Plug 'neoclide/coc.nvim', {'branch': 'release'}
+        Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
 
     call plug#end()
 " }
@@ -149,6 +148,11 @@
     " }
 
     " coc {
+        let g:coc_disable_transparent_cursor = 1
+        let g:coc_global_extensions = ['coc-tsserver', 'coc-prettier', 'coc-tabnine']
+        let g:coc_user_config = {
+              \   "list.maxPreviewHeight": 24,
+              \ }
         " Use `[g` and `]g` to navigate diagnostics
         nmap <silent> [g <Plug>(coc-diagnostic-prev)
         nmap <silent> ]g <Plug>(coc-diagnostic-next)
@@ -163,11 +167,15 @@
         command! -nargs=0 Prettier :CocCommand prettier.formatFile
         vmap <leader>f <Plug>(coc-format-selected)
         nmap <leader>f <Plug>(coc-format-selected)
+
+        " coc-fzf
+        let g:coc_fzf_preview = ''
+        let g:coc_fzf_opts = []
     " }
 
     " FZF {
-        let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
         nnoremap <silent> <C-p> :FZF -m<CR>
+        let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
         if executable('ag')
           let $FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
         endif

@@ -242,6 +242,10 @@ A.......Zoom (maximize/minimize) the NERDTree window.............|NERDTree-A|
  * `<leader>gw` :Gwrite<CR>
  * :Git xxx will pass anything along to git.
 
+#### git blame
+- `-` to view prior history before current comment
+- `gq` to reset it back to current file
+
 
 ## Spell Check
 ### Set spell check globally / only this buffer
