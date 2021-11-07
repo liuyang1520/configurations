@@ -149,7 +149,7 @@
 
     " coc {
         let g:coc_disable_transparent_cursor = 1
-        let g:coc_global_extensions = ['coc-tsserver', 'coc-prettier', 'coc-tabnine']
+        let g:coc_global_extensions = ['coc-tsserver', 'coc-prettier']
         let g:coc_user_config = {
               \   "list.maxPreviewHeight": 24,
               \ }
