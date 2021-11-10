@@ -165,8 +165,8 @@
 
         " Prettier
         command! -nargs=0 Prettier :CocCommand prettier.formatFile
-        vmap <leader>f <Plug>(coc-format-selected)
-        nmap <leader>f <Plug>(coc-format-selected)
+        vmap <leader>pf <Plug>(coc-format-selected)
+        nmap <leader>pf <Plug>(coc-format-selected)
 
         " coc-fzf
         let g:coc_fzf_preview = ''
@@ -174,24 +174,45 @@
     " }
 
     " FZF {
-        nnoremap <silent> <C-p> :FZF -m<CR>
-        let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+        nnoremap <silent> <Leader>f :FZF -m<CR>
+        nnoremap <silent> <Leader>h :History:<CR>
+        nnoremap <silent> <Leader>w :Windows<CR>
         if executable('ag')
           let $FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
+        else
+          let $FZF_DEFAULT_COMMAND = "
+            \ find *
+            \ -path '*/\.*' -prune -o
+            \ -path 'node_modules/**' -prune -o
+            \ -path 'target/**' -prune -o
+            \ -path 'dist/**' -prune -o
+            \ -type f -print -o -type l -print 2> /dev/null
+            \"
         endif
 
         " ag with preview
-        command! -bang -nargs=* Ag
+        command! -bang -nargs=* SRaw
           \ call fzf#vim#ag(<q-args>,
           \                 <bang>0 ? fzf#vim#with_preview('up:60%')
           \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
           \                 <bang>0)
 
-        command! -bang -nargs=* -complete=dir B
+        command! -bang -nargs=* -complete=dir S
           \ call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>,
           \                 <bang>0 ? fzf#vim#with_preview('up:60%')
           \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
           \                 <bang>0)
+
+        nnoremap <silent> <Leader>s :S <C-R><C-W><CR>
+        nnoremap <silent> <Leader>S :S! <C-R><C-W><CR>
+        vnoremap <Leader>s y:S <C-r>=fnameescape(@")<CR><CR>
+        vnoremap <Leader>S y:S! <C-r>=fnameescape(@")<CR><CR>
+
+        " tags
+        nnoremap <silent> <Leader>t :Tags <C-R><C-W><CR>
+        nnoremap <silent> <Leader>T :Tags! <C-R><C-W><CR>
+        vnoremap <Leader>t y:Tags <C-r>=fnameescape(@")<CR><CR>
+        vnoremap <Leader>T y:Tags! <C-r>=fnameescape(@")<CR><CR>
     " }
 
     " gutentags {
@@ -254,7 +275,7 @@
 
     " TagBar {
         if isdirectory(expand("~/.vim/plugged/tagbar/"))
-            nnoremap <silent> <leader>tt :TagbarToggle<CR>
+            nnoremap <silent> <leader>ptt :TagbarToggle<CR>
         endif
     "}
 
@@ -543,24 +564,12 @@
     " Yank from the cursor to the end of the line, to be consistent with C and D.
     nnoremap Y y$
 
-    " Code folding options
-    nmap <leader>f0 :set foldlevel=0<CR>
-    nmap <leader>f1 :set foldlevel=1<CR>
-    nmap <leader>f2 :set foldlevel=2<CR>
-    nmap <leader>f3 :set foldlevel=3<CR>
-    nmap <leader>f4 :set foldlevel=4<CR>
-    nmap <leader>f5 :set foldlevel=5<CR>
-    nmap <leader>f6 :set foldlevel=6<CR>
-    nmap <leader>f7 :set foldlevel=7<CR>
-    nmap <leader>f8 :set foldlevel=8<CR>
-    nmap <leader>f9 :set foldlevel=9<CR>
-
     " Most prefer to toggle search highlighting rather than clear the current
     " search results.
     nmap <silent> <leader>/ :nohlsearch<CR>
 
     " Find merge conflict markers
-    map <leader>fc /\v^[<\|=>]{7}( .*\|$)<CR>
+    map <leader>mc /\v^[<\|=>]{7}( .*\|$)<CR>
 
     " Shortcuts
     " Change Working Directory to that of the current file
@@ -595,10 +604,6 @@
     " Adjust viewports to the same size
     map <Leader>= <C-w>=
 
-    " Map <Leader>ff to display all lines with keyword under cursor
-    " and ask which one to jump to
-    nmap <Leader>ff [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
-
     " Easier horizontal scrolling
     map zl zL
     map zh zH
@@ -612,12 +617,6 @@
 
     " copy to mac
     vmap <C-x> :w !pbcopy<CR><CR>
-
-    " ag shortcut
-    nnoremap <silent> <Leader>b :B <C-R><C-W><CR>
-    nnoremap <silent> <Leader>B :B! <C-R><C-W><CR>
-    vnoremap <Leader>b y:B <C-r>=fnameescape(@")<CR><CR>
-    vnoremap <Leader>B y:B! <C-r>=fnameescape(@")<CR><CR>
 
     " copy current file name (relative/absolute) to system clipboard
     if has("mac") || has("gui_macvim") || has("gui_mac")
