@@ -175,7 +175,9 @@
 
     " FZF {
         nnoremap <silent> <Leader>f :Files<CR>
+        nnoremap <silent> <Leader>F :Files!<CR>
         nnoremap <silent> <Leader>h :History<CR>
+        nnoremap <silent> <Leader>H :History!<CR>
         nnoremap <silent> <Leader>w :Windows<CR>
         if executable('ag')
           let $FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
@@ -543,8 +545,8 @@
     map <S-L> gt
 
     " Reorder tabs
-    map <Leader>H :tabm -1<CR>
-    map <Leader>L :tabm +1<CR>
+    map <Leader>mtl :tabm -1<CR>
+    map <Leader>mtr :tabm +1<CR>
 
     " Stupid shift key fixes
     if has("user_commands")
