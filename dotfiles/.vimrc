@@ -96,9 +96,12 @@
         " terraform
         Plug 'hashivim/vim-terraform'
 
+        " markdown
+        Plug 'tpope/vim-markdown'
+        Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+
         " other langs
         Plug 'rust-lang/rust.vim'
-        Plug 'tpope/vim-markdown'
 
         " appearance
         Plug 'rafi/awesome-vim-colorschemes'
