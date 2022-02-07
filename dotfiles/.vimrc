@@ -177,6 +177,7 @@
     " }
 
     " FZF {
+        nnoremap <silent> <C-p> :Files<CR>
         nnoremap <silent> <Leader>f :Files<CR>
         nnoremap <silent> <Leader>F :Files!<CR>
         nnoremap <silent> <Leader>h :History<CR>
