@@ -10,6 +10,7 @@ This repo contains personal configuration files for local development environmen
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 ```
+red
 
 ## Configurations
 ### Clone this repo

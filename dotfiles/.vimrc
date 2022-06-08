@@ -126,7 +126,7 @@
 " Plugins {
 
     " colorscheme {
-        colorscheme one
+        colorscheme gruvbox
         set background=dark         " Assume a dark background
     " }
 
@@ -327,8 +327,8 @@
 
     " lightline {
         let g:lightline = {
-              \ 'colorscheme': 'one',
-              \ }
+              \ 'colorscheme': 'gruvbox',
+          \ }
     " }
 " }
 
