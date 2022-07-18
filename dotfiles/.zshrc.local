@@ -21,12 +21,14 @@ if [ -f ~/.fzf.zsh ]; then
 fi
 
 # git
-gh(){
-  open $(git config remote.origin.url | sed "s/git@\(.*\):\(.*\).git/https:\/\/\1\/\2/")/$1$2
+gh() {
+    if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
+        open $(git config remote.origin.url | sed "s/git@\(.*\):\(.*\).git/https:\/\/\1\/\2/")/$1$2
+    fi
 }
 # Open current branch
-alias ghb='gh tree/$(git symbolic-ref --quiet --short HEAD )'
+alias ghb='gh tree/$(git symbolic-ref --quiet --short HEAD)'
 # Open current directory/file in current branch
-alias ghbf="gh tree/$(git symbolic-ref --quiet --short HEAD )/$(git rev-parse --show-prefix)"
+alias ghbf='gh tree/$(git symbolic-ref --quiet --short HEAD)/$(git rev-parse --show-prefix)'
 # Open current directory/file in master branch
 alias ghf='gh tree/master/$(git rev-parse --show-prefix)'
