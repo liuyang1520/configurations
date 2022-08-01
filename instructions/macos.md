@@ -6,7 +6,8 @@
 
 ## Prerequisite
 ### Install packages
-- [vim](https://github.com/vim/vim) - `brew install --override-system-vi vim`
+- node, go - `brew install node go`
+- [vim](https://github.com/vim/vim) - `brew install vim && brew link vim`
 - [ag](https://github.com/ggreer/the_silver_searcher) - `brew install the_silver_searcher`
 - [fzf](https://github.com/junegunn/fzf) - `brew install fzf`
 - [bat](https://github.com/sharkdp/bat) - `brew install bat`

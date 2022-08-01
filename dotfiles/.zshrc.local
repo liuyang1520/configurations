@@ -1,3 +1,6 @@
+# path
+export PATH="/opt/homebrew/bin:$PATH"
+
 # Need to press ctrl-d 10 times to exit current panel, or input exit/logout.
 # This is to prevent mistyping.
 setopt ignoreeof

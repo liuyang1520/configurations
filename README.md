@@ -34,6 +34,7 @@ echo "source ~/.zshrc.local" >> ~/.zshrc
 
 ### Update vim plugins
 ```
+# Install node, go (optional, needed for some vim plugins)
 # Install vim-plug
 $ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
