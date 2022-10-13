@@ -65,9 +65,12 @@
         Plug 'terryma/vim-multiple-cursors'
         Plug 'mbbill/undotree'
 
-        " Python
+        " python
         Plug 'klen/python-mode'
         Plug 'yssource/python.vim'
+
+        " kotlin
+        Plug 'udalov/kotlin-vim'
 
         " javascript
         Plug 'pangloss/vim-javascript'
@@ -120,6 +123,9 @@
         Plug 'neoclide/coc.nvim', {'branch': 'release'}
         Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
 
+        " debugger
+        Plug 'puremourning/vimspector'
+
     call plug#end()
 " }
 
@@ -137,17 +143,6 @@
         let g:go_highlight_operators = 1
         let g:go_highlight_build_constraints = 1
         let g:go_fmt_command = "goimports"
-        "let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-        "let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-        "au FileType go nmap <Leader>s <Plug>(go-implements)
-        "au FileType go nmap <Leader>i <Plug>(go-info)
-        "au FileType go nmap <Leader>e <Plug>(go-rename)
-        "au FileType go nmap <leader>r <Plug>(go-run)
-        "au FileType go nmap <leader>b <Plug>(go-build)
-        "au FileType go nmap <leader>t <Plug>(go-test)
-        "au FileType go nmap <Leader>gd <Plug>(go-doc)
-        "au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
-        "au FileType go nmap <leader>co <Plug>(go-coverage)
     " }
 
     " coc {
@@ -174,6 +169,24 @@
         " coc-fzf
         let g:coc_fzf_preview = ''
         let g:coc_fzf_opts = []
+    " }
+
+    " vimspector {
+        let g:vimspector_install_gadgets = ['vscode-node-debug2']
+
+        nnoremap <Leader>dt :call vimspector#ToggleBreakpoint()<CR>
+        nnoremap <Leader>dT :call vimspector#ClearBreakpoints()<CR>
+        function! LaunchDebugger(adapter, pid)
+            call vimspector#LaunchWithConfigurations({
+                        \  "attach": {
+                        \    "adapter": a:adapter,
+                        \    "configuration": {
+                        \      "request": "attach",
+                        \      "processId": a:pid
+                        \    }
+                        \  }
+                        \})
+        endfunction
     " }
 
     " FZF {
@@ -605,9 +618,6 @@
     " Toggle cursorcolumn
     nmap <Leader>cc :set cursorcolumn!<cr>
 
-    " Toggle background dark and light
-    nmap <leader>cbg :call ToggleBG()<CR>
-
     " Adjust viewports to the same size
     map <Leader>= <C-w>=
 
@@ -783,17 +793,6 @@
         if line("'\"") <= line("$")
             silent! normal! g`"
             return 1
-        endif
-    endfunction
-
-    " Allow to trigger background
-    function! ToggleBG()
-        let s:tbg = &background
-        " Inversion
-        if s:tbg == "dark"
-            set background=light
-        else
-            set background=dark
         endif
     endfunction
 " }
