@@ -124,7 +124,7 @@
         Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
 
         " debugger
-        Plug 'puremourning/vimspector'
+        Plug 'puremourning/vimspector', { 'do': ':VimspectorInstall' }
 
     call plug#end()
 " }
