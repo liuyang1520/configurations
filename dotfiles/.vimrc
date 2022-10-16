@@ -132,7 +132,8 @@
 " Plugins {
 
     " colorscheme {
-        colorscheme gruvbox
+        let g:seoul256_background = 234
+        colorscheme seoul256
         set background=dark         " Assume a dark background
     " }
 
@@ -340,7 +341,7 @@
 
     " lightline {
         let g:lightline = {
-              \ 'colorscheme': 'gruvbox',
+              \ 'colorscheme': 'seoul256',
           \ }
     " }
 " }
