@@ -637,6 +637,9 @@
     " copy to mac
     vmap <C-x> :w !pbcopy<CR><CR>
 
+    " copy whole file
+    map <C-x> :%y<CR>
+
     " copy current file name (relative/absolute) to system clipboard
     if has("mac") || has("gui_macvim") || has("gui_mac")
       " relative path  (src/foo.txt)
