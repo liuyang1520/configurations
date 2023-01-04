@@ -1,2 +1,4 @@
 package-lock.json
 .terraform
+node_modules
+ios/Pods
