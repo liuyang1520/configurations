@@ -84,7 +84,6 @@
         " html
         Plug 'hail2u/vim-css3-syntax'
         Plug 'tpope/vim-haml'
-        Plug 'mattn/emmet-vim'
         Plug 'groenewege/vim-less'
 
         " colors
@@ -118,6 +117,7 @@
         if executable('ctags')
             Plug 'majutsushi/tagbar'
         endif
+        Plug 'github/copilot.vim'
 
         " coc
         Plug 'neoclide/coc.nvim', {'branch': 'release'}
