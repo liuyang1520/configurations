@@ -152,6 +152,8 @@
         let g:coc_user_config = {
               \   "list.maxPreviewHeight": 24,
               \ }
+        nnoremap <leader>cs :<C-u>CocCommand workspace.showOutput<CR>
+
         " Use `[g` and `]g` to navigate diagnostics
         nmap <silent> [g <Plug>(coc-diagnostic-prev)
         nmap <silent> ]g <Plug>(coc-diagnostic-next)
