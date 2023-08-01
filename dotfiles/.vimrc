@@ -202,7 +202,10 @@
         nnoremap <silent> <Leader>F :Files!<CR>
         nnoremap <silent> <Leader>h :History<CR>
         nnoremap <silent> <Leader>H :History!<CR>
+        nnoremap <silent> <Leader>b :Buffers<CR>
+        nnoremap <silent> <Leader>B :Buffers!<CR>
         nnoremap <silent> <Leader>w :Windows<CR>
+        nnoremap <silent> <Leader>c :BCommits!<CR>
         if executable('ag')
           let $FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
         else
