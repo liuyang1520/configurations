@@ -178,24 +178,6 @@
         let g:coc_fzf_opts = []
     " }
 
-    " vimspector {
-        let g:vimspector_install_gadgets = ['vscode-node-debug2']
-
-        nnoremap <Leader>dt :call vimspector#ToggleBreakpoint()<CR>
-        nnoremap <Leader>dT :call vimspector#ClearBreakpoints()<CR>
-        function! LaunchDebugger(adapter, pid)
-            call vimspector#LaunchWithConfigurations({
-                        \  "attach": {
-                        \    "adapter": a:adapter,
-                        \    "configuration": {
-                        \      "request": "attach",
-                        \      "processId": a:pid
-                        \    }
-                        \  }
-                        \})
-        endfunction
-    " }
-
     " FZF {
         nnoremap <silent> <C-p> :Files<CR>
         nnoremap <silent> <Leader>f :Files<CR>
