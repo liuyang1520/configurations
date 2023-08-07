@@ -126,6 +126,9 @@
         " debugger
         Plug 'puremourning/vimspector', { 'do': ':VimspectorInstall' }
 
+        " prisma
+        Plug 'prisma/vim-prisma'
+
     call plug#end()
 " }
 
@@ -517,6 +520,7 @@
     autocmd BufRead,BufNewFile *.json setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.tf setlocal ts=2 sts=2 sw=2
     autocmd BufRead,BufNewFile *.tfvars setlocal ts=2 sts=2 sw=2
+    autocmd BufRead,BufNewFile *.prisma setlocal ts=2 sts=2 sw=2
 
     autocmd QuickFixCmdPost [^l]* nested cwindow
     autocmd QuickFixCmdPost    l* nested lwindow
