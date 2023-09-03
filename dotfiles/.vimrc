@@ -151,7 +151,7 @@
 
     " coc {
         let g:coc_disable_transparent_cursor = 1
-        let g:coc_global_extensions = ['coc-tsserver', 'coc-prettier', 'coc-eslint']
+        let g:coc_global_extensions = ['coc-tsserver', 'coc-prettier', 'coc-eslint', '@yaegassy/coc-tailwindcss3']
         let g:coc_user_config = {
               \   "list.maxPreviewHeight": 24,
               \   "coc.preferences.formatOnSaveFiletypes": ["javascript", "typescript", "typescriptreact", "javascriptreact"],
