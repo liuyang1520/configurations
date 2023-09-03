@@ -86,9 +86,6 @@
         Plug 'tpope/vim-haml'
         Plug 'groenewege/vim-less'
 
-        " colors
-        Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
-
         " ruby
         Plug 'tpope/vim-rails'
 
@@ -326,13 +323,6 @@
             let g:indentLine_enabled = 0
             nmap <leader>il :IndentLinesToggle<CR>
         endif
-    " }
-
-    " vim-hexokinase {
-        set termguicolors
-        let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-        let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-        let g:Hexokinase_highlighters = ['backgroundfull']
     " }
 
     " lightline {
