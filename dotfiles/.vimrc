@@ -120,9 +120,6 @@
         Plug 'neoclide/coc.nvim', {'branch': 'release'}
         Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
 
-        " debugger
-        Plug 'puremourning/vimspector', { 'do': ':VimspectorInstall' }
-
         " prisma
         Plug 'prisma/vim-prisma'
 
