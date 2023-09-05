@@ -47,7 +47,6 @@
     " Environment {
         " Basics {
             set nocompatible        " Must be first line
-            set background=dark     " Assume a dark background
         " }
 
     call plug#begin('~/.vim/plugged')
@@ -129,9 +128,12 @@
 " Plugins {
 
     " colorscheme {
-        let g:seoul256_background = 234
+        set background=dark
         colorscheme seoul256
-        set background=dark         " Assume a dark background
+        let g:seoul256_background = 234
+        " set background=light
+        " colo seoul256-light
+        " let g:seoul256_background = 256
     " }
 
     " GoLang {
