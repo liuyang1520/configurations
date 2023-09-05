@@ -154,6 +154,7 @@
               \   "eslint.autoFixOnSave": "true",
               \   "javascript.autoClosingTags": "false",
               \   "typescript.autoClosingTags": "false",
+              \   "eslint.execArgv": ["--max_old_space_size=16384"],
               \ }
         nnoremap <leader>cs :<C-u>CocCommand workspace.showOutput<CR>
 
