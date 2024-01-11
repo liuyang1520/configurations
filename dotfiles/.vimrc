@@ -654,6 +654,9 @@
       nnoremap <leader>cfd :let @+=expand("%:p:h")<CR>
     endif
 
+    " duplicate selection to below
+    vmap <leader>d y'>p
+
 " }
 
 " GUI Settings {
