@@ -110,6 +110,8 @@
         " programming
         Plug 'tpope/vim-fugitive'
         Plug 'tpope/vim-commentary'
+
+    if !has('nvim')
         if executable('ctags')
             Plug 'majutsushi/tagbar'
         endif
@@ -118,6 +120,7 @@
         " coc
         Plug 'neoclide/coc.nvim', {'branch': 'release'}
         Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
+    endif
 
         " prisma
         Plug 'prisma/vim-prisma'
@@ -136,6 +139,7 @@
         " let g:seoul256_background = 256
     " }
 
+    if !has('nvim')
     " GoLang {
         let g:go_highlight_functions = 1
         let g:go_highlight_methods = 1
@@ -147,13 +151,13 @@
 
     " coc {
         let g:coc_disable_transparent_cursor = 1
-        let g:coc_global_extensions = ['coc-tsserver', 'coc-prettier', 'coc-eslint', '@yaegassy/coc-tailwindcss3']
+        let g:coc_global_extensions = ['coc-tsserver', 'coc-prettier', '@yaegassy/coc-tailwindcss3']
         let g:coc_user_config = {
               \   "list.maxPreviewHeight": 24,
               \   "coc.preferences.formatOnSaveFiletypes": ["javascript", "typescript", "typescriptreact", "javascriptreact"],
-              \   "eslint.autoFixOnSave": "true",
               \   "javascript.autoClosingTags": "false",
               \   "typescript.autoClosingTags": "false",
+              \   "tsserver.maxTsServerMemory": 8192,
               \ }
         nnoremap <leader>cs :<C-u>CocCommand workspace.showOutput<CR>
 
@@ -176,6 +180,17 @@
         let g:coc_fzf_preview = ''
         let g:coc_fzf_opts = []
     " }
+
+    " Ctags {
+        set tags=./tags;/,~/.vimtags
+
+        " Make tags placed in .git/tags file available in all levels of a repository
+        let gitroot = substitute(system('git rev-parse --show-toplevel'), '[\n\r]', '', 'g')
+        if gitroot != ''
+            let &tags = &tags . ',' . gitroot . '/.git/tags'
+        endif
+    " }
+    endif
 
     " FZF {
         nnoremap <silent> <C-p> :Files<CR>
@@ -235,16 +250,6 @@
         let g:gutentags_ctags_extra_args = ['--map-javascript=.jsx']
         let g:gutentags_ctags_extra_args += ['--map-javascript=.mjs']
         let g:gutentags_ctags_extra_args += ['--map-typescript=.tsx']
-    " }
-
-    " Ctags {
-        set tags=./tags;/,~/.vimtags
-
-        " Make tags placed in .git/tags file available in all levels of a repository
-        let gitroot = substitute(system('git rev-parse --show-toplevel'), '[\n\r]', '', 'g')
-        if gitroot != ''
-            let &tags = &tags . ',' . gitroot . '/.git/tags'
-        endif
     " }
 
     " NerdTree {
