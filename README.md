@@ -23,6 +23,7 @@ git clone https://github.com/liuyang1520/configurations.git  ~/.liuyang1520-conf
 ln -sf ~/.liuyang1520-configurations/dotfiles/.zshrc.local ~/
 if [[ "$(uname -s)" = Darwin ]]; then ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux-osx.conf ~/.tmux.conf; else ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux.conf ~/; fi
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc ~/
+mkdir -p ~/.config/nvim && ln -sf ~/.liuyang1520-configurations/dotfiles/init.lua ~/.config/nvim/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.ctags.d ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.ignore ~/
 ```
