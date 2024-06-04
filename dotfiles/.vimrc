@@ -3,38 +3,8 @@
 " =======================================
 
 " Environment {
-    " Identify platform {
-        silent function! OSX()
-            return has('macunix')
-        endfunction
-        silent function! LINUX()
-            return has('unix') && !has('macunix') && !has('win32unix')
-        endfunction
-        silent function! WINDOWS()
-            return  (has('win32') || has('win64'))
-        endfunction
-    " }
-
     " Basics {
         set nocompatible        " Must be first line
-        if !WINDOWS()
-            set shell=/bin/sh
-        endif
-    " }
-
-    " Windows Compatible {
-        " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
-        " across (heterogeneous) systems easier.
-        if WINDOWS()
-          set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
-        endif
-    " }
-
-    " Arrow Key Fix {
-        " https://github.com/spf13/spf13-vim/issues/780
-        if &term[:4] == "xterm" || &term[:5] == 'screen' || &term[:3] == 'rxvt'
-            inoremap <silent> <C-[>OC <RIGHT>
-        endif
     " }
 
     " Global let, must be put in the beginning {
@@ -45,10 +15,6 @@
 
 " Install plugins {
     " Environment {
-        " Basics {
-            set nocompatible        " Must be first line
-        " }
-
     call plug#begin('~/.vim/plugged')
         " fuzzy search
         Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -63,53 +29,35 @@
         Plug 'tpope/vim-repeat'
         Plug 'terryma/vim-multiple-cursors'
         Plug 'mbbill/undotree'
+        Plug 'tpope/vim-fugitive'
+        Plug 'tpope/vim-commentary'
 
-        " python
-        Plug 'klen/python-mode'
-        Plug 'yssource/python.vim'
-
-        " kotlin
-        Plug 'udalov/kotlin-vim'
-
-        " javascript
+        " languages
         Plug 'pangloss/vim-javascript'
-        Plug 'posva/vim-vue'
         Plug 'leafgarland/typescript-vim'
         Plug 'peitalin/vim-jsx-typescript'
 
-        " json
         Plug 'elzr/vim-json'
 
-        " html
         Plug 'hail2u/vim-css3-syntax'
         Plug 'tpope/vim-haml'
         Plug 'groenewege/vim-less'
 
-        " ruby
         Plug 'tpope/vim-rails'
 
-        " golang
         Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 
-        " terraform
         Plug 'hashivim/vim-terraform'
 
-        " markdown
         Plug 'tpope/vim-markdown'
         Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
-        " other langs
         Plug 'rust-lang/rust.vim'
 
         " appearance
         Plug 'rafi/awesome-vim-colorschemes'
         Plug 'Yggdroot/indentLine'
         Plug 'mhinz/vim-signify'
-        Plug 'osyo-manga/vim-over'
-
-        " programming
-        Plug 'tpope/vim-fugitive'
-        Plug 'tpope/vim-commentary'
 
     if !has('nvim')
         if executable('ctags')
@@ -122,9 +70,6 @@
         Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
     endif
 
-        " prisma
-        Plug 'prisma/vim-prisma'
-
     call plug#end()
 " }
 
@@ -134,21 +79,9 @@
         set background=dark
         colorscheme seoul256
         let g:seoul256_background = 234
-        " set background=light
-        " colo seoul256-light
-        " let g:seoul256_background = 256
     " }
 
     if !has('nvim')
-    " GoLang {
-        let g:go_highlight_functions = 1
-        let g:go_highlight_methods = 1
-        let g:go_highlight_structs = 1
-        let g:go_highlight_operators = 1
-        let g:go_highlight_build_constraints = 1
-        let g:go_fmt_command = "goimports"
-    " }
-
     " coc {
         let g:coc_disable_transparent_cursor = 1
         let g:coc_global_extensions = ['coc-tsserver', 'coc-prettier', '@yaegassy/coc-tailwindcss3']
@@ -191,6 +124,16 @@
         endif
     " }
     endif
+
+    " GoLang {
+        let g:go_highlight_functions = 1
+        let g:go_highlight_methods = 1
+        let g:go_highlight_structs = 1
+        let g:go_highlight_operators = 1
+        let g:go_highlight_build_constraints = 1
+        let g:go_fmt_command = "goimports"
+    " }
+
 
     " FZF {
         nnoremap <silent> <C-p> :Files<CR>
@@ -661,27 +604,6 @@
 
     " duplicate selection to below
     vmap <leader>d y'>p
-
-" }
-
-" GUI Settings {
-    " GVIM- (here instead of .gvimrc)
-    if has('gui_running')
-        set guioptions-=T           " Remove the toolbar
-        set lines=40                " 40 lines of text instead of 24
-        if LINUX() && has("gui_running")
-            set guifont=Andale\ Mono\ Regular\ 12,Menlo\ Regular\ 11,Consolas\ Regular\ 12,Courier\ New\ Regular\ 14
-        elseif OSX() && has("gui_running")
-            set guifont=Andale\ Mono\ Regular:h12,Menlo\ Regular:h11,Consolas\ Regular:h12,Courier\ New\ Regular:h14
-        elseif WINDOWS() && has("gui_running")
-            set guifont=Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
-        endif
-    else
-        if &term == 'xterm' || &term == 'screen'
-            set t_Co=256            " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
-        endif
-        "set term=builtin_ansi       " Make arrow and other keys work
-    endif
 
 " }
 
