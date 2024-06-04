@@ -33,7 +33,6 @@ require("lazy").setup({
 
     -- misc
     'itchyny/lightline.vim',
-    'ludovicchabant/vim-gutentags',
     'preservim/nerdtree',
     'Xuyuanp/nerdtree-git-plugin',
     'tpope/vim-surround',
@@ -87,17 +86,6 @@ require("lazy").setup({
     vim.g.seoul256_background = 234
 -- }
 
--- Ctags {
-    -- Set tags option
-    vim.opt.tags = { './tags;/,~/.vimtags' }
-
-    -- Make tags placed in .git/tags file available in all levels of a repository
-    local gitroot = vim.fn.system('git rev-parse --show-toplevel'):gsub('[\n\r]', '')
-    if gitroot ~= '' then
-        vim.opt.tags:append(gitroot .. '/.git/tags')
-    end
--- }
-
 -- GoLang {
     vim.g.go_highlight_functions = 1
     vim.g.go_highlight_methods = 1
@@ -148,4 +136,69 @@ require("lazy").setup({
         command! -bang -nargs=* SRaw call fzf#vim#ag(<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
         command! -bang -nargs=* -complete=dir S call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
     ]], false)
+-- }
+
+-- NerdTree {
+    -- Key mappings
+    vim.api.nvim_set_keymap('n', '<C-e>', ':NERDTreeToggle<CR>', { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', '<leader>e', ':NERDTreeFind<CR>', { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', '<leader>nt', ':NERDTreeFind<CR>', { noremap = true, silent = true })
+
+    -- NERDTree settings
+    vim.g.NERDTreeShowBookmarks = 1
+    vim.g.NERDTreeIgnore = { '\\.py[cd]$', '\\~$', '\\.swo$', '\\.swp$', '^\\.git$', '^\\.hg$', '^\\.svn$', '\\.bzr$' }
+    vim.g.NERDTreeChDirMode = 0
+    vim.g.NERDTreeQuitOnOpen = 1
+    vim.g.NERDTreeMouseMode = 2
+    vim.g.NERDTreeShowHidden = 1
+    vim.g.NERDTreeAutoDeleteBuffer = 1
+    vim.g.NERDTreeMinimalUI = 1
+    vim.g.NERDTreeWinSize = 50
+    vim.g.NERDTreeMinimalMenu = 1
+
+    -- Auto commands
+    vim.api.nvim_exec([[
+        autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+        autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+    ]], false)
+-- }
+
+
+-- JSON {
+    -- Key mapping for formatting JSON using python's json.tool
+    vim.api.nvim_set_keymap('n', '<leader>jt', [[:%!python -m json.tool<CR>:set filetype=json<CR>]], { noremap = true, silent = true })
+
+    -- Disable JSON syntax conceal
+    vim.g.vim_json_syntax_conceal = 0
+-- }
+
+-- TagBar {
+    vim.api.nvim_set_keymap('n', '<leader>ptt', ':TagbarToggle<CR>', { noremap = true, silent = true })
+-- }
+
+-- Fugitive {
+    -- Key mappings for Git commands
+    vim.api.nvim_set_keymap('n', '<leader>gs', ':Git<CR>', { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', '<leader>gd', ':Gdiff<CR>', { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', '<leader>gc', ':Gcommit<CR>', { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', '<leader>gb', ':Git blame<CR>', { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', '<leader>gl', ':Gclog<CR>', { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', '<leader>gh', ':0Gclog<CR>', { noremap = true, silent = true })
+-- }
+
+-- UndoTree {
+    vim.api.nvim_set_keymap('n', '<Leader>u', ':UndotreeToggle<CR>', { noremap = true, silent = true })
+    vim.g.undotree_SetFocusWhenToggle = 1
+-- }
+
+
+-- indentLine {
+    vim.g.indentLine_enabled = 0
+    vim.api.nvim_set_keymap('n', '<leader>il', ':IndentLinesToggle<CR>', { noremap = true, silent = true })
+-- }
+
+-- lightline {
+    vim.g.lightline = {
+        colorscheme = 'seoul256'
+    }
 -- }

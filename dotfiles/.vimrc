@@ -224,21 +224,6 @@
         let g:vim_json_syntax_conceal = 0
     " }
 
-    " PyMode {
-        " Disable if python support not present
-        if !has('python') && !has('python3')
-            let g:pymode = 0
-        endif
-
-        if isdirectory(expand("~/.vim/plugged/python-mode"))
-            let g:pymode_lint_checkers = ['pyflakes']
-            let g:pymode_trim_whitespaces = 0
-            let g:pymode_options = 0
-            let g:pymode_rope = 0
-            let g:pymode_breakpoint = 0
-        endif
-    " }
-
     " TagBar {
         if isdirectory(expand("~/.vim/plugged/tagbar/"))
             nnoremap <silent> <leader>ptt :TagbarToggle<CR>
@@ -253,13 +238,6 @@
             nnoremap <silent> <leader>gb :Git blame<CR>
             nnoremap <silent> <leader>gl :Gclog<CR>
             nnoremap <silent> <leader>gh :0Gclog<CR>
-            nnoremap <silent> <leader>gp :Git push<CR>
-            nnoremap <silent> <leader>gr :Gread<CR>
-            nnoremap <silent> <leader>gw :Gwrite<CR>
-            nnoremap <silent> <leader>ge :Gedit<CR>
-            " Mnemonic _i_nteractive
-            nnoremap <silent> <leader>gi :Git add -p %<CR>
-            nnoremap <silent> <leader>gg :SignifyToggle<CR>
         endif
     "}
 
@@ -294,9 +272,6 @@
 " }
 
 " General {
-    " if !has('gui')
-        "set term=$TERM          " Make arrow and other keys work
-    " endif
     filetype plugin indent on   " Automatically detect file types.
     syntax on                   " Syntax highlighting
     set mouse=a                 " Automatically enable mouse usage
