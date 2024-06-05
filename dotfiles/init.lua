@@ -47,6 +47,7 @@ require("lazy").setup({
 
   "williamboman/mason.nvim",
   "williamboman/mason-lspconfig.nvim",
+  "WhoIsSethDaniel/mason-tool-installer.nvim",
   "neovim/nvim-lspconfig",
   "hrsh7th/nvim-cmp",
   "hrsh7th/cmp-nvim-lsp",
@@ -239,7 +240,6 @@ require("mason-lspconfig").setup({
     'biome',
     'ast_grep',
     'lua_ls',
-    'prettier',
   },
   automatic_installation = true,
   handlers = {
@@ -250,6 +250,11 @@ require("mason-lspconfig").setup({
     end,
   }
 })
+require('mason-tool-installer').setup {
+  ensure_installed = {
+    'prettier',
+  }
+}
 --}
 
 -- General {

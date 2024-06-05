@@ -11,6 +11,7 @@ if type brew >/dev/null 2>&1; then
     alias ctags="`brew --prefix`/bin/ctags"
 fi
 alias vim-clean="rm -rv $HOME/.vimviews"
+alias vim='nvim'
 
 # exports
 export FZF_DEFAULT_OPTS="
