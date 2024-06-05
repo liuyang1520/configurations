@@ -293,7 +293,6 @@
         " Always switch to the current file directory
     endif
 
-    "set autowrite                       " Automatically write a file when leaving a modified buffer
     set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
     set viewoptions=folds,options,cursor,unix,slash " Better Unix / Windows compatibility
     set virtualedit=onemore             " Allow for cursor beyond last character
@@ -309,15 +308,6 @@
     " expand tabs to spaces
     set expandtab
 
-    " Instead of reverting the cursor to the last position in the buffer, we
-    " set it to the first line when editing a git commit message
-    au FileType gitcommit au! BufEnter COMMIT_EDITMSG call setpos('.', [0, 1, 1, 0])
-
-    augroup resCur
-        autocmd!
-        autocmd BufWinEnter * call ResCur()
-    augroup END
-
     " Setting up the directories {
         set backup                  " Backups are nice ...
         if has('persistent_undo')
@@ -325,12 +315,6 @@
             set undolevels=1000         " Maximum number of changes that can be undone
             set undoreload=10000        " Maximum number lines to save for undo on a buffer reload
         endif
-
-        " Add exclusions to mkview and loadview
-        " eg: *.*, svn-commit.tmp
-        let g:skipview_files = [
-            \ '\[example pattern\]'
-            \ ]
     " }
 
 " }
@@ -343,7 +327,6 @@
 
     highlight clear SignColumn      " SignColumn should match background
     highlight clear LineNr          " Current line number row will have same background color in relative mode
-    "highlight clear CursorLineNr    " Remove highlight color from current line number
 
     if has('cmdline_info')
         set ruler                   " Show the ruler
@@ -390,17 +373,14 @@
     set nowrap                      " Do not wrap long lines
     set autoindent                  " Indent at the same level of the previous line
     set shiftwidth=4                " Use indents of 4 spaces
-    set expandtab                   " Tabs are spaces, not tabs
     set tabstop=4                   " An indentation every four columns
     set softtabstop=4               " Let backspace delete indent
     set nojoinspaces                " Prevents inserting two spaces after punctuation on a join (J)
     set splitright                  " Puts new vsplit windows to the right of the current
     set splitbelow                  " Puts new split windows to the bottom of the current
-    "set matchpairs+=<:>             " Match, to be used with %
-    set pastetoggle=<F12>           " pastetoggle (sane indentation on pastes)
+
     " term config
     set shell=/bin/zsh
-    "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
     " Remove trailing whitespaces and ^M chars
     autocmd FileType c,cpp,java,go,php,javascript,puppet,python,rust,twig,xml,yml,perl,sql autocmd BufWritePre <buffer> if 1 | call StripTrailingWhitespace() | endif
     "autocmd FileType go autocmd BufWritePre <buffer> Fmt
@@ -455,24 +435,6 @@
     noremap j gj
     noremap k gk
 
-    " Map g* keys in Normal, Operator-pending, and Visual+select
-    noremap $ :call WrapRelativeMotion("$")<CR>
-    noremap <End> :call WrapRelativeMotion("$")<CR>
-    noremap 0 :call WrapRelativeMotion("0")<CR>
-    noremap <Home> :call WrapRelativeMotion("0")<CR>
-    noremap ^ :call WrapRelativeMotion("^")<CR>
-    " Overwrite the operator pending $/<End> mappings from above
-    " to force inclusive motion with :execute normal!
-    onoremap $ v:call WrapRelativeMotion("$")<CR>
-    onoremap <End> v:call WrapRelativeMotion("$")<CR>
-    " Overwrite the Visual+select mode mappings from above
-    " to ensure the correct vis_sel flag is passed to function
-    vnoremap $ :<C-U>call WrapRelativeMotion("$", 1)<CR>
-    vnoremap <End> :<C-U>call WrapRelativeMotion("$", 1)<CR>
-    vnoremap 0 :<C-U>call WrapRelativeMotion("0", 1)<CR>
-    vnoremap <Home> :<C-U>call WrapRelativeMotion("0", 1)<CR>
-    vnoremap ^ :<C-U>call WrapRelativeMotion("^", 1)<CR>
-
     " The following two lines conflict with moving to top and
     " bottom of the screen
     map <S-H> gT
@@ -494,8 +456,6 @@
         command! -bang QA qa<bang>
         command! -bang Qa qa<bang>
     endif
-
-    cmap Tabe tabe
 
     " Yank from the cursor to the end of the line, to be consistent with C and D.
     nnoremap Y y$
@@ -523,14 +483,6 @@
     " For when you forget to sudo.. Really Write the file.
     cmap w!! w !sudo tee % >/dev/null
 
-    " Some helpers to edit mode
-    " http://vimcasts.org/e/14
-    cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<cr>
-    map <leader>ew :e %%
-    map <leader>es :sp %%
-    map <leader>ev :vsp %%
-    map <leader>et :tabe %%
-
     " Toggle cursorcolumn
     nmap <Leader>cc :set cursorcolumn!<cr>
 
@@ -543,10 +495,6 @@
 
     " Easier formatting
     nnoremap <silent> <leader>q gwip
-
-    " FIXME: Revert this f70be548
-    " fullscreen mode for GVIM and Terminal, need 'wmctrl' in you PATH
-    map <silent> <F11> :call system("wmctrl -ir " . v:windowid . " -b toggle,fullscreen")<CR>
 
     " copy to mac
     vmap <C-x> :w !pbcopy<CR><CR>
@@ -670,31 +618,6 @@
 
     function! s:ExpandFilenameAndExecute(command, file)
         execute a:command . " " . expand(a:file, ":p")
-    endfunction
-
-    " End/Start of line motion keys act relative to row/wrap width in the
-    " presence of `:set wrap`, and relative to line for `:set nowrap`.
-    " Default vim behaviour is to act relative to text line in both cases
-    " Same for 0, home, end, etc
-    function! WrapRelativeMotion(key, ...)
-        let vis_sel=""
-        if a:0
-            let vis_sel="gv"
-        endif
-        if &wrap
-            execute "normal!" vis_sel . "g" . a:key
-        else
-            execute "normal!" vis_sel . a:key
-        endif
-    endfunction
-
-    " http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
-    " Restore cursor to file position in previous editing session
-    function! ResCur()
-        if line("'\"") <= line("$")
-            silent! normal! g`"
-            return 1
-        endif
     endfunction
 " }
 
