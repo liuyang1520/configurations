@@ -90,19 +90,9 @@ require("lazy").setup({
 
 -- Colorscheme {
 vim.opt.background = 'dark'
-vim.cmd('colorscheme seoul256')
 vim.g.seoul256_background = 234
+vim.cmd('colorscheme seoul256')
 -- }
-
--- GoLang {
-vim.g.go_highlight_functions = 1
-vim.g.go_highlight_methods = 1
-vim.g.go_highlight_structs = 1
-vim.g.go_highlight_operators = 1
-vim.g.go_highlight_build_constraints = 1
-vim.g.go_fmt_command = "goimports"
--- }
-
 
 -- FZF {
 -- Key mappings
@@ -111,6 +101,7 @@ vim.api.nvim_set_keymap('n', '<Leader>f', ':Files<CR>', { noremap = true, silent
 vim.api.nvim_set_keymap('n', '<Leader>F', ':Files!<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>h', ':History<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>H', ':History!<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>j', ':Jumps<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>b', ':Buffers<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>B', ':Buffers!<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>w', ':Windows<CR>', { noremap = true, silent = true })
@@ -120,10 +111,6 @@ vim.api.nvim_set_keymap('n', '<Leader>s', ':S <C-R><C-W><CR>', { noremap = true,
 vim.api.nvim_set_keymap('n', '<Leader>S', ':S! <C-R><C-W><CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('v', '<Leader>s', 'y:S <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
 vim.api.nvim_set_keymap('v', '<Leader>S', 'y:S! <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<Leader>t', ':Tags <C-R><C-W><CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>T', ':Tags! <C-R><C-W><CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', '<Leader>t', 'y:Tags <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
-vim.api.nvim_set_keymap('v', '<Leader>T', 'y:Tags! <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
 
 -- Set FZF default command based on availability of 'ag'
 if vim.fn.executable('ag') == 1 then
@@ -150,7 +137,6 @@ vim.api.nvim_exec([[
 -- Key mappings
 vim.api.nvim_set_keymap('n', '<C-e>', ':NERDTreeToggle<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>e', ':NERDTreeFind<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>nt', ':NERDTreeFind<CR>', { noremap = true, silent = true })
 
 -- NERDTree settings
 vim.g.NERDTreeShowBookmarks = 1
