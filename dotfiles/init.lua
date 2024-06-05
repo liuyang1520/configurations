@@ -43,36 +43,13 @@ require("lazy").setup({
     'tpope/vim-commentary',
     'majutsushi/tagbar',
 
-    -- languages
-    'pangloss/vim-javascript',
-    'leafgarland/typescript-vim',
-    'peitalin/vim-jsx-typescript',
-
-    'elzr/vim-json',
-
-    'hail2u/vim-css3-syntax',
-    'tpope/vim-haml',
-    'groenewege/vim-less',
-
-    'tpope/vim-rails',
-
-    {
-        'fatih/vim-go',
-        build = ':GoInstallBinaries'
-    },
-
-    'hashivim/vim-terraform',
-
-    'tpope/vim-markdown',
-    {
-        'iamcco/markdown-preview.nvim',
-        build = function() vim.fn['mkdp#util#install']() end,
-        ft = {'markdown', 'vim-plug'}
-    },
-
-    'rust-lang/rust.vim',
-
     'github/copilot.vim',
+
+    "williamboman/mason.nvim",
+    "williamboman/mason-lspconfig.nvim",
+    "neovim/nvim-lspconfig",
+    "hrsh7th/nvim-cmp",
+    "hrsh7th/cmp-nvim-lsp",
 
     -- appearance
     'rafi/awesome-vim-colorschemes',
@@ -196,6 +173,29 @@ require("lazy").setup({
     }
 -- }
 
+-- LSP {
+    local lspconfig = require('lspconfig')
+    local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+    require("mason").setup()
+    require("mason-lspconfig").setup({
+        ensure_installed = {
+            'tsserver',
+            'biome',
+            'ast_grep',
+            'lua_ls',
+            'prettier',
+        },
+        automatic_installation = true,
+        handlers = {
+            function(server)
+                lspconfig[server].setup({
+                    capabilities = lsp_capabilities,
+                })
+            end,
+        }
+    })
+--}
+
 -- General {
     -- Enable file type detection, plugins, and indenting
     vim.cmd('filetype plugin indent on')
@@ -258,6 +258,10 @@ require("lazy").setup({
 
     -- Enable backups
     vim.opt.backup = true
+    local prefix = vim.env.XDG_CONFIG_HOME or vim.fn.expand("~/.config")
+    vim.opt.undodir = { prefix .. "/nvim/.undo//"}
+    vim.opt.backupdir = {prefix .. "/nvim/.backup//"}
+    vim.opt.directory = { prefix .. "/nvim/.swp//"}
 
     -- Persistent undo settings
     if vim.fn.has('persistent_undo') == 1 then
