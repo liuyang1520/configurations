@@ -1,11 +1,11 @@
 -- Environment {
 -- Basics {
-vim.opt.compatible = false         -- Must be first line
+vim.opt.compatible = false -- Must be first line
 -- }
 
 -- Global let, must be put in the beginning {
-vim.g.mapleader = ','              -- Set mapleader
-vim.g.maplocalleader = '_'         -- Set maplocalleader
+vim.g.mapleader = ','      -- Set mapleader
+vim.g.maplocalleader = '_' -- Set maplocalleader
 -- }
 -- }
 
@@ -16,7 +16,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",     -- latest stable release
+    "--branch=stable", -- latest stable release
     lazypath,
   })
 end
@@ -223,7 +223,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>')
     bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>')
     bufmap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>')
-    bufmap({ 'n', 'x' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>')
+    bufmap({ 'n', 'x', 'v' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>')
     bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>')
     bufmap('n', '<F3>', '<cmd>lua vim.lsp.buf.code_action()<cr>')
     bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
@@ -356,9 +356,9 @@ vim.opt.directory = { prefix .. "/nvim/.swp//" }
 
 -- Persistent undo settings
 if vim.fn.has('persistent_undo') == 1 then
-  vim.opt.undofile = true          -- Enable persistent undo
-  vim.opt.undolevels = 1000        -- Maximum number of changes that can be undone
-  vim.opt.undoreload = 10000       -- Maximum number of lines to save for undo on a buffer reload
+  vim.opt.undofile = true    -- Enable persistent undo
+  vim.opt.undolevels = 1000  -- Maximum number of changes that can be undone
+  vim.opt.undoreload = 10000 -- Maximum number of lines to save for undo on a buffer reload
 end
 
 -- Display the current mode
