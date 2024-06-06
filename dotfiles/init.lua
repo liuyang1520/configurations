@@ -245,7 +245,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
     bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>')
     bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>')
     bufmap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>')
-    bufmap({ 'n', 'x', 'v' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>')
+    bufmap({ 'n' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>')
+    bufmap({ 'x', 'v' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr><Esc>')
     bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>')
     bufmap('n', '<F3>', '<cmd>lua vim.lsp.buf.code_action()<cr>')
     bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
@@ -294,17 +295,11 @@ local set_indent = function()
   vim.opt_local.shiftwidth = 2
 end
 
--- Define autocmd for file types
-vim.api.nvim_create_autocmd("Filetype", {
-  pattern = { "html", "ruby" },
-  callback = set_indent,
-})
-
 -- Define autocmd for specific file patterns
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   pattern = {
     "*.coffee", "*.erb", "*.scss", "*.jst", "*.eco", "*.ejs", "*.yml",
-    "*.vue", "*.js", "*.jsx", "*.ts", "*.tsx", "*.mjs", "*.css",
+    "*.vue", "*.js", "*.jsx", "*.ts", "*.tsx", "*.mjs", "*.css", "*.rb",
     "*.html", "*.json", "*.tf", "*.tfvars", "*.prisma", "*.lua",
   },
   callback = set_indent,
