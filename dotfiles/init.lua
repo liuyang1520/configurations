@@ -33,8 +33,69 @@ require("lazy").setup({
 
   -- misc
   'itchyny/lightline.vim',
-  'preservim/nerdtree',
-  'Xuyuanp/nerdtree-git-plugin',
+  {
+    "nvim-tree/nvim-tree.lua",
+    config = function()
+      local nvimtree = require("nvim-tree")
+
+      vim.g.loaded_netrw = 1
+      vim.g.loaded_netrwPlugin = 1
+      vim.opt.termguicolors = true
+
+      nvimtree.setup({
+        view = {
+          width = 35,
+          adaptive_size = true,
+        },
+        renderer = {
+          icons = {
+            webdev_colors = false,
+            symlink_arrow = " ➛ ",
+            show = {
+              file = false,
+              folder = true,
+              folder_arrow = true,
+              git = true,
+              modified = true,
+              diagnostics = true,
+              bookmarks = true,
+            },
+            glyphs = {
+              symlink = "@",
+              bookmark = ":",
+              modified = "●",
+              folder = {
+                arrow_closed = "⏵",
+                arrow_open = "⏷",
+                default = "|",
+                open = "/",
+                empty = "∅",
+                empty_open = "⦱",
+                symlink = "@",
+                symlink_open = "@",
+              },
+              git = {
+                unstaged = "✗",
+                staged = "✓",
+                unmerged = "⌥",
+                renamed = "➜",
+                untracked = "★",
+                deleted = "⊖",
+                ignored = "◌",
+              },
+            },
+          },
+        },
+        git = {
+          ignore = false,
+        },
+      })
+
+      vim.keymap.set("n", "<C-e>", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
+      vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeFindFileToggle<CR>",
+        { desc = "Toggle file explorer on current file" })
+    end
+  },
   'tpope/vim-surround',
   'tpope/vim-repeat',
   'terryma/vim-multiple-cursors',
@@ -132,31 +193,6 @@ vim.api.nvim_exec([[
         command! -bang -nargs=* -complete=dir S call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
     ]], false)
 -- }
-
--- NerdTree {
--- Key mappings
-vim.api.nvim_set_keymap('n', '<C-e>', ':NERDTreeToggle<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>e', ':NERDTreeFind<CR>', { noremap = true, silent = true })
-
--- NERDTree settings
-vim.g.NERDTreeShowBookmarks = 1
-vim.g.NERDTreeIgnore = { '\\.py[cd]$', '\\~$', '\\.swo$', '\\.swp$', '^\\.git$', '^\\.hg$', '^\\.svn$', '\\.bzr$' }
-vim.g.NERDTreeChDirMode = 0
-vim.g.NERDTreeQuitOnOpen = 1
-vim.g.NERDTreeMouseMode = 2
-vim.g.NERDTreeShowHidden = 1
-vim.g.NERDTreeAutoDeleteBuffer = 1
-vim.g.NERDTreeMinimalUI = 1
-vim.g.NERDTreeWinSize = 50
-vim.g.NERDTreeMinimalMenu = 1
-
--- Auto commands
-vim.api.nvim_exec([[
-        autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-        autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-    ]], false)
--- }
-
 
 -- JSON {
 -- Key mapping for formatting JSON using python's json.tool
