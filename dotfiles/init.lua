@@ -260,6 +260,7 @@ require("mason").setup()
 require("mason-lspconfig").setup({
   ensure_installed = {
     'tsserver',
+    'pyright',
     'biome',
     'ast_grep',
     'lua_ls',
