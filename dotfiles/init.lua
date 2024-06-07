@@ -146,6 +146,51 @@ require("lazy").setup({
         indent = { enable = true },
       })
     end
+  },
+
+  {
+    "stevearc/conform.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local conform = require("conform")
+      vim.g.disable_autoformat = true
+
+      vim.api.nvim_create_user_command("ToggleAutoFormat", function()
+        vim.g.disable_autoformat = not vim.g.disable_autoformat
+      end, {
+        desc = "Toggle autoformat-on-save",
+      })
+
+      conform.setup({
+        formatters_by_ft = {
+          css = { "prettier" },
+          html = { "prettier" },
+          json = { "prettier" },
+          yaml = { "prettier" },
+          markdown = { "prettier" },
+          graphql = { "prettier" },
+        },
+        format_on_save = function(bufnr)
+          if vim.g.disable_autoformat then
+            return
+          end
+          return {
+            async = true,
+            lsp_fallback = true,
+            timeout_ms = 500,
+          }
+        end,
+      })
+
+      vim.keymap.set({ 'n', 'v', 'x' }, "<leader>Pf", function()
+        conform.format({
+          async = true,
+          lsp_fallback = true,
+          timeout_ms = 500,
+        })
+      end)
+      vim.keymap.set('n', '<leader>tpf', ':ToggleAutoFormat<CR>', { noremap = true, silent = true })
+    end,
   }
 })
 
