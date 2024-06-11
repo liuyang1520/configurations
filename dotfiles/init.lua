@@ -32,7 +32,19 @@ require("lazy").setup({
   'junegunn/fzf.vim',
 
   -- misc
-  'itchyny/lightline.vim',
+  {
+    'nvim-lualine/lualine.nvim',
+    config = function()
+      require('lualine').setup({
+        options = {
+          icons_enabled = false,
+          theme = 'seoul256',
+          section_separators = '',
+          component_separators = ''
+        }
+      })
+    end
+  },
   {
     "nvim-tree/nvim-tree.lua",
     config = function()
@@ -113,6 +125,23 @@ require("lazy").setup({
   "hrsh7th/nvim-cmp",
   "hrsh7th/cmp-nvim-lsp",
 
+  {
+    "rmagatti/auto-session",
+    config = function()
+      local auto_session = require("auto-session")
+
+      auto_session.setup({
+        auto_restore_enabled = false,
+        auto_session_suppress_dirs = { "~/", "~/Downloads", "~/Documents", "~/Desktop/" },
+      })
+
+      local keymap = vim.keymap
+
+      keymap.set("n", "<leader>qsr", "<cmd>SessionRestore<CR>", { desc = "Restore session for cwd" })
+      keymap.set("n", "<leader>qss", "<cmd>SessionSave<CR>", { desc = "Save session for auto session root dir" })
+    end,
+  },
+
   -- appearance
   'rafi/awesome-vim-colorschemes',
   'mhinz/vim-signify',
@@ -170,7 +199,7 @@ require("lazy").setup({
           markdown = { "prettier" },
           graphql = { "prettier" },
         },
-        format_on_save = function(bufnr)
+        format_on_save = function()
           if vim.g.disable_autoformat then
             return
           end
@@ -265,12 +294,6 @@ vim.api.nvim_set_keymap('n', '<leader>gh', ':0Gclog<CR>', { noremap = true, sile
 -- UndoTree {
 vim.api.nvim_set_keymap('n', '<Leader>u', ':UndotreeToggle<CR>', { noremap = true, silent = true })
 vim.g.undotree_SetFocusWhenToggle = 1
--- }
-
--- lightline {
-vim.g.lightline = {
-  colorscheme = 'seoul256'
-}
 -- }
 
 -- LSP {
@@ -562,9 +585,6 @@ vim.api.nvim_set_keymap('n', '<Leader>=', '<C-w>=', { noremap = true, silent = t
 -- Easier horizontal scrolling
 vim.api.nvim_set_keymap('n', 'zl', 'zL', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', 'zh', 'zH', { noremap = true, silent = true })
-
--- Easier formatting
-vim.api.nvim_set_keymap('n', '<Leader>q', 'gwip', { noremap = true, silent = true })
 
 -- Copy to macOS clipboard
 vim.api.nvim_set_keymap('v', '<C-x>', ':w !pbcopy<CR><CR>', { noremap = true, silent = true })
