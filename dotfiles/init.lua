@@ -40,7 +40,18 @@ require("lazy").setup({
           icons_enabled = false,
           theme = 'seoul256',
           section_separators = '',
-          component_separators = ''
+          component_separators = '',
+        },
+        tabline = {
+          lualine_a = {
+            {
+              'tabs',
+              tab_max_length = 40,
+              max_length = vim.o.columns,
+              mode = 1,
+              path = 0,
+            }
+          }
         }
       })
     end
@@ -167,6 +178,7 @@ require("lazy").setup({
           "bash",
           "lua",
           "vim",
+          "vimdoc",
           "dockerfile",
           "gitignore",
           "query",
