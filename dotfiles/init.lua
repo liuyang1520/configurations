@@ -70,6 +70,11 @@ require("lazy").setup({
           width = 35,
           adaptive_size = true,
         },
+        actions = {
+          open_file = {
+            quit_on_open = true
+          }
+        },
         renderer = {
           icons = {
             webdev_colors = false,
@@ -111,6 +116,9 @@ require("lazy").setup({
         },
         git = {
           ignore = false,
+        },
+        filesystem_watchers = {
+          enable = false,
         },
       })
 
