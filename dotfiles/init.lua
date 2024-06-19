@@ -218,13 +218,17 @@ require("lazy").setup({
           yaml = { "prettier" },
           markdown = { "prettier" },
           graphql = { "prettier" },
+          javascript = { "prettier" },
+          typescript = { "prettier" },
+          javascriptreact = { "prettier" },
+          typescriptreact = { "prettier" },
         },
         format_on_save = function()
           if vim.g.disable_autoformat then
             return
           end
           return {
-            async = true,
+            async = false,
             lsp_fallback = true,
             timeout_ms = 500,
           }
