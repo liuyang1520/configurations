@@ -30,6 +30,24 @@ require("lazy").setup({
     build = './install --all'
   },
   'junegunn/fzf.vim',
+  {
+    "ibhagwan/fzf-lua",
+    config = function()
+      require("fzf-lua").setup({
+        winopts = {
+          preview = {
+            default = "bat",
+          },
+        },
+        keymap = {
+          fzf = {
+            ["ctrl-u"] = "half-page-up",
+            ["ctrl-/"] = "toggle-preview",
+          }
+        }
+      })
+    end
+  },
 
   -- misc
   {
@@ -331,11 +349,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 
     bufmap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>')
-    bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>')
-    bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>')
-    bufmap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>')
-    bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>')
-    bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>')
+    bufmap('n', 'gd', "<cmd>lua require('fzf-lua').lsp_definitions({ jump_to_single_result = true })<cr>")
+    bufmap('n', 'gD', "<cmd>lua require('fzf-lua').lsp_declarations()<cr>")
+    bufmap('n', 'gi', "<cmd>lua require('fzf-lua').lsp_implementations()<cr>")
+    bufmap('n', 'go', "<cmd>lua require('fzf-lua').lsp_typedefs()<cr>")
+    bufmap('n', 'gr', "<cmd>lua require('fzf-lua').lsp_references()<cr>")
     bufmap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>')
     bufmap({ 'n' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>')
     bufmap({ 'x', 'v' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr><Esc>')
