@@ -248,7 +248,7 @@ require("lazy").setup({
           return {
             async = false,
             lsp_fallback = true,
-            timeout_ms = 500,
+            timeout_ms = 2000,
           }
         end,
       })
