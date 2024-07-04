@@ -145,13 +145,28 @@ require("lazy").setup({
         { desc = "Toggle file explorer on current file" })
     end
   },
+  {
+    'stevearc/aerial.nvim',
+    keys = {
+      { "<leader>tl", "<cmd>AerialToggle!<CR>" },
+    },
+    config = function()
+      require('aerial').setup({
+        backends = { "treesitter", },
+        layout = {
+          default_direction = "prefer_left",
+          min_width = 30,
+          max_width = { 40, 0.2 },
+        },
+      })
+    end
+  },
   'tpope/vim-surround',
   'tpope/vim-repeat',
   'terryma/vim-multiple-cursors',
   'mbbill/undotree',
   'tpope/vim-fugitive',
   'tpope/vim-commentary',
-  'majutsushi/tagbar',
 
   'github/copilot.vim',
 
@@ -308,15 +323,6 @@ vim.api.nvim_exec([[
         command! -bang -nargs=* SRaw call fzf#vim#ag(<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
         command! -bang -nargs=* -complete=dir S call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
     ]], false)
--- }
-
--- JSON {
--- Key mapping for formatting JSON using python's json.tool
-vim.api.nvim_set_keymap('n', '<leader>jt', [[:%!python -m json.tool<CR>:set filetype=json<CR>]],
-  { noremap = true, silent = true })
-
--- Disable JSON syntax conceal
-vim.g.vim_json_syntax_conceal = 0
 -- }
 
 -- TagBar {
