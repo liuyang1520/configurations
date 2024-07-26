@@ -235,7 +235,7 @@ require("lazy").setup({
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       local conform = require("conform")
-      vim.g.disable_autoformat = true
+      vim.g.disable_autoformat = false
 
       vim.api.nvim_create_user_command("ToggleAutoFormat", function()
         vim.g.disable_autoformat = not vim.g.disable_autoformat
