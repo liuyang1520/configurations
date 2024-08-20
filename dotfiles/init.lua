@@ -325,10 +325,6 @@ vim.api.nvim_exec([[
     ]], false)
 -- }
 
--- TagBar {
-vim.api.nvim_set_keymap('n', '<leader>ptt', ':TagbarToggle<CR>', { noremap = true, silent = true })
--- }
-
 -- Fugitive {
 -- Key mappings for Git commands
 vim.api.nvim_set_keymap('n', '<leader>gs', ':Git<CR>', { noremap = true, silent = true })
