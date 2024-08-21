@@ -927,7 +927,7 @@
 				<key>Blue Component</key>
 				<real>0.14509803921568629</real>
 				<key>Color Space</key>
-				<string>P3</string>
+				<string>sRGB</string>
 				<key>Green Component</key>
 				<real>0.14509803921568629</real>
 				<key>Red Component</key>
