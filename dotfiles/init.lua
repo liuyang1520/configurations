@@ -164,6 +164,12 @@ require("lazy").setup({
   'tpope/vim-surround',
   'tpope/vim-repeat',
   'terryma/vim-multiple-cursors',
+  {
+    "ggandor/leap.nvim",
+    config = function()
+      require('leap').create_default_mappings()
+    end,
+  },
   'mbbill/undotree',
   'tpope/vim-fugitive',
   'tpope/vim-commentary',
@@ -356,7 +362,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     bufmap('n', 'gi', "<cmd>lua require('fzf-lua').lsp_implementations()<cr>")
     bufmap('n', 'go', "<cmd>lua require('fzf-lua').lsp_typedefs()<cr>")
     bufmap('n', 'gr', "<cmd>lua require('fzf-lua').lsp_references()<cr>")
-    bufmap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>')
     bufmap({ 'n' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>')
     bufmap({ 'x', 'v' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr><Esc>')
     bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>')
