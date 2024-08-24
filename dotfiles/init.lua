@@ -1,20 +1,10 @@
--- Environment {
--- Basics {
-vim.opt.compatible = false -- Must be first line
--- }
-
--- Global let, must be put in the beginning {
-vim.g.mapleader = ','      -- Set mapleader
-vim.g.maplocalleader = '_' -- Set maplocalleader
--- }
--- }
+vim.g.mapleader = ','
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   vim.fn.system({
     "git",
-    "clone",
-    "--filter=blob:none",
+    "clone", "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable", -- latest stable release
     lazypath,
@@ -23,13 +13,49 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  -- fuzzy search
   {
     'junegunn/fzf',
     dir = '~/.fzf',
     build = './install --all'
   },
-  'junegunn/fzf.vim',
+  {
+    'junegunn/fzf.vim',
+    config = function()
+      vim.keymap.set('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>F', ':Files!<CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>h', ':History<CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>H', ':History!<CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>b', ':Buffers<CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>B', ':Buffers!<CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>w', ':Windows<CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>c', ':BCommits!<CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>r', ':History:<CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>s', ':S <C-R><C-W><CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>S', ':S! <C-R><C-W><CR>', { noremap = true, silent = true })
+      vim.keymap.set('v', '<Leader>s', 'y:S <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
+      vim.keymap.set('v', '<Leader>S', 'y:S! <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
+
+      -- Set FZF default command based on availability of 'ag'
+      if vim.fn.executable('ag') == 1 then
+        vim.env.FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
+      else
+        vim.env.FZF_DEFAULT_COMMAND = [[
+            find *
+            -path '*/\.*' -prune -o
+            -path 'node_modules/**' -prune -o
+            -path 'target/**' -prune -o
+            -path 'dist/**' -prune -o
+            -type f -print -o -type l -print 2> /dev/null
+        ]]
+      end
+
+      -- Define custom FZF commands with preview
+      vim.api.nvim_exec([[
+        command! -bang -nargs=* SRaw call fzf#vim#ag(<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
+        command! -bang -nargs=* -complete=dir S call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
+      ]], false)
+    end
+  },
   {
     "ibhagwan/fzf-lua",
     config = function()
@@ -117,7 +143,13 @@ require("lazy").setup({
       require('leap').create_default_mappings()
     end,
   },
-  'mbbill/undotree',
+  {
+    'mbbill/undotree',
+    config = function()
+      vim.keymap.set('n', '<Leader>u', vim.cmd.UndotreeToggle, { noremap = true, silent = true })
+      vim.g.undotree_SetFocusWhenToggle = 1
+    end,
+  },
   {
     'lewis6991/gitsigns.nvim',
     config = function()
@@ -194,8 +226,14 @@ require("lazy").setup({
     end,
   },
 
-  -- appearance
-  'rafi/awesome-vim-colorschemes',
+  {
+    'rafi/awesome-vim-colorschemes',
+    config = function()
+      vim.opt.background = 'dark'
+      vim.g.seoul256_background = 234
+      vim.cmd('colorscheme seoul256')
+    end
+  },
 
   {
     "nvim-treesitter/nvim-treesitter",
@@ -279,56 +317,6 @@ require("lazy").setup({
   }
 })
 
--- Colorscheme {
-vim.opt.background = 'dark'
-vim.g.seoul256_background = 234
-vim.cmd('colorscheme seoul256')
--- }
-
--- FZF {
--- Key mappings
-vim.keymap.set('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>f', ':Files<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>F', ':Files!<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>h', ':History<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>H', ':History!<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>j', ':Jumps<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>b', ':Buffers<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>B', ':Buffers!<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>w', ':Windows<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>c', ':BCommits!<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>r', ':History:<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>s', ':S <C-R><C-W><CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>S', ':S! <C-R><C-W><CR>', { noremap = true, silent = true })
-vim.keymap.set('v', '<Leader>s', 'y:S <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
-vim.keymap.set('v', '<Leader>S', 'y:S! <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
-
--- Set FZF default command based on availability of 'ag'
-if vim.fn.executable('ag') == 1 then
-  vim.env.FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
-else
-  vim.env.FZF_DEFAULT_COMMAND = [[
-            find *
-            -path '*/\.*' -prune -o
-            -path 'node_modules/**' -prune -o
-            -path 'target/**' -prune -o
-            -path 'dist/**' -prune -o
-            -type f -print -o -type l -print 2> /dev/null
-        ]]
-end
-
--- Define custom FZF commands with preview
-vim.api.nvim_exec([[
-        command! -bang -nargs=* SRaw call fzf#vim#ag(<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
-        command! -bang -nargs=* -complete=dir S call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
-    ]], false)
--- }
-
--- UndoTree {
-vim.keymap.set('n', '<Leader>u', ':UndotreeToggle<CR>', { noremap = true, silent = true })
-vim.g.undotree_SetFocusWhenToggle = 1
--- }
-
 -- LSP {
 local lsp_cmds = vim.api.nvim_create_augroup('lsp_cmds', { clear = true })
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -384,19 +372,22 @@ require('mason-tool-installer').setup {
 
 -- General {
 -- Remove specific format options for all file types
+-- Comments will no longer be automatically wrapped.
+-- Typing a new line while inside a comment will no longer auto-continue the comment.
+-- Starting a new line with o or O will not automatically insert the comment leader.
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "*",
   callback = function()
     vim.opt_local.formatoptions:remove({ "c", "r", "o" })
   end,
 })
+
 -- Set local tabstop, softtabstop, and shiftwidth for specific file types and patterns
 local set_indent = function()
   vim.opt_local.tabstop = 2
   vim.opt_local.softtabstop = 2
   vim.opt_local.shiftwidth = 2
 end
-
 -- Define autocmd for specific file patterns
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   pattern = {
@@ -407,20 +398,8 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   callback = set_indent,
 })
 
--- Enable file type detection, plugins, and indenting
-vim.cmd('filetype plugin indent on')
-
--- Enable syntax highlighting
-vim.cmd('syntax on')
-
 -- Automatically enable mouse usage
 vim.opt.mouse = 'a'
-
--- Hide the mouse cursor while typing
-vim.opt.mousehide = true
-
--- Set script encoding to utf-8
-vim.scriptencoding = 'utf-8'
 
 -- Configure clipboard settings
 if vim.fn.has('clipboard') == 1 then
@@ -433,7 +412,7 @@ if vim.fn.has('clipboard') == 1 then
   end
 end
 
--- Abbreviate messages (avoids 'hit enter')
+-- Abbreviate messages, modifies how Neovim displays and reduces command-line messages.
 vim.opt.shortmess:append('filmnrxoOtT')
 
 -- Better Unix / Windows compatibility
@@ -584,22 +563,14 @@ vim.keymap.set('n', '<S-H>', 'gT', { noremap = true, silent = true })
 vim.keymap.set('n', '<S-L>', 'gt', { noremap = true, silent = true })
 
 -- Reorder tabs
-vim.keymap.set('n', '<Leader>mtl', ':tabm -1<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>mtr', ':tabm +1<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>ml', ':tabm -1<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>mr', ':tabm +1<CR>', { noremap = true, silent = true })
 
 -- Yank from the cursor to the end of the line, to be consistent with C and D.
 vim.keymap.set('n', 'Y', 'y$', { noremap = true, silent = true })
 
 -- Toggle search highlighting rather than clear the current search results.
 vim.keymap.set('n', '<leader>/', ':nohlsearch<CR>', { noremap = true, silent = true })
-
--- Find merge conflict markers
-vim.keymap.set('n', '<leader>mc', [[/\v^[<\|=>]{7}( .*\|$)<CR>]], { noremap = true, silent = true })
-
--- Shortcuts
--- Change Working Directory to that of the current file
-vim.keymap.set('c', 'cwd', 'lcd %:p:h', { noremap = true, silent = true })
-vim.keymap.set('c', 'cd.', 'lcd %:p:h', { noremap = true, silent = true })
 
 -- Visual shifting (does not exit Visual mode)
 vim.keymap.set('v', '<', '<gv', { noremap = true, silent = true })
@@ -615,15 +586,9 @@ vim.keymap.set('c', 'w!!', 'w !sudo tee % >/dev/null', { noremap = true, silent 
 -- Toggle cursorcolumn
 vim.keymap.set('n', '<Leader>il', ':set cursorcolumn!<CR>', { noremap = true, silent = true })
 
--- Adjust viewports to the same size
-vim.keymap.set('n', '<Leader>=', '<C-w>=', { noremap = true, silent = true })
-
 -- Easier horizontal scrolling
 vim.keymap.set('n', 'zl', 'zL', { noremap = true, silent = true })
 vim.keymap.set('n', 'zh', 'zH', { noremap = true, silent = true })
-
--- Copy to macOS clipboard
-vim.keymap.set('v', '<C-x>', ':w !pbcopy<CR><CR>', { noremap = true, silent = true })
 
 -- Copy whole file
 vim.keymap.set('n', '<C-x>', ':%y<CR>', { noremap = true, silent = true })
@@ -631,20 +596,8 @@ vim.keymap.set('n', '<C-x>', ':%y<CR>', { noremap = true, silent = true })
 -- Duplicate selection to below
 vim.keymap.set('v', '<leader>d', 'y\'>p', { noremap = true, silent = true })
 
--- Function to check if running on macOS
-local is_mac = vim.fn.has("mac") == 1 or vim.fn.has("gui_macvim") == 1 or vim.fn.has("gui_mac") == 1
-
-if is_mac then
-  -- Copy relative path (src/foo.txt)
-  vim.keymap.set('n', '<leader>cfr', ':let @*=expand("%")<CR>', { noremap = true, silent = true })
-
-  -- Copy absolute path (/something/src/foo.txt)
-  vim.keymap.set('n', '<leader>cfa', ':let @*=expand("%:p")<CR>', { noremap = true, silent = true })
-
-  -- Copy filename (foo.txt)
-  vim.keymap.set('n', '<leader>cff', ':let @*=expand("%:t")<CR>', { noremap = true, silent = true })
-
-  -- Copy directory name (/something/src)
-  vim.keymap.set('n', '<leader>cfd', ':let @*=expand("%:p:h")<CR>', { noremap = true, silent = true })
-end
+-- Copy relative path (src/foo.txt)
+vim.keymap.set('n', '<leader>cfr', ':let @*=expand("%")<CR>', { noremap = true, silent = true })
+-- Copy filename (foo.txt)
+vim.keymap.set('n', '<leader>cff', ':let @*=expand("%:t")<CR>', { noremap = true, silent = true })
 -- }
