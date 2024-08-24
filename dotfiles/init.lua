@@ -161,7 +161,6 @@ require("lazy").setup({
       })
     end
   },
-  'tpope/vim-surround',
   'tpope/vim-repeat',
   'terryma/vim-multiple-cursors',
   {
@@ -173,6 +172,23 @@ require("lazy").setup({
   'mbbill/undotree',
   'tpope/vim-fugitive',
   'tpope/vim-commentary',
+  {
+    "sindrets/diffview.nvim",
+    keys = {
+      { "<leader>gs", "<cmd>DiffviewOpen<CR>" },
+      { "<leader>gl", "<cmd>DiffviewFileHistory %<CR>" },
+      { "<leader>gh", "<cmd>DiffviewFileHistory<CR>" },
+    },
+    config = function()
+      require("diffview").setup({
+        signs = {
+          fold_closed = "⏵",
+          fold_open = "⏷",
+          done = "✓",
+        },
+      })
+    end,
+  },
 
   'github/copilot.vim',
 
@@ -294,21 +310,21 @@ vim.cmd('colorscheme seoul256')
 
 -- FZF {
 -- Key mappings
-vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>f', ':Files<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>F', ':Files!<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>h', ':History<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>H', ':History!<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>j', ':Jumps<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>b', ':Buffers<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>B', ':Buffers!<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>w', ':Windows<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>c', ':BCommits!<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>r', ':History:<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>s', ':S <C-R><C-W><CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>S', ':S! <C-R><C-W><CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', '<Leader>s', 'y:S <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
-vim.api.nvim_set_keymap('v', '<Leader>S', 'y:S! <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
+vim.keymap.set('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>f', ':Files<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>F', ':Files!<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>h', ':History<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>H', ':History!<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>j', ':Jumps<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>b', ':Buffers<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>B', ':Buffers!<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>w', ':Windows<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>c', ':BCommits!<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>r', ':History:<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>s', ':S <C-R><C-W><CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>S', ':S! <C-R><C-W><CR>', { noremap = true, silent = true })
+vim.keymap.set('v', '<Leader>s', 'y:S <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
+vim.keymap.set('v', '<Leader>S', 'y:S! <C-r>=fnameescape(@")<CR><CR>', { noremap = true })
 
 -- Set FZF default command based on availability of 'ag'
 if vim.fn.executable('ag') == 1 then
@@ -333,16 +349,11 @@ vim.api.nvim_exec([[
 
 -- Fugitive {
 -- Key mappings for Git commands
-vim.api.nvim_set_keymap('n', '<leader>gs', ':Git<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>gd', ':Gdiff<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>gc', ':Gcommit<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>gb', ':Git blame<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>gl', ':Gclog<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>gh', ':0Gclog<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>gb', ':Git blame<CR>', { noremap = true, silent = true })
 -- }
 
 -- UndoTree {
-vim.api.nvim_set_keymap('n', '<Leader>u', ':UndotreeToggle<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>u', ':UndotreeToggle<CR>', { noremap = true, silent = true })
 vim.g.undotree_SetFocusWhenToggle = 1
 -- }
 
@@ -583,81 +594,84 @@ vim.opt.splitright = true
 vim.opt.splitbelow = true
 
 -- Easier moving in tabs and windows
-vim.api.nvim_set_keymap('n', '<C-J>', '<C-W>j', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-K>', '<C-W>k', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-L>', '<C-W>l', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-H>', '<C-W>h', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-J>', '<C-W>j', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-K>', '<C-W>k', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-L>', '<C-W>l', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-H>', '<C-W>h', { noremap = true, silent = true })
+
+-- Close current tab
+vim.keymap.set('n', '<C-w>Q', ':tabclose<CR>', { noremap = true, silent = true })
 
 -- Wrapped lines go down/up to the next row, rather than the next line in the file
-vim.api.nvim_set_keymap('n', 'j', 'gj', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'k', 'gk', { noremap = true, silent = true })
+vim.keymap.set('n', 'j', 'gj', { noremap = true, silent = true })
+vim.keymap.set('n', 'k', 'gk', { noremap = true, silent = true })
 
 -- Conflict with moving to top and bottom of the screen
-vim.api.nvim_set_keymap('n', '<S-H>', 'gT', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<S-L>', 'gt', { noremap = true, silent = true })
+vim.keymap.set('n', '<S-H>', 'gT', { noremap = true, silent = true })
+vim.keymap.set('n', '<S-L>', 'gt', { noremap = true, silent = true })
 
 -- Reorder tabs
-vim.api.nvim_set_keymap('n', '<Leader>mtl', ':tabm -1<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>mtr', ':tabm +1<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>mtl', ':tabm -1<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>mtr', ':tabm +1<CR>', { noremap = true, silent = true })
 
 -- Yank from the cursor to the end of the line, to be consistent with C and D.
-vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true, silent = true })
+vim.keymap.set('n', 'Y', 'y$', { noremap = true, silent = true })
 
 -- Toggle search highlighting rather than clear the current search results.
-vim.api.nvim_set_keymap('n', '<leader>/', ':nohlsearch<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>/', ':nohlsearch<CR>', { noremap = true, silent = true })
 
 -- Find merge conflict markers
-vim.api.nvim_set_keymap('n', '<leader>mc', [[/\v^[<\|=>]{7}( .*\|$)<CR>]], { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>mc', [[/\v^[<\|=>]{7}( .*\|$)<CR>]], { noremap = true, silent = true })
 
 -- Shortcuts
 -- Change Working Directory to that of the current file
-vim.api.nvim_set_keymap('c', 'cwd', 'lcd %:p:h', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('c', 'cd.', 'lcd %:p:h', { noremap = true, silent = true })
+vim.keymap.set('c', 'cwd', 'lcd %:p:h', { noremap = true, silent = true })
+vim.keymap.set('c', 'cd.', 'lcd %:p:h', { noremap = true, silent = true })
 
 -- Visual shifting (does not exit Visual mode)
-vim.api.nvim_set_keymap('v', '<', '<gv', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', '>', '>gv', { noremap = true, silent = true })
+vim.keymap.set('v', '<', '<gv', { noremap = true, silent = true })
+vim.keymap.set('v', '>', '>gv', { noremap = true, silent = true })
 
 -- Allow using the repeat operator with a visual selection (!)
 -- http://stackoverflow.com/a/8064607/127816
-vim.api.nvim_set_keymap('v', '.', ':normal .<CR>', { noremap = true, silent = true })
+vim.keymap.set('v', '.', ':normal .<CR>', { noremap = true, silent = true })
 
 -- For when you forget to sudo.. Really Write the file.
-vim.api.nvim_set_keymap('c', 'w!!', 'w !sudo tee % >/dev/null', { noremap = true, silent = true })
+vim.keymap.set('c', 'w!!', 'w !sudo tee % >/dev/null', { noremap = true, silent = true })
 
 -- Toggle cursorcolumn
-vim.api.nvim_set_keymap('n', '<Leader>il', ':set cursorcolumn!<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>il', ':set cursorcolumn!<CR>', { noremap = true, silent = true })
 
 -- Adjust viewports to the same size
-vim.api.nvim_set_keymap('n', '<Leader>=', '<C-w>=', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>=', '<C-w>=', { noremap = true, silent = true })
 
 -- Easier horizontal scrolling
-vim.api.nvim_set_keymap('n', 'zl', 'zL', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'zh', 'zH', { noremap = true, silent = true })
+vim.keymap.set('n', 'zl', 'zL', { noremap = true, silent = true })
+vim.keymap.set('n', 'zh', 'zH', { noremap = true, silent = true })
 
 -- Copy to macOS clipboard
-vim.api.nvim_set_keymap('v', '<C-x>', ':w !pbcopy<CR><CR>', { noremap = true, silent = true })
+vim.keymap.set('v', '<C-x>', ':w !pbcopy<CR><CR>', { noremap = true, silent = true })
 
 -- Copy whole file
-vim.api.nvim_set_keymap('n', '<C-x>', ':%y<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-x>', ':%y<CR>', { noremap = true, silent = true })
 
 -- Duplicate selection to below
-vim.api.nvim_set_keymap('v', '<leader>d', 'y\'>p', { noremap = true, silent = true })
+vim.keymap.set('v', '<leader>d', 'y\'>p', { noremap = true, silent = true })
 
 -- Function to check if running on macOS
 local is_mac = vim.fn.has("mac") == 1 or vim.fn.has("gui_macvim") == 1 or vim.fn.has("gui_mac") == 1
 
 if is_mac then
   -- Copy relative path (src/foo.txt)
-  vim.api.nvim_set_keymap('n', '<leader>cfr', ':let @*=expand("%")<CR>', { noremap = true, silent = true })
+  vim.keymap.set('n', '<leader>cfr', ':let @*=expand("%")<CR>', { noremap = true, silent = true })
 
   -- Copy absolute path (/something/src/foo.txt)
-  vim.api.nvim_set_keymap('n', '<leader>cfa', ':let @*=expand("%:p")<CR>', { noremap = true, silent = true })
+  vim.keymap.set('n', '<leader>cfa', ':let @*=expand("%:p")<CR>', { noremap = true, silent = true })
 
   -- Copy filename (foo.txt)
-  vim.api.nvim_set_keymap('n', '<leader>cff', ':let @*=expand("%:t")<CR>', { noremap = true, silent = true })
+  vim.keymap.set('n', '<leader>cff', ':let @*=expand("%:t")<CR>', { noremap = true, silent = true })
 
   -- Copy directory name (/something/src)
-  vim.api.nvim_set_keymap('n', '<leader>cfd', ':let @*=expand("%:p:h")<CR>', { noremap = true, silent = true })
+  vim.keymap.set('n', '<leader>cfd', ':let @*=expand("%:p:h")<CR>', { noremap = true, silent = true })
 end
 -- }
