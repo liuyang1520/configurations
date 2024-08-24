@@ -145,22 +145,6 @@ require("lazy").setup({
         { desc = "Toggle file explorer on current file" })
     end
   },
-  {
-    'stevearc/aerial.nvim',
-    keys = {
-      { "<leader>tl", "<cmd>AerialToggle!<CR>" },
-    },
-    config = function()
-      require('aerial').setup({
-        backends = { "treesitter", },
-        layout = {
-          default_direction = "prefer_left",
-          min_width = 30,
-          max_width = { 40, 0.2 },
-        },
-      })
-    end
-  },
   'tpope/vim-repeat',
   'terryma/vim-multiple-cursors',
   {
@@ -190,29 +174,29 @@ require("lazy").setup({
     end,
   },
 
-  'github/copilot.vim',
-
   "williamboman/mason.nvim",
   "williamboman/mason-lspconfig.nvim",
   "WhoIsSethDaniel/mason-tool-installer.nvim",
   "neovim/nvim-lspconfig",
-  "hrsh7th/nvim-cmp",
-  "hrsh7th/cmp-nvim-lsp",
-
   {
-    "rmagatti/auto-session",
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+    },
+  },
+  {
+    "github/copilot.vim",
     config = function()
-      local auto_session = require("auto-session")
-
-      auto_session.setup({
-        auto_restore_enabled = false,
-        auto_session_suppress_dirs = { "~/", "~/Downloads", "~/Documents", "~/Desktop/" },
-      })
-
-      local keymap = vim.keymap
-
-      keymap.set("n", "<leader>qsr", "<cmd>SessionRestore<CR>", { desc = "Restore session for cwd" })
-      keymap.set("n", "<leader>qss", "<cmd>SessionSave<CR>", { desc = "Save session for auto session root dir" })
+      vim.g.copilot_no_tab_map = true
+      vim.keymap.set(
+        "i",
+        "<C-l>",
+        'copilot#Accept("<CR>")',
+        { silent = true, expr = true, script = true, replace_keycodes = false }
+      )
+      vim.keymap.set("i", "<C-j>", "<Plug>(copilot-next)")
+      vim.keymap.set("i", "<C-k>", "<Plug>(copilot-previous)")
+      vim.keymap.set("i", "<C-h>", "<Plug>(copilot-dismiss)")
     end,
   },
 
@@ -384,6 +368,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 local lspconfig = require('lspconfig')
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+
 require("mason").setup()
 require("mason-lspconfig").setup({
   ensure_installed = {
