@@ -75,76 +75,39 @@ require("lazy").setup({
     end
   },
   {
-    "nvim-tree/nvim-tree.lua",
-    config = function()
-      local nvimtree = require("nvim-tree")
-
-      vim.g.loaded_netrw = 1
-      vim.g.loaded_netrwPlugin = 1
-      vim.opt.termguicolors = true
-
-      nvimtree.setup({
-        view = {
-          width = 35,
-          adaptive_size = true,
-        },
-        actions = {
-          open_file = {
-            quit_on_open = true
-          }
-        },
-        renderer = {
-          icons = {
-            webdev_colors = false,
-            symlink_arrow = " ➛ ",
-            show = {
-              file = false,
-              folder = true,
-              folder_arrow = true,
-              git = true,
-              modified = true,
-              diagnostics = true,
-              bookmarks = true,
-            },
-            glyphs = {
-              symlink = "@",
-              bookmark = ":",
-              modified = "●",
-              folder = {
-                arrow_closed = "⏵",
-                arrow_open = "⏷",
-                default = "",
-                open = "",
-                empty = "∅",
-                empty_open = "⦱",
-                symlink = "@",
-                symlink_open = "@",
-              },
-              git = {
-                unstaged = "✗",
-                staged = "✓",
-                unmerged = "⌥",
-                renamed = "➜",
-                untracked = "★",
-                deleted = "⊖",
-                ignored = "◌",
-              },
-            },
-          },
-        },
-        git = {
-          ignore = false,
-        },
-        filesystem_watchers = {
-          enable = false,
-        },
-      })
-
-      vim.keymap.set("n", "<C-e>", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
-      vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeFindFileToggle<CR>",
-        { desc = "Toggle file explorer on current file" })
-    end
+    'stevearc/oil.nvim',
+    event = "VeryLazy",
+    keys = {
+      {
+        "<C-e>",
+        function()
+          require("oil").toggle_float(vim.fn.getcwd())
+        end,
+      },
+      {
+        "<leader>e",
+        function()
+          local oil = require("oil")
+          oil.toggle_float()
+          local entry = oil.get_cursor_entry()
+          if entry then
+            oil.open_preview()
+          end
+        end,
+      },
+    },
+    opts = {
+      default_file_explorer = true,
+      columns = {
+        "mtime",
+      },
+      delete_to_trash = true,
+      view_options = {
+        show_hidden = true,
+      },
+    },
   },
+
   'tpope/vim-repeat',
   'terryma/vim-multiple-cursors',
   {
