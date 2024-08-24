@@ -109,6 +109,7 @@ require("lazy").setup({
   },
 
   'tpope/vim-repeat',
+  'tpope/vim-commentary',
   'terryma/vim-multiple-cursors',
   {
     "ggandor/leap.nvim",
@@ -117,8 +118,38 @@ require("lazy").setup({
     end,
   },
   'mbbill/undotree',
-  'tpope/vim-fugitive',
-  'tpope/vim-commentary',
+  {
+    'lewis6991/gitsigns.nvim',
+    config = function()
+      require('gitsigns').setup({
+        current_line_blame_opts = {
+          virt_text = true,
+          virt_text_pos = 'eol',
+          delay = 100,
+        },
+        on_attach = function(bufnr)
+          local gitsigns = require('gitsigns')
+
+          local function map(mode, l, r, opts)
+            opts = opts or {}
+            opts.buffer = bufnr
+            vim.keymap.set(mode, l, r, opts)
+          end
+
+          map('n', '<leader>ghs', gitsigns.stage_hunk)
+          map('n', '<leader>ghr', gitsigns.reset_hunk)
+          map('n', '<leader>ghp', gitsigns.preview_hunk)
+          map('n', '<leader>gd', gitsigns.diffthis)
+          map('v', '<leader>ghs', function() gitsigns.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
+          map('v', '<leader>ghr', function() gitsigns.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
+
+          -- blame
+          map('n', '<leader>gb', gitsigns.toggle_current_line_blame)
+          map('n', '<leader>ghb', function() gitsigns.blame_line { full = true } end)
+        end
+      })
+    end,
+  },
   {
     "sindrets/diffview.nvim",
     keys = {
@@ -165,7 +196,6 @@ require("lazy").setup({
 
   -- appearance
   'rafi/awesome-vim-colorschemes',
-  'mhinz/vim-signify',
 
   {
     "nvim-treesitter/nvim-treesitter",
@@ -292,11 +322,6 @@ vim.api.nvim_exec([[
         command! -bang -nargs=* SRaw call fzf#vim#ag(<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
         command! -bang -nargs=* -complete=dir S call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
     ]], false)
--- }
-
--- Fugitive {
--- Key mappings for Git commands
-vim.keymap.set('n', '<leader>gb', ':Git blame<CR>', { noremap = true, silent = true })
 -- }
 
 -- UndoTree {
