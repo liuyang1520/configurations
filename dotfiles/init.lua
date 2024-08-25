@@ -230,7 +230,7 @@ require("lazy").setup({
     'rafi/awesome-vim-colorschemes',
     config = function()
       vim.opt.background = 'dark'
-      vim.g.seoul256_background = 234
+      vim.g.seoul256_background = 233
       vim.cmd('colorscheme seoul256')
     end
   },
