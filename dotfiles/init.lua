@@ -123,6 +123,9 @@ require("lazy").setup({
       },
     },
     opts = {
+      keymaps = {
+        ["<C-_>"] = "actions.preview", -- <C-/> key
+      },
       default_file_explorer = true,
       columns = {
         "mtime",
