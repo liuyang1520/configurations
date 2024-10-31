@@ -199,6 +199,11 @@ require("lazy").setup({
           fold_open = "⏷",
           done = "✓",
         },
+        keymaps = {
+          view = {
+            ["n L"] = false, -- Unmap the "L" key in normal mode
+          },
+        },
       })
     end,
   },
