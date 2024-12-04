@@ -124,7 +124,8 @@ require("lazy").setup({
     },
     opts = {
       keymaps = {
-        ["<C-_>"] = "actions.preview", -- <C-/> key
+        ["<C-_>"] = "actions.preview",                                -- <C-/> key
+        ["<leader>o"] = "<CMD>exec '!open ' . expand('%:p')[6:]<CR>", -- Open file in default program
       },
       default_file_explorer = true,
       columns = {
