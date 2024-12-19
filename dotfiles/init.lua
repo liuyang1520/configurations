@@ -101,15 +101,76 @@ require("lazy").setup({
     end
   },
   {
+    "nvim-tree/nvim-tree.lua",
+    config = function()
+      local nvimtree = require("nvim-tree")
+      vim.g.loaded_netrw = 1
+      vim.g.loaded_netrwPlugin = 1
+      vim.opt.termguicolors = true
+      nvimtree.setup({
+        view = {
+          width = 35,
+          adaptive_size = true,
+        },
+        actions = {
+          open_file = {
+            quit_on_open = true
+          }
+        },
+        renderer = {
+          icons = {
+            webdev_colors = false,
+            symlink_arrow = " ➛ ",
+            show = {
+              file = false,
+              folder = true,
+              folder_arrow = true,
+              git = true,
+              modified = true,
+              diagnostics = true,
+              bookmarks = true,
+            },
+            glyphs = {
+              symlink = "@",
+              bookmark = ":",
+              modified = "●",
+              folder = {
+                arrow_closed = "⏵",
+                arrow_open = "⏷",
+                default = "",
+                open = "",
+                empty = "∅",
+                empty_open = "⦱",
+                symlink = "@",
+                symlink_open = "@",
+              },
+              git = {
+                unstaged = "✗",
+                staged = "✓",
+                unmerged = "⌥",
+                renamed = "➜",
+                untracked = "★",
+                deleted = "⊖",
+                ignored = "◌",
+              },
+            },
+          },
+        },
+        git = {
+          ignore = false,
+        },
+        filesystem_watchers = {
+          enable = false,
+        },
+      })
+      vim.keymap.set("n", "<C-e>", "<cmd>NvimTreeFindFileToggle<CR>",
+        { desc = "Toggle file explorer on current file" })
+    end
+  },
+  {
     'stevearc/oil.nvim',
     event = "VeryLazy",
     keys = {
-      {
-        "<C-e>",
-        function()
-          require("oil").toggle_float(vim.fn.getcwd())
-        end,
-      },
       {
         "<leader>e",
         function()
@@ -180,7 +241,7 @@ require("lazy").setup({
           map('v', '<leader>ghr', function() gitsigns.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
 
           -- blame
-          map('n', '<leader>gb', gitsigns.toggle_current_line_blame)
+          map('n', '<leader>gb', gitsigns.blame)
           map('n', '<leader>ghb', function() gitsigns.blame_line { full = true } end)
         end
       })
