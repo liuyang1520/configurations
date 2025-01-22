@@ -189,6 +189,7 @@ require("lazy").setup({
         ["<leader>o"] = "<CMD>exec '!open ' . expand('%:p')[6:]<CR>", -- Open file in default program
       },
       default_file_explorer = true,
+      skip_confirm_for_simple_edits = true,
       columns = {
         "mtime",
       },
@@ -293,6 +294,26 @@ require("lazy").setup({
       vim.keymap.set("i", "<C-j>", "<Plug>(copilot-next)")
       vim.keymap.set("i", "<C-k>", "<Plug>(copilot-previous)")
       vim.keymap.set("i", "<C-h>", "<Plug>(copilot-dismiss)")
+    end,
+  },
+  {
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("codecompanion").setup()
+      vim.api.nvim_set_keymap("n", "<C-a>", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("v", "<C-a>", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("n", "<leader>a", "<cmd>CodeCompanionChat Toggle<cr>",
+        { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("v", "<leader>a", "<cmd>CodeCompanionChat Toggle<cr>",
+        { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
+
+      -- Expand 'cc' into 'CodeCompanion' in the command line
+      vim.cmd([[cab cc CodeCompanion]])
     end,
   },
 
