@@ -23,6 +23,7 @@ require("lazy").setup({
     config = function()
       vim.keymap.set('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
       vim.keymap.set('n', '<Leader>F', ':Files!<CR>', { noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>e', ':Files %:p:h<CR>', { noremap = true, silent = true }) -- Open files in the current directory
       vim.keymap.set('n', '<Leader>h', ':History<CR>', { noremap = true, silent = true })
       vim.keymap.set('n', '<Leader>H', ':History!<CR>', { noremap = true, silent = true })
       vim.keymap.set('n', '<Leader>b', ':Buffers<CR>', { noremap = true, silent = true })
@@ -280,6 +281,29 @@ require("lazy").setup({
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
     },
+    config = function()
+      local cmp = require("cmp")
+      cmp.setup({
+        completion = {
+          autocomplete = false
+        },
+        sources = cmp.config.sources({
+          { name = 'nvim_lsp' },
+        }),
+        mapping = cmp.mapping.preset.insert({
+          ["<C-n>"] = cmp.mapping({
+            i = function()
+              if cmp.visible() then -- pop-up menu is visible
+                cmp.select_next_item()
+              else
+                cmp.complete() -- open the pop-up menu
+              end
+            end,
+          }),
+          ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+        }),
+      })
+    end,
   },
   {
     "github/copilot.vim",
@@ -444,6 +468,7 @@ require("mason-lspconfig").setup({
     'biome',
     'ast_grep',
     'lua_ls',
+    'tailwindcss',
   },
   automatic_installation = true,
   handlers = {
