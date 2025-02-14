@@ -41,3 +41,14 @@ alias git-web-branch-file='git-web tree/$(git symbolic-ref --quiet --short HEAD)
 alias git-web-file='git-web tree/master/$(git rev-parse --show-prefix)'
 alias git-adog='git log --all --decorate --oneline --graph'
 alias git-log-status='git log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat'
+
+# LLMs
+function llm {
+    readonly _prompt=${1:?"Specify the prompt"}
+    readonly _disable_format=${2:-""}  # Check if the second argument exists
+    if [[ -n $_disable_format ]]; then
+        ollama run deepseek-r1:14b "$_prompt"
+    else
+        ollama run deepseek-r1:14b "$_prompt" | glow
+    fi
+}
