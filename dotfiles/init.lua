@@ -168,38 +168,6 @@ require("lazy").setup({
         { desc = "Toggle file explorer on current file" })
     end
   },
-  {
-    'stevearc/oil.nvim',
-    event = "VeryLazy",
-    keys = {
-      {
-        "<leader>e",
-        function()
-          local oil = require("oil")
-          oil.toggle_float()
-          local entry = oil.get_cursor_entry()
-          if entry then
-            oil.open_preview()
-          end
-        end,
-      },
-    },
-    opts = {
-      keymaps = {
-        ["<C-_>"] = "actions.preview",                                -- <C-/> key
-        ["<leader>o"] = "<CMD>exec '!open ' . expand('%:p')[6:]<CR>", -- Open file in default program
-      },
-      default_file_explorer = true,
-      skip_confirm_for_simple_edits = true,
-      columns = {
-        "mtime",
-      },
-      delete_to_trash = true,
-      view_options = {
-        show_hidden = true,
-      },
-    },
-  },
 
   'tpope/vim-repeat',
   'tpope/vim-commentary',
