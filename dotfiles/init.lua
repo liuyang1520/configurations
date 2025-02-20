@@ -441,9 +441,16 @@ require("mason-lspconfig").setup({
   automatic_installation = true,
   handlers = {
     function(server)
-      lspconfig[server].setup({
-        capabilities = lsp_capabilities,
-      })
+      if server == "ts_ls" then
+        lspconfig[server].setup({
+          cmd = { "env", "NODE_OPTIONS=--max-old-space-size=16384", "typescript-language-server", "--stdio" },
+          capabilities = lsp_capabilities,
+        })
+      else
+        lspconfig[server].setup({
+          capabilities = lsp_capabilities,
+        })
+      end
     end,
   }
 })
