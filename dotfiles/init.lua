@@ -15,8 +15,8 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   {
     'junegunn/fzf',
-    dir = '~/.fzf',
-    build = './install --all'
+    build = './install --all',
+    name = "fzf"
   },
   {
     'junegunn/fzf.vim',

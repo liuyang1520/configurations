@@ -1,24 +1,44 @@
 # Description
+
 This repo contains personal configuration files for local development environment
 
-# Preparation
-- [MacOS](instructions/macos.md)
-- [Linux](instructions/linux.md)
+# Install (macOS)
 
-# Install
 ## oh-my-zsh
+
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 ```
-red
+
+## Homebrew
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+## Dependencies & Applications
+
+- [iterm2](https://github.com/gnachman/iTerm2) - `brew install --cask iterm2`
+  - Background color `22273E`
+  - Ohmyzsh theme `dst` - `sed -i '' 's/^ZSH_THEME=.*/ZSH_THEME="dst"/' ~/.zshrc & source ~/.zshrc`
+- node, go - `brew install node go`
+- [vim](https://github.com/vim/vim) - `brew install vim && brew link vim`
+- [ag](https://github.com/ggreer/the_silver_searcher) - `brew install the_silver_searcher`
+- [fzf](https://github.com/junegunn/fzf) - `brew install fzf`
+- [bat](https://github.com/sharkdp/bat) - `brew install bat`
+- [tmux](https://github.com/tmux/tmux) - `brew install tmux`
+  - reattach-to-user-namespace - `brew install reattach-to-user-namespace`
 
 ## Configurations
+
 ### Clone this repo
+
 ```
 git clone https://github.com/liuyang1520/configurations.git  ~/.liuyang1520-configurations
 ```
 
 ### Create softlinks
+
 ```
 ln -sf ~/.liuyang1520-configurations/dotfiles/.zshrc.local ~/
 if [[ "$(uname -s)" = Darwin ]]; then ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux-osx.conf ~/.tmux.conf; else ln -sf ~/.liuyang1520-configurations/dotfiles/.tmux.conf ~/; fi
@@ -29,20 +49,7 @@ ln -sf ~/.liuyang1520-configurations/dotfiles/.ignore ~/
 ```
 
 ### Update `.zshrc`
+
 ```
 echo "source ~/.zshrc.local" >> ~/.zshrc
 ```
-
-### Update vim plugins
-```
-# Install node, go (optional, needed for some vim plugins)
-# Install vim-plug
-$ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-$ vim +PlugInstall +PlugClean! +q
-```
-
-
-# Screenshots
-## tmux
-![image](https://user-images.githubusercontent.com/8689754/49188903-97c0be00-f329-11e8-865d-11e5081a34fd.png)
