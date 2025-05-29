@@ -411,7 +411,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 
     bufmap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>')
-    bufmap('n', 'gd', "<cmd>lua require('fzf-lua').lsp_definitions({ jump_to_single_result = true })<cr>")
+    bufmap('n', 'gd', "<cmd>lua require('fzf-lua').lsp_definitions({ jump1 = true })<cr>")
     bufmap('n', 'gD', "<cmd>lua require('fzf-lua').lsp_declarations()<cr>")
     bufmap('n', 'gi', "<cmd>lua require('fzf-lua').lsp_implementations()<cr>")
     bufmap('n', 'go', "<cmd>lua require('fzf-lua').lsp_typedefs()<cr>")
@@ -438,7 +438,7 @@ require("mason-lspconfig").setup({
     'lua_ls',
     'tailwindcss',
   },
-  automatic_installation = true,
+  automatic_enabled = true,
   handlers = {
     function(server)
       if server == "ts_ls" then
