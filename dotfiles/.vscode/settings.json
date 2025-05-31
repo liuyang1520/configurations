@@ -1,0 +1,21 @@
+{
+  "window.commandCenter": true,
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  },
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "jest.enable": false,
+  "jest.runMode": "on-demand",
+  "workbench.colorTheme": "GitHub Dark Default",
+  "workbench.activityBar.orientation": "vertical",
+  "editor.fontFamily": "Monaco",
+  "editor.smoothScrolling": true,
+  "editor.autoClosingQuotes": "never",
+  "editor.autoSurround": "never",
+  "editor.autoClosingBrackets": "never",
+  "editor.autoClosingDelete": "never",
+  "editor.autoClosingOvertype": "never",
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
