@@ -24,12 +24,10 @@
     "command": "workbench.action.findInFiles",
     "when": "editorTextFocus && neovim.mode != insert"
   },
-
   {
     "key": "cmd+i",
     "command": "composerMode.agent",
   },
-
   // Editor
   {
     "key": "ctrl+u",
@@ -73,17 +71,16 @@
       ]
     }
   },
-
   // Navigations
   {
     "key": "shift+l",
     "command": "workbench.action.nextEditor",
-    "when": "neovim.mode == normal"
+    "when": "neovim.mode == normal && editorFocus"
   },
   {
     "key": "shift+h",
     "command": "workbench.action.previousEditor",
-    "when": "neovim.mode == normal"
+    "when": "neovim.mode == normal && editorFocus"
   },
   {
     "key": "ctrl+h",
@@ -125,7 +122,6 @@
     "command": "list.focusAnyUp",
     "when": "listFocus"
   },
-
   // Panel
   {
     "key": "shift+l",
@@ -142,7 +138,6 @@
     "command": "workbench.action.closePanel",
     "when": "panelFocus"
   },
-  
   // Side Bar
   {
     "key": "ctrl+w q",
