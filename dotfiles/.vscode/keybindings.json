@@ -1,11 +1,5 @@
 [
   // Global
-  // Fuzzy file search (like <C-p> in Neovim)
-  {
-    "key": "ctrl+p",
-    "command": "workbench.action.quickOpen",
-    "when": "editorTextFocus && neovim.mode == normal"
-  },
   // Open file explorer (like <C-e> for NvimTree)
   {
     "key": "ctrl+e",
@@ -46,7 +40,12 @@
             "to": "up",
             "by": "halfPage"
           }
-        }
+        },
+        {
+          "command": "vscode-neovim.send",
+          "when": "editorTextFocus && neovim.init && neovim.mode != insert || neovim.recording",
+          "args": "<C-U>"
+        },
       ]
     }
   },
@@ -67,7 +66,12 @@
             "to": "down",
             "by": "halfPage"
           }
-        }
+        },
+        {
+          "command": "vscode-neovim.send",
+          "when": "editorTextFocus && neovim.init && neovim.mode != insert || neovim.recording",
+          "args": "<C-D>"
+        },
       ]
     }
   },
