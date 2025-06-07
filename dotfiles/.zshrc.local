@@ -47,8 +47,8 @@ function llm {
     readonly _prompt=${1:?"Specify the prompt"}
     readonly _disable_format=${2:-""}  # Check if the second argument exists
     if [[ -n $_disable_format ]]; then
-        ollama run gemma3:1b "$_prompt"
+        ollama run deepseek-r1:8b "$_prompt"
     else
-        ollama run gemma3:1b "$_prompt" | glow
+        ollama run deepseek-r1:8b "$_prompt" | glow
     fi
 }
