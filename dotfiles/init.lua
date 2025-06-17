@@ -738,3 +738,12 @@ vim.keymap.set('n', '<leader>cff', ':let @*=expand("%:t")<CR>', {
     noremap = true,
     silent = true
 })
+
+-- Toggling scrolloff
+vim.keymap.set('n', '<Leader>zz', function()
+    if vim.o.scrolloff == 999 then
+        vim.o.scrolloff = 0
+    else
+        vim.o.scrolloff = 999
+    end
+end, { noremap = true, silent = true })
