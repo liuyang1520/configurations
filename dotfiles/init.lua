@@ -436,6 +436,10 @@ if not vim.g.vscode then
             end
         end}
     })
+    lspconfig.tailwindcss.setup{
+        capabilities = lsp_capabilities,
+        root_dir = require('lspconfig.util').root_pattern('tailwind.config.js', 'tailwind.config.ts', 'postcss.config.js', '.git'),
+    }
     require('mason-tool-installer').setup {
         ensure_installed = {'prettier'}
     }
@@ -462,7 +466,7 @@ end
 -- Define autocmd for specific file patterns
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
     pattern = {"*.coffee", "*.erb", "*.scss", "*.jst", "*.eco", "*.ejs", "*.yml", "*.vue", "*.js", "*.jsx", "*.ts",
-               "*.tsx", "*.mjs", "*.css", "*.rb", "*.html", "*.json", "*.tf", "*.tfvars", "*.prisma", "*.lua"},
+               "*.tsx", "*.mjs", "*.css", "*.rb", "*.html", "*.json", "*.tf", "*.tfvars", "*.prisma"},
     callback = set_indent
 })
 
