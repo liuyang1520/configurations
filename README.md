@@ -49,6 +49,7 @@ ln -sf ~/.liuyang1520-configurations/dotfiles/.ignore ~/
 ```
 
 #### VSCode/Cursor
+
 ```
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vscode/keybindings.json "$HOME/Library/Application Support/Cursor/User/keybindings.json"
 ln -sf ~/.liuyang1520-configurations/dotfiles/.vscode/settings.json "$HOME/Library/Application Support/Cursor/User/settings.json"
@@ -57,5 +58,7 @@ ln -sf ~/.liuyang1520-configurations/dotfiles/.vscode/settings.json "$HOME/Libra
 ### Update `.zshrc`
 
 ```
-echo "source ~/.zshrc.local" >> ~/.zshrc
+sed -i.bak '/^source \$ZSH\/oh-my-zsh\.sh/i\
+source ~/.zshrc.local
+' ~/.zshrc
 ```
