@@ -88,7 +88,7 @@ if not vim.g.vscode then
             -- Define custom FZF commands with preview
             vim.api.nvim_exec([[
         command! -bang -nargs=* SRaw call fzf#vim#ag(<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
-        command! -bang -nargs=* -complete=dir S call fzf#vim#ag_raw('--ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
+        command! -bang -nargs=* -complete=dir S call fzf#vim#ag_raw('--color-path="0;34" --color-match="31;40" --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
       ]], false)
         end
     }, {
