@@ -460,9 +460,22 @@ if not vim.g.vscode then
     ensure_installed = { 'ts_ls', 'pyright', 'biome', 'ast_grep', 'lua_ls', 'tailwindcss' },
     automatic_enabled = true,
     handlers = { function(server)
-      lspconfig[server].setup({
-        capabilities = lsp_capabilities
-      })
+      if server == "ts_ls" then
+        lspconfig[server].setup({
+          cmd = { "env", "NODE_OPTIONS=--max-old-space-size=16384", "typescript-language-server", "--stdio" },
+          capabilities = lsp_capabilities
+        })
+      elseif server == "tailwindcss" then
+        lspconfig[server].setup({
+          capabilities = lsp_capabilities,
+          root_dir = require('lspconfig.util').root_pattern('tailwind.config.js', 'tailwind.config.ts',
+            'postcss.config.js', '.git'),
+        })
+      else
+        lspconfig[server].setup({
+          capabilities = lsp_capabilities
+        })
+      end
     end }
   })
   require('mason-tool-installer').setup {
