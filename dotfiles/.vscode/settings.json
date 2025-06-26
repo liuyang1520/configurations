@@ -9,6 +9,7 @@
   "workbench.colorTheme": "GitHub Dark Default",
   "workbench.activityBar.orientation": "vertical",
   "editor.fontFamily": "Monaco",
+  "typescript.tsserver.maxTsServerMemory": 16192,
   "editor.smoothScrolling": true,
   "editor.autoClosingQuotes": "never",
   "editor.autoSurround": "never",
