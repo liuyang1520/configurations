@@ -21,6 +21,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/mas
 - [iterm2](https://github.com/gnachman/iTerm2) - `brew install --cask iterm2`
   - Background color `22273E`
   - Ohmyzsh theme `dst` - `sed -i '' 's/^ZSH_THEME=.*/ZSH_THEME="dst"/' ~/.zshrc & source ~/.zshrc`
+- [ghostty](https://ghostty.org/) - `brew install --cask ghostty`
 - node, go - `brew install node go`
 - [vim](https://github.com/vim/vim) - `brew install vim && brew link vim`
 - [ag](https://github.com/ggreer/the_silver_searcher) - `brew install the_silver_searcher`
@@ -46,6 +47,8 @@ ln -sf ~/.liuyang1520-configurations/dotfiles/.vimrc ~/
 mkdir -p ~/.config/nvim && ln -sf ~/.liuyang1520-configurations/dotfiles/init.lua ~/.config/nvim/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.ctags.d ~/
 ln -sf ~/.liuyang1520-configurations/dotfiles/.ignore ~/
+
+mkdir -p ~/.config/ghostty && ln -sf ~/.liuyang1520-configurations/dotfiles/ghostty.config ~/.config/ghostty/config
 ```
 
 #### VSCode/Cursor
