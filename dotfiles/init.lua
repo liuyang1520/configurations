@@ -783,3 +783,9 @@ vim.keymap.set('n', '<Leader>zz', function()
     vim.o.scrolloff = 999
   end
 end, { noremap = true, silent = true })
+
+-- Toggle markdown preview with Glow
+vim.keymap.set('n', '<leader>gp', function()
+  local filepath = vim.fn.expand('%:p')
+  vim.cmd('tabnew | term glow ' .. filepath)
+end, { desc = 'Glow Preview in Tab' })
