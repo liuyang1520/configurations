@@ -229,18 +229,7 @@ if not vim.g.vscode then
             vim.keymap.set(mode, l, r, opts)
           end
 
-          map('n', '<leader>ghs', gitsigns.stage_hunk)
-          map('n', '<leader>ghr', gitsigns.reset_hunk)
-          map('n', '<leader>ghp', gitsigns.preview_hunk)
           map('n', '<leader>gd', gitsigns.diffthis)
-          map('v', '<leader>ghs', function()
-            gitsigns.stage_hunk { vim.fn.line('.'), vim.fn.line('v') }
-          end)
-          map('v', '<leader>ghr', function()
-            gitsigns.reset_hunk { vim.fn.line('.'), vim.fn.line('v') }
-          end)
-
-          -- blame
           map('n', '<leader>gb', gitsigns.blame)
           map('n', '<leader>ghb', function()
             gitsigns.blame_line {
@@ -251,23 +240,19 @@ if not vim.g.vscode then
       })
     end
   }, {
-    "sindrets/diffview.nvim",
-    keys = { { "<leader>gs", "<cmd>DiffviewOpen<CR>" }, { "<leader>gl", "<cmd>DiffviewFileHistory %<CR>" },
-      { "<leader>gh", "<cmd>DiffviewFileHistory<CR>" } },
-    config = function()
-      require("diffview").setup({
-        signs = {
-          fold_closed = "⏵",
-          fold_open = "⏷",
-          done = "✓"
-        },
-        keymaps = {
-          view = {
-            ["n L"] = false -- Unmap the "L" key in normal mode
-          }
-        }
-      })
-    end
+    "kdheepak/lazygit.nvim",
+    lazy = true,
+    cmd = {
+      "LazyGit",
+      "LazyGitCurrentFile",
+      "LazyGitFilterCurrentFile",
+    },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    keys = {
+      { "<leader>gs", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+    }
   }, "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim", "WhoIsSethDaniel/mason-tool-installer.nvim",
     "neovim/nvim-lspconfig", {
     "hrsh7th/nvim-cmp",

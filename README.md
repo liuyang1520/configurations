@@ -29,6 +29,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/mas
 - [bat](https://github.com/sharkdp/bat) - `brew install bat`
 - [tmux](https://github.com/tmux/tmux) - `brew install tmux`
   - reattach-to-user-namespace - `brew install reattach-to-user-namespace`
+- [lazygit](https://github.com/kdheepak/lazygit.nvim) - `brew install lazygit`
 
 ## Configurations
 
