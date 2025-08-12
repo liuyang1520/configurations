@@ -24,31 +24,16 @@ if not vim.g.vscode then
         noremap = true,
         silent = true
       })
+      -- Open files in the current directory
       vim.keymap.set('n', '<Leader>e', ':Files %:p:h<CR>', {
         noremap = true,
         silent = true
-      }) -- Open files in the current directory
+      })
       vim.keymap.set('n', '<Leader>h', ':History<CR>', {
         noremap = true,
         silent = true
       })
-      vim.keymap.set('n', '<Leader>H', ':History!<CR>', {
-        noremap = true,
-        silent = true
-      })
       vim.keymap.set('n', '<Leader>b', ':Buffers<CR>', {
-        noremap = true,
-        silent = true
-      })
-      vim.keymap.set('n', '<Leader>B', ':Buffers!<CR>', {
-        noremap = true,
-        silent = true
-      })
-      vim.keymap.set('n', '<Leader>w', ':Windows<CR>', {
-        noremap = true,
-        silent = true
-      })
-      vim.keymap.set('n', '<Leader>c', ':BCommits!<CR>', {
         noremap = true,
         silent = true
       })
@@ -244,14 +229,14 @@ if not vim.g.vscode then
     lazy = true,
     cmd = {
       "LazyGit",
-      "LazyGitCurrentFile",
       "LazyGitFilterCurrentFile",
     },
     dependencies = {
       "nvim-lua/plenary.nvim",
     },
     keys = {
-      { "<leader>gs", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+      { "<leader>gs", "<cmd>LazyGit<cr>",                  desc = "LazyGit" },
+      { "<leader>gc", "<cmd>LazyGitFilterCurrentFile<cr>", desc = "LazyGitFilterCurrentFile" }
     }
   }, "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim", "WhoIsSethDaniel/mason-tool-installer.nvim",
     "neovim/nvim-lspconfig", {
