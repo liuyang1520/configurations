@@ -394,50 +394,21 @@ if not vim.g.vscode then
   } })
 
   -- LSP
-  local lsp_cmds = vim.api.nvim_create_augroup('lsp_cmds', {
-    clear = true
-  })
-  vim.api.nvim_create_autocmd('LspAttach', {
-    group = lsp_cmds,
-    desc = 'LSP actions',
-    callback = function()
-      local bufmap = function(mode, lhs, rhs)
-        vim.keymap.set(mode, lhs, rhs, {
-          buffer = true
-        })
-      end
-
-      bufmap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>')
-      bufmap('n', 'gd', "<cmd>lua require('fzf-lua').lsp_definitions({ jump1 = true })<cr>")
-      bufmap('n', 'gD', "<cmd>lua require('fzf-lua').lsp_declarations()<cr>")
-      bufmap('n', 'gi', "<cmd>lua require('fzf-lua').lsp_implementations()<cr>")
-      bufmap('n', 'go', "<cmd>lua require('fzf-lua').lsp_typedefs()<cr>")
-      bufmap('n', 'gr', "<cmd>lua require('fzf-lua').lsp_references()<cr>")
-      bufmap({ 'n' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>')
-      bufmap({ 'x', 'v' }, '<leader>pf', '<cmd>lua vim.lsp.buf.format({async = true})<cr><Esc>')
-      bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>')
-      bufmap('n', '<F3>', '<cmd>lua vim.lsp.buf.code_action()<cr>')
-      bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
-      bufmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>')
-      bufmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>')
-    end
-  })
-  local lspconfig = require('lspconfig')
-  local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
-
-  require("mason").setup()
-  require("mason-lspconfig").setup({
-    ensure_installed = { 'ts_ls', 'pyright', 'biome', 'ast_grep', 'lua_ls', 'tailwindcss' },
-    automatic_enabled = true,
-    handlers = { function(server)
-      lspconfig[server].setup({
-        capabilities = lsp_capabilities
-      })
-    end }
+  require('mason').setup()
+  require('mason-lspconfig').setup({
+    ensure_installed = { 'pyright', 'biome', 'lua_ls', 'tailwindcss' },
+    automatic_installation = true,
+    handlers = {
+      function(server_name)
+        require('lspconfig')[server_name].setup {}
+      end,
+    }
   })
   require('mason-tool-installer').setup {
     ensure_installed = { 'prettier' }
   }
+  vim.lsp.enable({ "tsgo" })
+  vim.keymap.set('n', 'gl', vim.diagnostic.open_float)
 end
 
 -- General
