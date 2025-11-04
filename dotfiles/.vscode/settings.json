@@ -1,8 +1,5 @@
 {
   "window.commandCenter": true,
-  "extensions.experimental.affinity": {
-    "asvetliakov.vscode-neovim": 1
-  },
   "javascript.preferences.importModuleSpecifier": "non-relative",
   "jest.enable": false,
   "jest.runMode": "on-demand",

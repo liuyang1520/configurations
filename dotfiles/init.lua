@@ -100,7 +100,6 @@ if not vim.g.vscode then
         require('lualine').setup({
           options = {
             icons_enabled = false,
-            theme = 'seoul256',
             section_separators = '',
             component_separators = ''
           },
@@ -318,11 +317,12 @@ if not vim.g.vscode then
       { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>",   desc = "Deny diff" },
     },
   }, {
-    'rafi/awesome-vim-colorschemes',
+    "rebelot/kanagawa.nvim",
     config = function()
-      vim.opt.background = 'dark'
-      vim.g.seoul256_background = 233
-      vim.cmd('colorscheme seoul256')
+      require("kanagawa").setup({
+        theme = "dragon", -- "wave" | "dragon" | "lotus"
+      })
+      vim.cmd("colorscheme kanagawa")
     end
   }, {
     "nvim-treesitter/nvim-treesitter",
