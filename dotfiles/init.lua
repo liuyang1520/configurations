@@ -281,42 +281,6 @@ if not vim.g.vscode then
       vim.keymap.set("i", "<C-h>", "<Plug>(copilot-dismiss)")
     end
   }, {
-    "coder/claudecode.nvim",
-    dependencies = { "folke/snacks.nvim" },
-    config = function()
-      require("claudecode").setup({})
-      vim.api.nvim_create_autocmd("TermOpen", {
-        pattern = "*",
-        callback = function()
-          -- Check if this is a Claude Code terminal by looking at the command
-          local bufname = vim.api.nvim_buf_get_name(0)
-          if bufname:match("claude") or bufname:match("Claude") then
-            -- Set buffer-local keymaps only for Claude terminals
-            vim.keymap.set('t', '<C-h>', '<C-\\><C-N><C-w>h', { buffer = true, desc = 'Claude Terminal left' })
-            vim.keymap.set('t', '<C-j>', '<C-\\><C-N><C-w>j', { buffer = true, desc = 'Claude Terminal down' })
-            vim.keymap.set('t', '<C-k>', '<C-\\><C-N><C-w>k', { buffer = true, desc = 'Claude Terminal up' })
-            vim.keymap.set('t', '<C-l>', '<C-\\><C-N><C-w>l', { buffer = true, desc = 'Claude Terminal right' })
-          end
-        end,
-      })
-    end,
-    keys = {
-      { "<leader>ac", "<cmd>ClaudeCode<cr>",            desc = "Toggle Claude" },
-      { "<leader>ar", "<cmd>ClaudeCode --resume<cr>",   desc = "Resume Claude" },
-      { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
-      { "<leader>as", "<cmd>ClaudeCodeAdd %<cr>",       desc = "Add current buffer" },
-      { "<leader>as", "<cmd>ClaudeCodeSend<cr>",        mode = "v",                 desc = "Send to Claude" },
-      {
-        "<leader>as",
-        "<cmd>ClaudeCodeTreeAdd<cr>",
-        desc = "Add file",
-        ft = { "NvimTree", "neo-tree", "oil" },
-      },
-      -- Diff management
-      { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
-      { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>",   desc = "Deny diff" },
-    },
-  }, {
     "rebelot/kanagawa.nvim",
     config = function()
       require("kanagawa").setup({
