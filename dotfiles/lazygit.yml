@@ -1,3 +1,10 @@
+promptToReturnFromSubprocess: false
+
+os:
+  edit: "nvim -- {{filename}}"
+  editAtLine: "nvim +{{line}} -- {{filename}}"
+  editInTerminal: true
+
 git:
   pagers:
-    - pager: delta --dark --paging=never
+    - pager: delta --dark --paging=never --line-numbers --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
