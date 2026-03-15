@@ -182,13 +182,6 @@ require("lazy").setup({ {
     })
   end
 }, 'tpope/vim-repeat', 'tpope/vim-commentary', 'terryma/vim-multiple-cursors', {
-  url = "https://codeberg.org/andyg/leap.nvim",
-  config = function()
-    vim.keymap.set({ 'n', 'x', 'o' }, 's', '<Plug>(leap-forward)', { desc = "Leap forward" })
-    vim.keymap.set({ 'n', 'x', 'o' }, 'S', '<Plug>(leap-backward)', { desc = "Leap backward" })
-    vim.keymap.set({ 'n', 'x', 'o' }, 'gs', '<Plug>(leap-from-window)', { desc = "Leap from window" })
-  end
-}, {
   'mbbill/undotree',
   cmd = "UndotreeToggle",
   keys = {
@@ -584,13 +577,6 @@ vim.keymap.set('n', '<C-H>', '<C-W>h', {
   noremap = true,
   silent = true,
   desc = "Window left"
-})
-
--- Close current tab
-vim.keymap.set('n', '<C-w>Q', ':tabclose<CR>', {
-  noremap = true,
-  silent = true,
-  desc = "Close tab"
 })
 
 -- Wrapped lines go down/up to the next row, rather than the next line in the file
