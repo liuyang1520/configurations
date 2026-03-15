@@ -1,66 +1,60 @@
 vim.g.mapleader = ','
 
-if not vim.g.vscode then
-  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not (vim.uv or vim.loop).fs_stat(lazypath) then
-    vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git",
-      "--branch=stable", -- latest stable release
-      lazypath })
-  end
-  vim.opt.rtp:prepend(lazypath)
+if vim.loader and vim.loader.enable then
+  vim.loader.enable()
+end
 
-  require("lazy").setup({ {
-    'junegunn/fzf',
-    build = './install --all',
-    name = "fzf"
-  }, {
-    'junegunn/fzf.vim',
-    config = function()
-      vim.keymap.set('n', '<C-p>', ':Files<CR>', {
-        noremap = true,
-        silent = true
-      })
-      vim.keymap.set('n', '<Leader>F', ':Files!<CR>', {
-        noremap = true,
-        silent = true
-      })
-      -- Open files in the current directory
-      vim.keymap.set('n', '<Leader>e', ':Files %:p:h<CR>', {
-        noremap = true,
-        silent = true
-      })
-      vim.keymap.set('n', '<Leader>h', ':History<CR>', {
-        noremap = true,
-        silent = true
-      })
-      vim.keymap.set('n', '<Leader>b', ':Buffers<CR>', {
-        noremap = true,
-        silent = true
-      })
-      vim.keymap.set('n', '<Leader>r', ':History:<CR>', {
-        noremap = true,
-        silent = true
-      })
-      vim.keymap.set('n', '<Leader>s', ':S <C-R><C-W><CR>', {
-        noremap = true,
-        silent = true
-      })
-      vim.keymap.set('n', '<Leader>S', ':S! <C-R><C-W><CR>', {
-        noremap = true,
-        silent = true
-      })
-      vim.keymap.set('v', '<Leader>s', 'y:S <C-r>=fnameescape(@")<CR><CR>', {
-        noremap = true
-      })
-      vim.keymap.set('v', '<Leader>S', 'y:S! <C-r>=fnameescape(@")<CR><CR>', {
-        noremap = true
-      })
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath })
+end
+vim.opt.rtp:prepend(lazypath)
 
-      -- Set FZF default command based on availability of 'ag'
-      if vim.fn.executable('ag') == 1 then
-        vim.env.FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
-      else
-        vim.env.FZF_DEFAULT_COMMAND = [[
+require("lazy").setup({ {
+  'junegunn/fzf',
+  build = './install --all',
+  name = "fzf"
+}, {
+  'junegunn/fzf.vim',
+  config = function()
+    vim.keymap.set('n', '<C-p>', ':Files<CR>', {
+      noremap = true,
+      silent = true,
+      desc = "FZF: Files"
+    })
+    -- Open files in the current directory
+    vim.keymap.set('n', '<Leader>e', ':Files %:p:h<CR>', {
+      noremap = true,
+      silent = true,
+      desc = "FZF: Files (current dir)"
+    })
+    vim.keymap.set('n', '<Leader>h', ':History<CR>', {
+      noremap = true,
+      silent = true,
+      desc = "FZF: History"
+    })
+    vim.keymap.set('n', '<Leader>r', ':History:<CR>', {
+      noremap = true,
+      silent = true,
+      desc = "FZF: Command history"
+    })
+    vim.keymap.set('n', '<Leader>s', ':S <C-R><C-W><CR>', {
+      noremap = true,
+      silent = true,
+      desc = "FZF: Search word under cursor"
+    })
+    vim.keymap.set('v', '<Leader>s', 'y:S <C-r>=fnameescape(@")<CR><CR>', {
+      noremap = true,
+      desc = "FZF: Search selection"
+    })
+
+    -- Set FZF default command based on availability of 'ag'
+    if vim.fn.executable('ag') == 1 then
+      vim.env.FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
+    else
+      vim.env.FZF_DEFAULT_COMMAND = [[
             find *
             -path '*/\.*' -prune -o
             -path 'node_modules/**' -prune -o
@@ -68,312 +62,334 @@ if not vim.g.vscode then
             -path 'dist/**' -prune -o
             -type f -print -o -type l -print 2> /dev/null
         ]]
-      end
-
-      -- Define custom FZF commands with preview
-      vim.api.nvim_exec([[
-        command! -bang -nargs=* SRaw call fzf#vim#ag(<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
-        command! -bang -nargs=* -complete=dir S call fzf#vim#ag_raw('--color-path="0;34" --color-match="31;40" --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q '.<q-args>, <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
-      ]], false)
     end
-  }, {
-    "ibhagwan/fzf-lua",
+
+    local function fzf_preview(bang)
+      if bang then
+        return vim.fn["fzf#vim#with_preview"]("up:60%")
+      end
+      return vim.fn["fzf#vim#with_preview"]("right:50%:hidden", "?")
+    end
+
+    vim.api.nvim_create_user_command("SRaw", function(opts)
+      local bang = opts.bang and 1 or 0
+      vim.fn["fzf#vim#ag"](opts.args, fzf_preview(opts.bang), bang)
+    end, {
+      bang = true,
+      nargs = "*",
+      desc = "FZF: search (raw)"
+    })
+
+    vim.api.nvim_create_user_command("S", function(opts)
+      local bang = opts.bang and 1 or 0
+      local query =
+          '--color-path="0;34" --color-match="31;40" --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q ' ..
+          opts.args
+      vim.fn["fzf#vim#ag_raw"](query, fzf_preview(opts.bang), bang)
+    end, {
+      bang = true,
+      nargs = "*",
+      complete = "dir",
+      desc = "FZF: search"
+    })
+  end
+}, {
+  "ibhagwan/fzf-lua",
+  config = function()
+    require("fzf-lua").setup({
+      winopts = {
+        preview = {
+          default = "bat"
+        }
+      },
+      keymap = {
+        fzf = {
+          ["ctrl-u"] = "half-page-up",
+          ["ctrl-/"] = "toggle-preview"
+        }
+      }
+    })
+  end
+}, -- misc
+  {
+    'nvim-lualine/lualine.nvim',
     config = function()
-      require("fzf-lua").setup({
-        winopts = {
-          preview = {
-            default = "bat"
-          }
+      require('lualine').setup({
+        options = {
+          icons_enabled = false,
+          section_separators = '',
+          component_separators = ''
         },
-        keymap = {
-          fzf = {
-            ["ctrl-u"] = "half-page-up",
-            ["ctrl-/"] = "toggle-preview"
-          }
+        tabline = {
+          lualine_a = { {
+            'tabs',
+            tab_max_length = 40,
+            max_length = vim.o.columns,
+            mode = 1,
+            path = 0
+          } }
         }
       })
     end
-  }, -- misc
-    {
-      'nvim-lualine/lualine.nvim',
-      config = function()
-        require('lualine').setup({
-          options = {
-            icons_enabled = false,
-            section_separators = '',
-            component_separators = ''
+  }, {
+  "nvim-tree/nvim-tree.lua",
+  cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeFindFileToggle" },
+  keys = {
+    { "<C-e>", "<cmd>NvimTreeFindFileToggle<CR>", desc = "Toggle file explorer on current file" }
+  },
+  init = function()
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
+    vim.opt.termguicolors = true
+  end,
+  config = function()
+    require("nvim-tree").setup({
+      view = {
+        width = 35,
+        adaptive_size = true
+      },
+      actions = {
+        open_file = {
+          quit_on_open = true
+        }
+      },
+      renderer = {
+        icons = {
+          webdev_colors = false,
+          symlink_arrow = " ➛ ",
+          show = {
+            file = false,
+            folder = true,
+            folder_arrow = true,
+            git = true,
+            modified = true,
+            diagnostics = true,
+            bookmarks = true
           },
-          tabline = {
-            lualine_a = { {
-              'tabs',
-              tab_max_length = 40,
-              max_length = vim.o.columns,
-              mode = 1,
-              path = 0
-            } }
-          }
-        })
-      end
-    }, {
-    "nvim-tree/nvim-tree.lua",
-    config = function()
-      local nvimtree = require("nvim-tree")
-      vim.g.loaded_netrw = 1
-      vim.g.loaded_netrwPlugin = 1
-      vim.opt.termguicolors = true
-      nvimtree.setup({
-        view = {
-          width = 35,
-          adaptive_size = true
-        },
-        actions = {
-          open_file = {
-            quit_on_open = true
-          }
-        },
-        renderer = {
-          icons = {
-            webdev_colors = false,
-            symlink_arrow = " ➛ ",
-            show = {
-              file = false,
-              folder = true,
-              folder_arrow = true,
-              git = true,
-              modified = true,
-              diagnostics = true,
-              bookmarks = true
-            },
-            glyphs = {
+          glyphs = {
+            symlink = "@",
+            bookmark = ":",
+            modified = "●",
+            folder = {
+              arrow_closed = "⏵",
+              arrow_open = "⏷",
+              default = "",
+              open = "",
+              empty = "∅",
+              empty_open = "⦱",
               symlink = "@",
-              bookmark = ":",
-              modified = "●",
-              folder = {
-                arrow_closed = "⏵",
-                arrow_open = "⏷",
-                default = "",
-                open = "",
-                empty = "∅",
-                empty_open = "⦱",
-                symlink = "@",
-                symlink_open = "@"
-              },
-              git = {
-                unstaged = "✗",
-                staged = "✓",
-                unmerged = "⌥",
-                renamed = "➜",
-                untracked = "★",
-                deleted = "⊖",
-                ignored = "◌"
-              }
+              symlink_open = "@"
+            },
+            git = {
+              unstaged = "✗",
+              staged = "✓",
+              unmerged = "⌥",
+              renamed = "➜",
+              untracked = "★",
+              deleted = "⊖",
+              ignored = "◌"
             }
           }
-        },
-        git = {
-          ignore = false
-        },
-        filesystem_watchers = {
-          enable = false
         }
-      })
-      vim.keymap.set("n", "<C-e>", "<cmd>NvimTreeFindFileToggle<CR>", {
-        desc = "Toggle file explorer on current file"
-      })
-    end
-  }, 'tpope/vim-repeat', 'tpope/vim-commentary', 'terryma/vim-multiple-cursors', {
-    "ggandor/leap.nvim",
-    config = function()
-      require('leap').create_default_mappings()
-    end
-  }, {
-    'mbbill/undotree',
-    config = function()
-      vim.keymap.set('n', '<Leader>u', vim.cmd.UndotreeToggle, {
-        noremap = true,
-        silent = true
-      })
-      vim.g.undotree_SetFocusWhenToggle = 1
-    end
-  }, {
-    'lewis6991/gitsigns.nvim',
-    config = function()
-      require('gitsigns').setup({
-        current_line_blame_opts = {
-          virt_text = true,
-          virt_text_pos = 'eol',
-          delay = 100
-        },
-        on_attach = function(bufnr)
-          local gitsigns = require('gitsigns')
+      },
+      git = {
+        ignore = false
+      },
+      filesystem_watchers = {
+        enable = false
+      }
+    })
+  end
+}, 'tpope/vim-repeat', 'tpope/vim-commentary', 'terryma/vim-multiple-cursors', {
+  "ggandor/leap.nvim",
+  config = function()
+    require('leap').create_default_mappings()
+  end
+}, {
+  'mbbill/undotree',
+  cmd = "UndotreeToggle",
+  keys = {
+    { "<leader>u", "<cmd>UndotreeToggle<CR>", desc = "Toggle undo tree" }
+  },
+  init = function()
+    vim.g.undotree_SetFocusWhenToggle = 1
+  end,
+}, {
+  'lewis6991/gitsigns.nvim',
+  event = { "BufReadPre", "BufNewFile" },
+  config = function()
+    require('gitsigns').setup({
+      current_line_blame_opts = {
+        virt_text = true,
+        virt_text_pos = 'eol',
+        delay = 100
+      },
+      on_attach = function(bufnr)
+        local gitsigns = require('gitsigns')
 
-          local function map(mode, l, r, opts)
-            opts = opts or {}
-            opts.buffer = bufnr
-            vim.keymap.set(mode, l, r, opts)
-          end
-
-          map('n', '<leader>gd', gitsigns.diffthis)
-          map('n', '<leader>gb', gitsigns.blame)
-          map('n', '<leader>ghb', function()
-            gitsigns.blame_line {
-              full = true
-            }
-          end)
+        local function map(mode, l, r, opts)
+          opts = opts or {}
+          opts.buffer = bufnr
+          vim.keymap.set(mode, l, r, opts)
         end
-      })
-    end
-  }, {
-    "kdheepak/lazygit.nvim",
-    lazy = true,
-    cmd = {
-      "LazyGit",
-      "LazyGitFilterCurrentFile",
-    },
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    keys = {
-      { "<leader>gs", "<cmd>LazyGit<cr>",                  desc = "LazyGit" },
-      { "<leader>gc", "<cmd>LazyGitFilterCurrentFile<cr>", desc = "LazyGitFilterCurrentFile" }
-    }
-  }, "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim", "WhoIsSethDaniel/mason-tool-installer.nvim",
-    "neovim/nvim-lspconfig", {
-    "hrsh7th/nvim-cmp",
-    dependencies = { "hrsh7th/cmp-nvim-lsp" },
-    config = function()
-      local cmp = require("cmp")
-      cmp.setup({
-        completion = {
-          autocomplete = false
-        },
-        sources = cmp.config.sources({ {
-          name = 'nvim_lsp'
-        } }),
-        mapping = cmp.mapping.preset.insert({
-          ["<C-n>"] = cmp.mapping({
-            i = function()
-              if cmp.visible() then -- pop-up menu is visible
-                cmp.select_next_item()
-              else
-                cmp.complete() -- open the pop-up menu
-              end
-            end
-          }),
-          ["<C-p>"] = cmp.mapping.select_prev_item({
-            behavior = cmp.SelectBehavior.Insert
-          })
-        })
-      })
-    end
-  }, {
-    "github/copilot.vim",
-    config = function()
-      vim.g.copilot_no_tab_map = true
-      vim.keymap.set("i", "<C-l>", 'copilot#Accept("<CR>")', {
-        silent = true,
-        expr = true,
-        script = true,
-        replace_keycodes = false
-      })
-      vim.keymap.set("i", "<C-j>", "<Plug>(copilot-next)")
-      vim.keymap.set("i", "<C-k>", "<Plug>(copilot-previous)")
-      vim.keymap.set("i", "<C-h>", "<Plug>(copilot-dismiss)")
-    end
-  }, {
-    "rebelot/kanagawa.nvim",
-    config = function()
-      require("kanagawa").setup({
-        theme = "dragon", -- "wave" | "dragon" | "lotus"
-      })
-      vim.cmd("colorscheme kanagawa")
-    end
-  }, {
-    "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
-    config = function()
-      local configs = require("nvim-treesitter.configs")
-      configs.setup({
-        ensure_installed = { "json", "javascript", "typescript", "tsx", "yaml", "html", "css", "prisma",
-          "markdown", "markdown_inline", "graphql", "bash", "lua", "vim", "vimdoc",
-          "dockerfile", "gitignore", "query" },
-        highlight = {
-          enable = true
-        },
-        indent = {
-          enable = true
-        }
-      })
-    end
-  }, {
-    "stevearc/conform.nvim",
-    event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      local conform = require("conform")
-      vim.g.disable_autoformat = false
 
-      vim.api.nvim_create_user_command("ToggleAutoFormat", function()
-        vim.g.disable_autoformat = not vim.g.disable_autoformat
-      end, {
-        desc = "Toggle autoformat-on-save"
-      })
-
-      conform.setup({
-        formatters_by_ft = {
-          css = { "prettier" },
-          html = { "prettier" },
-          json = { "prettier" },
-          yaml = { "prettier" },
-          markdown = { "prettier" },
-          graphql = { "prettier" },
-          javascript = { "prettier" },
-          typescript = { "prettier" },
-          javascriptreact = { "prettier" },
-          typescriptreact = { "prettier" }
-        },
-        format_on_save = function()
-          if vim.g.disable_autoformat then
-            return
-          end
-          return {
-            async = false,
-            lsp_fallback = true,
-            timeout_ms = 2000
+        map('n', '<leader>gd', gitsigns.diffthis, { desc = "Git diff (this)" })
+        map('n', '<leader>gb', gitsigns.blame, { desc = "Git blame (buffer)" })
+        map('n', '<leader>ghb', function()
+          gitsigns.blame_line {
+            full = true
           }
-        end
-      })
-
-      vim.keymap.set({ 'n', 'v', 'x' }, "<leader>Pf", function()
-        conform.format({
-          async = true,
-          lsp_fallback = true,
-          timeout_ms = 500
-        })
-      end)
-      vim.keymap.set('n', '<leader>tpf', ':ToggleAutoFormat<CR>', {
-        noremap = true,
-        silent = true
-      })
-    end
-  } })
-
-  -- LSP
-  require('mason').setup()
-  require('mason-lspconfig').setup({
-    ensure_installed = { 'pyright', 'biome', 'lua_ls', 'tailwindcss' },
-    automatic_installation = true,
-    handlers = {
-      function(server_name)
-        require('lspconfig')[server_name].setup {}
-      end,
-    }
-  })
-  require('mason-tool-installer').setup {
-    ensure_installed = { 'prettier' }
+        end, { desc = "Git blame (line)" })
+      end
+    })
+  end
+}, {
+  "kdheepak/lazygit.nvim",
+  lazy = true,
+  cmd = {
+    "LazyGit",
+    "LazyGitFilterCurrentFile",
+  },
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+  },
+  keys = {
+    { "<leader>gs", "<cmd>LazyGit<cr>",                  desc = "LazyGit" },
+    { "<leader>gc", "<cmd>LazyGitFilterCurrentFile<cr>", desc = "LazyGitFilterCurrentFile" }
   }
-  vim.lsp.enable({ "tsgo" })
-  vim.keymap.set('n', 'gl', vim.diagnostic.open_float)
-end
+}, "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim", "WhoIsSethDaniel/mason-tool-installer.nvim",
+  "neovim/nvim-lspconfig", {
+  "hrsh7th/nvim-cmp",
+  dependencies = { "hrsh7th/cmp-nvim-lsp" },
+  config = function()
+    local cmp = require("cmp")
+    cmp.setup({
+      completion = {
+        autocomplete = false
+      },
+      sources = cmp.config.sources({ {
+        name = 'nvim_lsp'
+      } }),
+      mapping = cmp.mapping.preset.insert({
+        ["<C-n>"] = cmp.mapping({
+          i = function()
+            if cmp.visible() then -- pop-up menu is visible
+              cmp.select_next_item()
+            else
+              cmp.complete() -- open the pop-up menu
+            end
+          end
+        }),
+        ["<C-p>"] = cmp.mapping.select_prev_item({
+          behavior = cmp.SelectBehavior.Insert
+        })
+      })
+    })
+  end
+}, {
+  "github/copilot.vim",
+  event = "InsertEnter",
+  init = function()
+    vim.g.copilot_no_tab_map = true
+  end,
+  config = function()
+    vim.keymap.set("i", "<C-l>", 'copilot#Accept("<CR>")', {
+      silent = true,
+      expr = true,
+      script = true,
+      replace_keycodes = false,
+      desc = "Copilot accept"
+    })
+    vim.keymap.set("i", "<C-j>", "<Plug>(copilot-next)", { desc = "Copilot next suggestion" })
+    vim.keymap.set("i", "<C-k>", "<Plug>(copilot-previous)", { desc = "Copilot previous suggestion" })
+    vim.keymap.set("i", "<C-h>", "<Plug>(copilot-dismiss)", { desc = "Copilot dismiss" })
+  end
+}, {
+  "rebelot/kanagawa.nvim",
+  config = function()
+    require("kanagawa").setup({
+      theme = "dragon", -- "wave" | "dragon" | "lotus"
+    })
+    vim.cmd("colorscheme kanagawa")
+  end
+}, {
+  "nvim-treesitter/nvim-treesitter",
+  build = ":TSUpdate",
+  config = function()
+    local configs = require("nvim-treesitter.configs")
+    configs.setup({
+      ensure_installed = { "json", "javascript", "typescript", "tsx", "yaml", "html", "css", "prisma",
+        "markdown", "markdown_inline", "graphql", "bash", "lua", "vim", "vimdoc",
+        "dockerfile", "gitignore", "query" },
+      highlight = {
+        enable = true
+      },
+      indent = {
+        enable = true
+      }
+    })
+  end
+}, {
+  "stevearc/conform.nvim",
+  event = { "BufReadPre", "BufNewFile" },
+  config = function()
+    local conform = require("conform")
+    vim.g.disable_autoformat = false
+
+    vim.api.nvim_create_user_command("ToggleAutoFormat", function()
+      vim.g.disable_autoformat = not vim.g.disable_autoformat
+    end, {
+      desc = "Toggle autoformat-on-save"
+    })
+
+    conform.setup({
+      formatters_by_ft = {
+        css = { "prettier" },
+        html = { "prettier" },
+        json = { "prettier" },
+        yaml = { "prettier" },
+        markdown = { "prettier" },
+        graphql = { "prettier" },
+        javascript = { "prettier" },
+        typescript = { "prettier" },
+        javascriptreact = { "prettier" },
+        typescriptreact = { "prettier" }
+      },
+      format_on_save = function()
+        if vim.g.disable_autoformat then
+          return
+        end
+        return {
+          async = false,
+          lsp_fallback = true,
+          timeout_ms = 2000
+        }
+      end
+    })
+    vim.keymap.set('n', '<leader>tpf', ':ToggleAutoFormat<CR>', {
+      noremap = true,
+      silent = true,
+      desc = "Toggle autoformat-on-save"
+    })
+  end
+} })
+
+-- LSP
+require('mason').setup()
+require('mason-lspconfig').setup({
+  ensure_installed = { 'pyright', 'biome', 'lua_ls', 'tailwindcss' },
+  automatic_installation = true,
+  handlers = {
+    function(server_name)
+      require('lspconfig')[server_name].setup {}
+    end,
+  }
+})
+require('mason-tool-installer').setup {
+  ensure_installed = { 'prettier' }
+}
+vim.lsp.enable({ "tsgo" })
+vim.keymap.set('n', 'gl', vim.diagnostic.open_float, { desc = "Line diagnostics" })
 
 -- General
 -- Remove specific format options for all file types
@@ -387,12 +403,22 @@ vim.api.nvim_create_autocmd("FileType", {
   end
 })
 
+-- Highlight yanked text
+vim.api.nvim_create_autocmd("TextYankPost", {
+  desc = "Highlight on yank",
+  group = vim.api.nvim_create_augroup("yank-highlight", { clear = true }),
+  callback = function()
+    vim.highlight.on_yank({ timeout = 200 })
+  end,
+})
+
 -- Set local tabstop, softtabstop, and shiftwidth for specific file types and patterns
 local set_indent = function()
   vim.opt_local.tabstop = 2
   vim.opt_local.softtabstop = 2
   vim.opt_local.shiftwidth = 2
 end
+
 -- Define autocmd for specific file patterns
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   pattern = { "*.coffee", "*.erb", "*.scss", "*.jst", "*.eco", "*.ejs", "*.yml", "*.vue", "*.js", "*.jsx", "*.ts",
@@ -491,6 +517,9 @@ vim.opt.incsearch = true
 -- Highlight search terms
 vim.opt.hlsearch = true
 
+-- Live preview for :substitute
+vim.opt.inccommand = "split"
+
 -- Windows can be 0 line high
 vim.opt.winminheight = 0
 
@@ -555,129 +584,153 @@ vim.opt.splitbelow = true
 -- Easier moving in tabs and windows
 vim.keymap.set('n', '<C-J>', '<C-W>j', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Window down"
 })
 vim.keymap.set('n', '<C-K>', '<C-W>k', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Window up"
 })
 vim.keymap.set('n', '<C-L>', '<C-W>l', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Window right"
 })
 vim.keymap.set('n', '<C-H>', '<C-W>h', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Window left"
 })
 
 -- Close current tab
 vim.keymap.set('n', '<C-w>Q', ':tabclose<CR>', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Close tab"
 })
 
 -- Wrapped lines go down/up to the next row, rather than the next line in the file
 vim.keymap.set('n', 'j', 'gj', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Down (wrap)"
 })
 vim.keymap.set('n', 'k', 'gk', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Up (wrap)"
 })
 
 -- Conflict with moving to top and bottom of the screen
 vim.keymap.set('n', '<S-H>', 'gT', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Previous tab"
 })
 vim.keymap.set('n', '<S-L>', 'gt', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Next tab"
 })
 
 -- Reorder tabs
 vim.keymap.set('n', '<Leader>ml', ':tabm -1<CR>', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Move tab left"
 })
 vim.keymap.set('n', '<Leader>mr', ':tabm +1<CR>', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Move tab right"
 })
 
 -- Yank from the cursor to the end of the line, to be consistent with C and D.
 vim.keymap.set('n', 'Y', 'y$', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Yank to end of line"
 })
 
 -- Toggle search highlighting rather than clear the current search results.
 vim.keymap.set('n', '<leader>/', ':nohlsearch<CR>', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Clear search highlight"
 })
 
 -- Visual shifting (does not exit Visual mode)
 vim.keymap.set('v', '<', '<gv', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Indent left"
 })
 vim.keymap.set('v', '>', '>gv', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Indent right"
 })
 
 -- Allow using the repeat operator with a visual selection (!)
 -- http://stackoverflow.com/a/8064607/127816
 vim.keymap.set('v', '.', ':normal .<CR>', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Repeat selection"
 })
 
 -- For when you forget to sudo.. Really Write the file.
 vim.keymap.set('c', 'w!!', 'w !sudo tee % >/dev/null', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Write with sudo"
 })
 
 -- Toggle cursorcolumn
 vim.keymap.set('n', '<Leader>il', ':set cursorcolumn!<CR>', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Toggle cursorcolumn"
 })
 
 -- Easier horizontal scrolling
 vim.keymap.set('n', 'zl', 'zL', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Scroll right"
 })
 vim.keymap.set('n', 'zh', 'zH', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Scroll left"
 })
 
 -- Copy whole file
 vim.keymap.set('n', '<C-x>', ':%y<CR>', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Yank whole file"
 })
 
 -- Duplicate selection to below
 vim.keymap.set('v', '<leader>d', 'y\'>p', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Duplicate selection below"
 })
 
 -- Copy relative path (src/foo.txt)
 vim.keymap.set('n', '<leader>cfr', ':let @*=expand("%")<CR>', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Copy relative path"
 })
 -- Copy filename (foo.txt)
 vim.keymap.set('n', '<leader>cff', ':let @*=expand("%:t")<CR>', {
   noremap = true,
-  silent = true
+  silent = true,
+  desc = "Copy filename"
 })
 
 -- Toggling scrolloff
@@ -687,7 +740,7 @@ vim.keymap.set('n', '<Leader>zz', function()
   else
     vim.o.scrolloff = 999
   end
-end, { noremap = true, silent = true })
+end, { noremap = true, silent = true, desc = "Toggle scrolloff" })
 
 -- Toggle markdown preview with Glow
 vim.keymap.set('n', '<leader>gp', function()
