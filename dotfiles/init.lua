@@ -19,6 +19,14 @@ require("lazy").setup({ {
 }, {
   'junegunn/fzf.vim',
   config = function()
+    vim.g.fzf_layout = {
+      window = {
+        width = 0.96,
+        height = 0.94,
+      },
+    }
+    vim.g.fzf_preview_window = { "right:60%:hidden", "?" }
+
     vim.keymap.set('n', '<C-p>', ':Files<CR>', {
       noremap = true,
       silent = true,
@@ -64,74 +72,47 @@ require("lazy").setup({ {
         ]]
     end
 
-    local function fzf_preview(bang)
-      if bang then
-        return vim.fn["fzf#vim#with_preview"]("up:60%")
-      end
-      return vim.fn["fzf#vim#with_preview"]("right:50%:hidden", "?")
-    end
+    local fzf_opts = vim.fn["fzf#vim#with_preview"]("right:60%:hidden", "?")
 
     vim.api.nvim_create_user_command("SRaw", function(opts)
-      local bang = opts.bang and 1 or 0
-      vim.fn["fzf#vim#ag"](opts.args, fzf_preview(opts.bang), bang)
+      vim.fn["fzf#vim#ag"](opts.args, fzf_opts, 0)
     end, {
-      bang = true,
       nargs = "*",
       desc = "FZF: search (raw)"
     })
 
     vim.api.nvim_create_user_command("S", function(opts)
-      local bang = opts.bang and 1 or 0
       local query =
           '--color-path="0;34" --color-match="31;40" --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q ' ..
           opts.args
-      vim.fn["fzf#vim#ag_raw"](query, fzf_preview(opts.bang), bang)
+      vim.fn["fzf#vim#ag_raw"](query, fzf_opts, 0)
     end, {
-      bang = true,
       nargs = "*",
       complete = "dir",
       desc = "FZF: search"
     })
   end
 }, {
-  "ibhagwan/fzf-lua",
+  'nvim-lualine/lualine.nvim',
   config = function()
-    require("fzf-lua").setup({
-      winopts = {
-        preview = {
-          default = "bat"
-        }
+    require('lualine').setup({
+      options = {
+        icons_enabled = false,
+        section_separators = '',
+        component_separators = ''
       },
-      keymap = {
-        fzf = {
-          ["ctrl-u"] = "half-page-up",
-          ["ctrl-/"] = "toggle-preview"
-        }
+      tabline = {
+        lualine_a = { {
+          'tabs',
+          tab_max_length = 40,
+          max_length = vim.o.columns,
+          mode = 1,
+          path = 0
+        } }
       }
     })
   end
-}, -- misc
-  {
-    'nvim-lualine/lualine.nvim',
-    config = function()
-      require('lualine').setup({
-        options = {
-          icons_enabled = false,
-          section_separators = '',
-          component_separators = ''
-        },
-        tabline = {
-          lualine_a = { {
-            'tabs',
-            tab_max_length = 40,
-            max_length = vim.o.columns,
-            mode = 1,
-            path = 0
-          } }
-        }
-      })
-    end
-  }, {
+}, {
   "nvim-tree/nvim-tree.lua",
   cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeFindFileToggle" },
   keys = {
@@ -201,9 +182,11 @@ require("lazy").setup({ {
     })
   end
 }, 'tpope/vim-repeat', 'tpope/vim-commentary', 'terryma/vim-multiple-cursors', {
-  "ggandor/leap.nvim",
+  url = "https://codeberg.org/andyg/leap.nvim",
   config = function()
-    require('leap').create_default_mappings()
+    vim.keymap.set({ 'n', 'x', 'o' }, 's', '<Plug>(leap-forward)', { desc = "Leap forward" })
+    vim.keymap.set({ 'n', 'x', 'o' }, 'S', '<Plug>(leap-backward)', { desc = "Leap backward" })
+    vim.keymap.set({ 'n', 'x', 'o' }, 'gs', '<Plug>(leap-from-window)', { desc = "Leap from window" })
   end
 }, {
   'mbbill/undotree',
