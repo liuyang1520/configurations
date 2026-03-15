@@ -677,30 +677,11 @@ vim.keymap.set('n', '<Leader>il', ':set cursorcolumn!<CR>', {
   desc = "Toggle cursorcolumn"
 })
 
--- Easier horizontal scrolling
-vim.keymap.set('n', 'zl', 'zL', {
-  noremap = true,
-  silent = true,
-  desc = "Scroll right"
-})
-vim.keymap.set('n', 'zh', 'zH', {
-  noremap = true,
-  silent = true,
-  desc = "Scroll left"
-})
-
 -- Copy whole file
 vim.keymap.set('n', '<C-x>', ':%y<CR>', {
   noremap = true,
   silent = true,
   desc = "Yank whole file"
-})
-
--- Duplicate selection to below
-vim.keymap.set('v', '<leader>d', 'y\'>p', {
-  noremap = true,
-  silent = true,
-  desc = "Duplicate selection below"
 })
 
 -- Copy relative path (src/foo.txt)
