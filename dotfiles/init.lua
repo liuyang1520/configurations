@@ -13,11 +13,14 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({ {
-  'junegunn/fzf',
-  build = './install --all',
-  name = "fzf"
-}, {
   'junegunn/fzf.vim',
+  dependencies = {
+    {
+      'junegunn/fzf',
+      build = './install --all',
+      name = "fzf"
+    }
+  },
   config = function()
     vim.g.fzf_layout = {
       window = {
