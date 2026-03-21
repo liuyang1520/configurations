@@ -3,7 +3,7 @@ if [[ -d "${HOME}/.oh-my-zsh" ]]; then
     [ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
     [ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/pure" ] || git clone https://github.com/sindresorhus/pure.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/pure"
 
-    plugins=(zsh-syntax-highlighting)
+    plugins=(${plugins:#zsh-syntax-highlighting} zsh-syntax-highlighting)
     ZSH_THEME=""
     fpath+=("${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/pure")
     autoload -U promptinit
@@ -111,14 +111,13 @@ dotfiles_setup_zshrc() {
         return 0
     fi
 
-    if grep -Fqx "${_source_line}" "${_zshrc}"; then
-        return 0
-    fi
-
     _tmp="${_zshrc}.dotfiles.tmp.$$"
     awk -v source_line="${_source_line}" -v ohmyzsh_line="${_ohmyzsh_line}" '
         BEGIN { inserted=0 }
         {
+            if ($0 == source_line) {
+                next
+            }
             if (!inserted && $0 == ohmyzsh_line) {
                 print source_line
                 inserted=1
@@ -134,6 +133,11 @@ dotfiles_setup_zshrc() {
         rm -f "${_tmp}"
         return 1
     }
+
+    if cmp -s "${_tmp}" "${_zshrc}"; then
+        rm -f "${_tmp}"
+        return 0
+    fi
 
     cp "${_zshrc}" "${_zshrc}.bak" || {
         rm -f "${_tmp}"

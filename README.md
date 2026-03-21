@@ -23,7 +23,7 @@ dotfiles-setup --init
 - install Homebrew if missing
 - install required brew dependencies if missing
 - create/update all configuration symlinks
-- ensure `source ~/.zshrc.local` is present in `~/.zshrc`
+- ensure `source ~/.zshrc.local` is present before `source $ZSH/oh-my-zsh.sh` in `~/.zshrc`
 
 ## Symlink only
 
