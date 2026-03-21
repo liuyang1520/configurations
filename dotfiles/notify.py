@@ -93,7 +93,7 @@ def _notify_osascript(title: str, message: str) -> bool:
 on run argv
   set theTitle to item 1 of argv
   set theMessage to item 2 of argv
-  display notification theMessage with title theTitle
+  display notification theMessage with title theTitle sound name "Funk"
 end run
 """.strip()
 
