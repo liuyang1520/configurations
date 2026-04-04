@@ -4,6 +4,31 @@ if vim.loader and vim.loader.enable then
   vim.loader.enable()
 end
 
+vim.cmd("syntax enable")
+
+local builtin_treesitter = {
+  c = "c",
+  help = "vimdoc",
+  lua = "lua",
+  markdown = "markdown",
+  query = "query",
+  vim = "vim",
+}
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = vim.tbl_keys(builtin_treesitter),
+  callback = function(args)
+    local lang = builtin_treesitter[vim.bo[args.buf].filetype]
+    if not lang then
+      return
+    end
+
+    if pcall(vim.treesitter.language.add, lang) then
+      pcall(vim.treesitter.start, args.buf, lang)
+    end
+  end,
+})
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git",
@@ -290,23 +315,6 @@ require("lazy").setup({ {
       theme = "dragon", -- "wave" | "dragon" | "lotus"
     })
     vim.cmd("colorscheme kanagawa")
-  end
-}, {
-  "nvim-treesitter/nvim-treesitter",
-  build = ":TSUpdate",
-  config = function()
-    local configs = require("nvim-treesitter.configs")
-    configs.setup({
-      ensure_installed = { "json", "javascript", "typescript", "tsx", "yaml", "html", "css", "prisma",
-        "markdown", "markdown_inline", "graphql", "bash", "lua", "vim", "vimdoc",
-        "dockerfile", "gitignore", "query" },
-      highlight = {
-        enable = true
-      },
-      indent = {
-        enable = true
-      }
-    })
   end
 }, {
   "stevearc/conform.nvim",
