@@ -430,14 +430,11 @@ end
 -- Abbreviate messages, modifies how Neovim displays and reduces command-line messages.
 vim.opt.shortmess:append('filmnrxoOtT')
 
--- Better Unix / Windows compatibility
-vim.opt.viewoptions = { 'folds', 'options', 'cursor', 'unix', 'slash' }
+-- Save folds, local options, and cursor position in views
+vim.opt.viewoptions = { 'folds', 'options', 'cursor' }
 
 -- Store a lot of history (default is 20)
 vim.opt.history = 1000
-
--- Allow buffer switching without saving
-vim.opt.hidden = true
 
 -- Set '.' as an end of word designator
 vim.opt.iskeyword:remove('.')
@@ -447,9 +444,6 @@ vim.opt.iskeyword:remove('#')
 
 -- Set '-' as an end of word designator
 vim.opt.iskeyword:remove('-')
-
--- Use default regular expression engine
-vim.opt.regexpengine = 0
 
 -- Disable spell checking
 vim.opt.spell = false
@@ -474,7 +468,7 @@ if vim.fn.has('persistent_undo') == 1 then
   vim.opt.undoreload = 10000 -- Maximum number of lines to save for undo on a buffer reload
 end
 
--- Display the current mode
+-- Statusline already shows the current mode
 vim.opt.showmode = true
 
 -- Highlight current line
@@ -485,9 +479,6 @@ vim.cmd('highlight clear SignColumn')
 
 -- Current line number row will have the same background color in relative mode
 vim.cmd('highlight clear LineNr')
-
--- Backspace for dummies
-vim.opt.backspace = { 'indent', 'eol', 'start' }
 
 -- No extra spaces between rows
 vim.opt.linespace = 0
@@ -516,9 +507,6 @@ vim.opt.ignorecase = true
 -- Case sensitive when uppercase present
 vim.opt.smartcase = true
 
--- Show list instead of just completing
-vim.opt.wildmenu = true
-
 -- Command <Tab> completion: list matches, then longest common part, then all
 vim.opt.wildmode = { 'list:longest', 'full' }
 
@@ -546,9 +534,6 @@ vim.opt.listchars = {
 
 -- Do not wrap long lines
 vim.opt.wrap = false
-
--- Indent at the same level of the previous line
-vim.opt.autoindent = true
 
 -- Use indents of 4 spaces
 vim.opt.shiftwidth = 4
