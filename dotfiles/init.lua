@@ -5,7 +5,7 @@ if vim.loader and vim.loader.enable then
 end
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git",
     "--branch=stable", -- latest stable release
     lazypath })
@@ -236,7 +236,7 @@ require("lazy").setup({ {
     { "<leader>gs", "<cmd>LazyGit<cr>",                  desc = "LazyGit" },
     { "<leader>gc", "<cmd>LazyGitFilterCurrentFile<cr>", desc = "LazyGitFilterCurrentFile" }
   }
-}, "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim", "WhoIsSethDaniel/mason-tool-installer.nvim",
+}, "mason-org/mason.nvim", "mason-org/mason-lspconfig.nvim", "WhoIsSethDaniel/mason-tool-installer.nvim",
   "neovim/nvim-lspconfig", {
   "hrsh7th/nvim-cmp",
   dependencies = { "hrsh7th/cmp-nvim-lsp" },
@@ -354,20 +354,28 @@ require("lazy").setup({ {
 } })
 
 -- LSP
+local preferred_ts_server = vim.fn.executable("tsgo") == 1 and "tsgo" or "ts_ls"
+local mason_servers = { "pyright", "biome", "lua_ls", "tailwindcss", "ts_ls" }
+local lsp_servers = { "pyright", "biome", "lua_ls", "tailwindcss", preferred_ts_server }
+local ok_cmp_lsp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+local lsp_capabilities = ok_cmp_lsp
+    and cmp_nvim_lsp.default_capabilities()
+    or vim.lsp.protocol.make_client_capabilities()
+
 require('mason').setup()
 require('mason-lspconfig').setup({
-  ensure_installed = { 'pyright', 'biome', 'lua_ls', 'tailwindcss' },
-  automatic_installation = true,
-  handlers = {
-    function(server_name)
-      require('lspconfig')[server_name].setup {}
-    end,
-  }
+  ensure_installed = mason_servers,
+  automatic_enable = false,
 })
-require('mason-tool-installer').setup {
+for _, server in ipairs(lsp_servers) do
+  vim.lsp.config(server, {
+    capabilities = vim.deepcopy(lsp_capabilities),
+  })
+end
+require('mason-tool-installer').setup({
   ensure_installed = { 'prettier' }
-}
-vim.lsp.enable({ "tsgo" })
+})
+vim.lsp.enable(lsp_servers)
 vim.keymap.set('n', 'gl', vim.diagnostic.open_float, { desc = "Line diagnostics" })
 
 -- General
