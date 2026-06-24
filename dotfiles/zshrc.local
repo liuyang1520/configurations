@@ -210,6 +210,96 @@ if type brew >/dev/null 2>&1; then
 fi
 alias vim='nvim'
 
+# Give tmux a stable, concise command label for the active pane.
+_dotfiles_tmux_compact_command_label() {
+    emulate -L zsh
+    setopt extended_glob
+
+    local _line="${1//$'\n'/ }"
+    local -a _words
+    _words=("${(z)_line}")
+
+    local _i=1
+    while (( _i <= ${#_words} )); do
+        case "${_words[_i]}" in
+            env)
+                (( _i++ ))
+                while (( _i <= ${#_words} )) && [[ "${_words[_i]}" == -* || "${_words[_i]}" == [A-Za-z_][A-Za-z0-9_]#=* ]]; do
+                    (( _i++ ))
+                done
+                ;;
+            sudo|command|exec|builtin|noglob|nocorrect|time|[A-Za-z_][A-Za-z0-9_]#=*)
+                (( _i++ ))
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    local _cmd="${_words[_i]:t}"
+    local _arg="${_words[$((_i + 1))]:t}"
+    local _arg2="${_words[$((_i + 2))]:t}"
+    local _label="${_cmd:-zsh}"
+
+    case "${_cmd}" in
+        npm|pnpm|yarn|bun)
+            if [[ "${_arg}" == "run" && -n "${_arg2}" ]]; then
+                _label="${_cmd} ${_arg2}"
+            elif [[ -n "${_arg}" && "${_arg}" != -* ]]; then
+                _label="${_cmd} ${_arg}"
+            fi
+            ;;
+        uv)
+            if [[ "${_arg}" == "run" && -n "${_arg2}" ]]; then
+                _label="uv ${_arg2}"
+            elif [[ -n "${_arg}" && "${_arg}" != -* ]]; then
+                _label="uv ${_arg}"
+            fi
+            ;;
+        git|gh|go|cargo|docker|docker-compose|kubectl|make|just|python|python3|node|deno|ruby)
+            if [[ -n "${_arg}" && "${_arg}" != -* ]]; then
+                _label="${_cmd} ${_arg}"
+            fi
+            ;;
+    esac
+
+    print -r -- "${_label}"
+}
+
+_dotfiles_tmux_set_window_label() {
+    emulate -L zsh
+
+    [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]] || return 0
+    (( ${+commands[tmux]} )) || return 0
+
+    local _command="${1:-zsh}"
+    local _dir="${PWD:t}"
+    [[ -n "${_dir}" ]] || _dir="/"
+
+    command tmux set-option -q -p -t "${TMUX_PANE}" @dotfiles_window_label "${_command}|${_dir}"
+}
+
+_dotfiles_tmux_preexec() {
+    emulate -L zsh
+
+    local _label
+    _label="$(_dotfiles_tmux_compact_command_label "$1")"
+    _dotfiles_tmux_set_window_label "${_label}"
+}
+
+_dotfiles_tmux_precmd() {
+    _dotfiles_tmux_set_window_label "zsh"
+}
+
+if [[ -n "${TMUX:-}" ]]; then
+    autoload -Uz add-zsh-hook
+    add-zsh-hook -d preexec _dotfiles_tmux_preexec 2>/dev/null || true
+    add-zsh-hook -d precmd _dotfiles_tmux_precmd 2>/dev/null || true
+    add-zsh-hook preexec _dotfiles_tmux_preexec
+    add-zsh-hook precmd _dotfiles_tmux_precmd
+fi
+
 # exports
 export FZF_DEFAULT_OPTS="
     --bind ctrl-d:half-page-down,ctrl-u:half-page-up,alt-f:preview-half-page-down,alt-b:preview-half-page-up,ctrl-/:toggle-preview
