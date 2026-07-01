@@ -359,6 +359,10 @@ require("lazy").setup({ {
       desc = "Toggle autoformat-on-save"
     })
   end
+}, {
+  "MeanderingProgrammer/render-markdown.nvim",
+  ft = { "markdown" },
+  opts = {}
 } })
 
 -- LSP
@@ -543,6 +547,18 @@ vim.opt.listchars = {
 -- Do not wrap long lines
 vim.opt.wrap = false
 
+-- Wrap markdown buffers for easier reading.
+local function setup_markdown_buffer()
+  vim.opt_local.wrap = true
+  vim.opt_local.linebreak = true
+  vim.opt_local.breakindent = true
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = setup_markdown_buffer,
+})
+
 -- Use indents of 4 spaces
 vim.opt.shiftwidth = 4
 
@@ -695,9 +711,3 @@ vim.keymap.set('n', '<Leader>zz', function()
     vim.o.scrolloff = 999
   end
 end, { noremap = true, silent = true, desc = "Toggle scrolloff" })
-
--- Toggle markdown preview with Glow
-vim.keymap.set('n', '<leader>gp', function()
-  local filepath = vim.fn.expand('%:p')
-  vim.cmd('tabnew | term glow -w "$(tput cols)" ' .. vim.fn.shellescape(filepath))
-end, { desc = 'Glow Preview in Tab' })
