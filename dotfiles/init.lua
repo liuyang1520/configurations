@@ -699,5 +699,5 @@ end, { noremap = true, silent = true, desc = "Toggle scrolloff" })
 -- Toggle markdown preview with Glow
 vim.keymap.set('n', '<leader>gp', function()
   local filepath = vim.fn.expand('%:p')
-  vim.cmd('tabnew | term glow "' .. filepath .. '"')
+  vim.cmd('tabnew | term glow -w "$(tput cols)" ' .. vim.fn.shellescape(filepath))
 end, { desc = 'Glow Preview in Tab' })
