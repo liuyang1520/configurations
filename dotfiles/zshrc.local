@@ -209,6 +209,7 @@ if type brew >/dev/null 2>&1; then
     alias ctags="`brew --prefix`/bin/ctags"
 fi
 alias vim='nvim'
+alias v='nvim'
 
 # Give tmux a stable, concise command label for the active pane.
 _dotfiles_tmux_compact_command_label() {
