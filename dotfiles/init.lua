@@ -312,9 +312,9 @@ require("lazy").setup({ {
   "rebelot/kanagawa.nvim",
   config = function()
     require("kanagawa").setup({
-      theme = "dragon", -- "wave" | "dragon" | "lotus"
+      theme = "wave", -- "wave" | "dragon" | "lotus"
     })
-    vim.cmd("colorscheme kanagawa")
+    vim.cmd("colorscheme kanagawa-wave")
   end
 }, {
   "stevearc/conform.nvim",
