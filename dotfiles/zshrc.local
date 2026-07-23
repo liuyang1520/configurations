@@ -323,5 +323,3 @@ git-web() {
 }
 # Open current directory/file in current branch
 alias git-web-file='git-web tree/$(git symbolic-ref --quiet --short HEAD)/$(git rev-parse --show-prefix)'
-alias git-adog='git log --all --decorate --oneline --graph'
-alias git-log-status='git log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat'
