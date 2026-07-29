@@ -22,12 +22,13 @@ AGY_COMMAND="${AGY_COMMAND:-agy}"
 AGY_MODEL="${AGY_MODEL:-Gemini 3.6 Flash (High)}"
 AGY_SKIP_PERMISSIONS="${AGY_SKIP_PERMISSIONS:-1}"
 
-# Antigravity recommends inline rendering inside terminal multiplexers. Its
-# alternate-screen renderer can lose cursor alignment across the host tmux,
-# Apple Container's PTY, and the containerized TUI.
+# Antigravity CLI 1.1.8's inline renderer restores the input cursor two
+# columns too far left after its status line changes through Apple Container's
+# PTY and tmux. Full-screen rendering repaints with absolute cursor positions
+# and keeps the cursor aligned with the prompt.
 if [[ -z "${AGY_ALT_SCREEN_MODE:-}" ]]; then
   if [[ -n "${TMUX:-}" ]]; then
-    AGY_ALT_SCREEN_MODE="never"
+    AGY_ALT_SCREEN_MODE="always"
   else
     AGY_ALT_SCREEN_MODE="default"
   fi
@@ -101,7 +102,7 @@ Environment variables:
   AGY_MODEL                Antigravity model.
                            Default: Gemini 3.6 Flash (High)
   AGY_ALT_SCREEN_MODE      Antigravity rendering mode: default, always, or never.
-                           Default: never in tmux; default otherwise.
+                           Default: always in tmux; default otherwise.
   AGY_SKIP_PERMISSIONS     Pass agy --dangerously-skip-permissions. Default: 1
   AGY_TOOL_PERMISSION      Container-local fallback toolPermission.
                            Default: always-proceed
@@ -557,7 +558,7 @@ echo "  mounted source tree: /src"
 echo "  isolated Antigravity home: /root"
 echo "  your macOS home is NOT mounted unless you changed this script."
 echo "  agy model is ${AGY_MODEL:-Gemini 3.6 Flash (High)}, passed with agy --model when supported."
-echo "  terminal rendering mode is ${AGY_ALT_SCREEN_MODE:-default} (tmux defaults to never)."
+echo "  terminal rendering mode is ${AGY_ALT_SCREEN_MODE:-default} (tmux defaults to always)."
 echo "  default agy mode passes --dangerously-skip-permissions when supported."
 echo "  host ~/.gemini is copied into isolated /root/.gemini for auth, but host files are not modified."
 echo "  safest risky-work mode is: agy-container --copy --sandbox-auto"
