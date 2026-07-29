@@ -1,0 +1,719 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MODE="direct"
+CONTAINER_MODE="persistent"
+TEMP_CONTAINER_REQUESTED="0"
+SHARED_CONTAINER_REQUESTED="0"
+START_AGY="1"
+
+IMAGE="${AGY_CONTAINER_IMAGE:-docker.io/library/node:26-bookworm}"
+CPUS="${AGY_CONTAINER_CPUS:-4}"
+MEMORY="${AGY_CONTAINER_MEMORY:-8g}"
+
+STATE_ROOT="${AGY_CONTAINER_STATE:-$HOME/.local/state/agy-container}"
+ISOLATED_HOME="$STATE_ROOT/home"
+
+AGY_INSTALL_URL="${AGY_INSTALL_URL:-https://antigravity.google/cli/install.sh}"
+AGY_COMMAND="${AGY_COMMAND:-agy}"
+
+# Session defaults for agy.
+# These are passed as CLI args when the installed agy supports them.
+AGY_MODEL="${AGY_MODEL:-Gemini 3.6 Flash (High)}"
+AGY_SKIP_PERMISSIONS="${AGY_SKIP_PERMISSIONS:-1}"
+
+# Antigravity recommends inline rendering inside terminal multiplexers. Its
+# alternate-screen renderer can lose cursor alignment across the host tmux,
+# Apple Container's PTY, and the containerized TUI.
+if [[ -z "${AGY_ALT_SCREEN_MODE:-}" ]]; then
+  if [[ -n "${TMUX:-}" ]]; then
+    AGY_ALT_SCREEN_MODE="never"
+  else
+    AGY_ALT_SCREEN_MODE="default"
+  fi
+fi
+
+# Preserve terminal capabilities across Apple Container's PTY boundary.
+HOST_TERM="${TERM:-xterm-256color}"
+HOST_COLORTERM="${COLORTERM:-}"
+HOST_TERM_PROGRAM="${TERM_PROGRAM:-}"
+
+# Container-local fallback settings only.
+# Runtime settings written by this script include: "toolPermission": "always-proceed"
+# Human grep form: toolPermission=always-proceed
+AGY_TOOL_PERMISSION="${AGY_TOOL_PERMISSION:-always-proceed}"
+AGY_SANDBOX="${AGY_SANDBOX:-1}"
+
+# Import host Antigravity/Gemini CLI config into the isolated container home.
+# This copies ~/.gemini into ~/.local/state/agy-container/home/.gemini.
+# It does NOT modify the host ~/.gemini files.
+# macOS Keychain/system-keyring credentials may not be portable, but file-backed
+# Antigravity/Gemini CLI auth/settings often are useful to copy.
+AGY_IMPORT_HOST_AUTH="${AGY_IMPORT_HOST_AUTH:-1}"
+AGY_HOST_GEMINI_DIR="${AGY_HOST_GEMINI_DIR:-$HOME/.gemini}"
+
+usage() {
+  cat <<USAGE
+Usage:
+  agy-container [options]
+
+Options:
+  --temp-container    Run Antigravity CLI in an ephemeral container that is removed on exit.
+  --shared-container  Reuse the persistent container for this source root.
+                      Sibling directories are available under /src.
+  --copy              Work on a temp copy of the current directory (implies --temp-container).
+  --direct            Mount the current directory directly. Default.
+  --shell             Open a shell instead of starting Antigravity CLI.
+
+  --auto              Use full auto mode. Default. Passes
+                      agy --dangerously-skip-permissions when supported.
+                      Use carefully; this can modify mounted host files.
+  --manual            Ask before tool actions. Does not pass
+                      --dangerously-skip-permissions.
+  --sandbox-auto      Safer auto mode. Sets toolPermission=proceed-in-sandbox
+                      and launches agy with --sandbox when supported.
+  --strict            Strict review mode. Does not pass
+                      --dangerously-skip-permissions.
+  --always-proceed    Alias for --auto.
+  --dangerously-skip-permissions
+                      Alias for --auto.
+  --no-sandbox        Do not pass --sandbox to agy.
+  --tool-permission MODE
+                      Set raw Antigravity CLI toolPermission fallback.
+                      Known values: request-review, proceed-in-sandbox,
+                      always-proceed, strict.
+  --model MODEL       Set Antigravity model.
+                      Default: Gemini 3.6 Flash (High)
+
+  --import-host-auth  Copy host ~/.gemini into the isolated container home. Default.
+  --no-import-host-auth
+                      Do not copy host ~/.gemini into the container home.
+
+  --help              Show this help.
+
+Environment variables:
+  AGY_CONTAINER_IMAGE      OCI image. Default: docker.io/library/node:26-bookworm
+  AGY_CONTAINER_CPUS       CPU count. Default: 4
+  AGY_CONTAINER_MEMORY     Memory. Default: 8g
+  AGY_CONTAINER_STATE      Host state dir. Default: ~/.local/state/agy-container
+  AGY_SHARED_SRC_ROOT      Host directory mounted at /src by --shared-container.
+                           Default: parent of the current directory.
+  AGY_MODEL                Antigravity model.
+                           Default: Gemini 3.6 Flash (High)
+  AGY_ALT_SCREEN_MODE      Antigravity rendering mode: default, always, or never.
+                           Default: never in tmux; default otherwise.
+  AGY_SKIP_PERMISSIONS     Pass agy --dangerously-skip-permissions. Default: 1
+  AGY_TOOL_PERMISSION      Container-local fallback toolPermission.
+                           Default: always-proceed
+  AGY_SANDBOX              Pass --sandbox to agy when supported. Default: 1
+  AGY_IMPORT_HOST_AUTH     Copy host ~/.gemini into container home on startup. Default: 1
+  AGY_HOST_GEMINI_DIR      Host Gemini/Antigravity config dir. Default: ~/.gemini
+  AGY_ARGS                 Extra args passed to agy.
+                           Example: AGY_ARGS='--help' agy-container
+  AGY_INSTALL_URL          Installer URL. Default: https://antigravity.google/cli/install.sh
+  AGY_COMMAND              CLI executable. Default: agy
+
+Examples:
+  agy-container
+  agy-container --copy
+  agy-container --temp-container
+  agy-container --shared-container
+  agy-container --manual
+  agy-container --sandbox-auto
+  agy-container --no-import-host-auth
+  AGY_MODEL='Gemini 3.6 Flash (High)' agy-container
+  AGY_SKIP_PERMISSIONS=0 agy-container
+  AGY_ARGS='--help' agy-container
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --copy)
+      MODE="copy"
+      shift
+      ;;
+    --direct)
+      MODE="direct"
+      shift
+      ;;
+    --temp-container)
+      CONTAINER_MODE="temporary"
+      TEMP_CONTAINER_REQUESTED="1"
+      shift
+      ;;
+    --shared-container)
+      CONTAINER_MODE="shared"
+      SHARED_CONTAINER_REQUESTED="1"
+      shift
+      ;;
+    --shell)
+      START_AGY="0"
+      shift
+      ;;
+    --auto)
+      AGY_TOOL_PERMISSION="always-proceed"
+      AGY_SKIP_PERMISSIONS="1"
+      shift
+      ;;
+    --manual)
+      AGY_TOOL_PERMISSION="request-review"
+      AGY_SKIP_PERMISSIONS="0"
+      shift
+      ;;
+    --sandbox-auto)
+      AGY_TOOL_PERMISSION="proceed-in-sandbox"
+      AGY_SKIP_PERMISSIONS="0"
+      AGY_SANDBOX="1"
+      shift
+      ;;
+    --strict)
+      AGY_TOOL_PERMISSION="strict"
+      AGY_SKIP_PERMISSIONS="0"
+      shift
+      ;;
+    --always-proceed|--dangerously-skip-permissions)
+      AGY_TOOL_PERMISSION="always-proceed"
+      AGY_SKIP_PERMISSIONS="1"
+      shift
+      ;;
+    --no-sandbox)
+      AGY_SANDBOX="0"
+      shift
+      ;;
+    --tool-permission)
+      AGY_TOOL_PERMISSION="${2:?Missing tool permission mode}"
+      shift 2
+      ;;
+    --model)
+      AGY_MODEL="${2:?Missing model name}"
+      shift 2
+      ;;
+    --import-host-auth)
+      AGY_IMPORT_HOST_AUTH="1"
+      shift
+      ;;
+    --no-import-host-auth)
+      AGY_IMPORT_HOST_AUTH="0"
+      shift
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [[ "$TEMP_CONTAINER_REQUESTED" == "1" && "$SHARED_CONTAINER_REQUESTED" == "1" ]]; then
+  echo "Error: --temp-container cannot be combined with --shared-container." >&2
+  exit 1
+fi
+
+if [[ "$MODE" == "copy" && "$CONTAINER_MODE" == "shared" ]]; then
+  echo "Error: --copy cannot be combined with --shared-container." >&2
+  exit 1
+fi
+
+if [[ "$MODE" == "copy" ]]; then
+  CONTAINER_MODE="temporary"
+fi
+
+if ! command -v container >/dev/null 2>&1; then
+  echo "Error: Apple 'container' command not found." >&2
+  echo "Install Apple Container first, then run: container system start" >&2
+  exit 1
+fi
+
+if ! command -v rsync >/dev/null 2>&1; then
+  echo "Error: rsync not found on host." >&2
+  exit 1
+fi
+
+SRC_DIR="$(pwd -P)"
+REPO_NAME="$(basename "$SRC_DIR")"
+TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
+
+safe_container_name() {
+  local label="$1"
+  local path="$2"
+  local slug hash
+
+  slug="$(printf '%s' "$label" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9_.-' '-')"
+  slug="${slug#-}"
+  slug="${slug%-}"
+  [[ -n "$slug" ]] || slug="project"
+  hash="$(printf '%s' "$path" | shasum -a 256 | cut -c1-12)"
+  printf 'agy-%s-%s' "$slug" "$hash"
+}
+
+container_exists() {
+  container inspect "$1" >/dev/null 2>&1
+}
+
+container_is_running() {
+  container inspect "$1" 2>/dev/null | grep -Eq '"status"[[:space:]]*:[[:space:]]*"running"'
+}
+
+wait_for_container() {
+  local name="$1"
+  local attempt
+
+  for attempt in {1..20}; do
+    if container exec "$name" true >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 0.25
+  done
+
+  echo "Error: container '$name' did not become ready." >&2
+  exit 1
+}
+
+mkdir -p "$STATE_ROOT" "$ISOLATED_HOME"
+
+import_host_auth() {
+  if [[ "${AGY_IMPORT_HOST_AUTH:-1}" == "0" ]]; then
+    echo "Host Antigravity/Gemini config import disabled. Container will use isolated /root/.gemini only."
+    return 0
+  fi
+
+  if [[ ! -d "${AGY_HOST_GEMINI_DIR:-$HOME/.gemini}" ]]; then
+    echo "No host Gemini/Antigravity config found at: ${AGY_HOST_GEMINI_DIR:-$HOME/.gemini}"
+    return 0
+  fi
+
+  mkdir -p "$ISOLATED_HOME/.gemini"
+
+  echo "Importing host Antigravity/Gemini config into isolated container home:"
+  echo "  from: ${AGY_HOST_GEMINI_DIR:-$HOME/.gemini}"
+  echo "  to:   $ISOLATED_HOME/.gemini"
+  echo "  note: this copies files only and does NOT modify host ~/.gemini."
+  echo "  note: macOS Keychain/system-keyring secrets may not be portable."
+
+  rsync -a --ignore-existing \
+    --exclude "antigravity-cli/brain/" \
+    --exclude "antigravity-ide/brain/" \
+    --exclude "*/logs/" \
+    --exclude "*/Cache/" \
+    "${AGY_HOST_GEMINI_DIR:-$HOME/.gemini}/" "$ISOLATED_HOME/.gemini/"
+}
+
+import_host_auth
+
+echo "Checking Apple Container kernel..."
+if ! container system property list 2>/dev/null | grep -q "binaryPath"; then
+  echo "No Apple Container Linux kernel configured."
+  echo "Installing recommended kernel. This may download a large file."
+  container system kernel set --recommended
+fi
+
+echo "Starting Apple Container system service..."
+container system start
+
+echo "Apple Container status:"
+container system status || true
+
+if [[ "$MODE" == "copy" ]]; then
+  WORK_DIR="${AGY_WORK_DIR:-/tmp/agy-container-work/${REPO_NAME}-${TIMESTAMP}}"
+  mkdir -p "$(dirname "$WORK_DIR")"
+
+  echo "Copying current repo to sandbox:"
+  echo "  from: $SRC_DIR"
+  echo "  to:   $WORK_DIR"
+
+  rsync -a --delete \
+    --exclude ".agy-container-home/" \
+    "$SRC_DIR/" "$WORK_DIR/"
+else
+  WORK_DIR="$SRC_DIR"
+  echo "Direct mode: mounting current directory at /src:"
+  echo "  $WORK_DIR"
+fi
+
+if [[ "$CONTAINER_MODE" == "shared" ]]; then
+  SHARED_SRC_ROOT="${AGY_SHARED_SRC_ROOT:-$(dirname "$SRC_DIR")}"
+  if [[ ! -d "$SHARED_SRC_ROOT" ]]; then
+    echo "Error: AGY_SHARED_SRC_ROOT is not a directory: $SHARED_SRC_ROOT" >&2
+    exit 1
+  fi
+  SHARED_SRC_ROOT="$(cd "$SHARED_SRC_ROOT" && pwd -P)"
+
+  case "$SRC_DIR" in
+    "$SHARED_SRC_ROOT"/*)
+      RELATIVE_WORK_DIR="${SRC_DIR#"$SHARED_SRC_ROOT"/}"
+      ;;
+    *)
+      echo "Error: current directory must be inside AGY_SHARED_SRC_ROOT." >&2
+      exit 1
+      ;;
+  esac
+
+  MAP_HOST_DIR="$SHARED_SRC_ROOT"
+  CONTAINER_WORK_DIR="/src/$RELATIVE_WORK_DIR"
+  CONTAINER_NAME="$(safe_container_name "shared" "$SHARED_SRC_ROOT")"
+else
+  MAP_HOST_DIR="$WORK_DIR"
+  CONTAINER_WORK_DIR="/src"
+  CONTAINER_NAME="$(safe_container_name "$REPO_NAME" "$SRC_DIR")"
+fi
+
+cat > "$ISOLATED_HOME/.agy-container-entrypoint.sh" <<'BOOT'
+#!/usr/bin/env bash
+set -euo pipefail
+
+export HOME=/root
+export PATH="/root/.local/bin:/root/bin:/root/.antigravity/bin:/root/.cache/antigravity/bin:$PATH"
+
+cd "${AGY_WORK_DIR:?AGY_WORK_DIR is required}"
+
+echo "Inside container."
+echo "Workdir: $AGY_WORK_DIR"
+echo
+
+if command -v apt-get >/dev/null 2>&1 && [[ ! -f /.agy-container-provisioned ]]; then
+  echo "Installing basic tools inside container..."
+  apt-get update
+
+  apt-get install -y --no-install-recommends \
+    bash \
+    git \
+    curl \
+    ca-certificates \
+    gnupg \
+    less \
+    procps \
+    ripgrep \
+    fd-find \
+    python3 \
+    python3-venv \
+    python3-pip \
+    rsync \
+    unzip \
+    xdg-utils \
+    dbus \
+    libsecret-1-0 \
+    gnome-keyring \
+  || apt-get install -y --no-install-recommends \
+    bash \
+    git \
+    curl \
+    ca-certificates \
+    less \
+    procps \
+    ripgrep \
+    python3 \
+    rsync \
+    unzip
+
+  touch /.agy-container-provisioned
+fi
+
+start_keyring_if_available() {
+  # Antigravity CLI may authenticate via the system keyring when available.
+  # In a container this is best-effort; credentials/settings still live under persistent /root.
+  if command -v gnome-keyring-daemon >/dev/null 2>&1; then
+    eval "$(gnome-keyring-daemon --start --components=secrets 2>/dev/null || true)"
+    export SSH_AUTH_SOCK="${SSH_AUTH_SOCK:-}"
+  fi
+}
+
+start_keyring_if_available
+
+find_agy() {
+  if command -v "${AGY_COMMAND:-agy}" >/dev/null 2>&1; then
+    command -v "${AGY_COMMAND:-agy}"
+    return 0
+  fi
+
+  local candidate
+  for candidate in \
+    /root/.local/bin/agy \
+    /root/bin/agy \
+    /root/.antigravity/bin/agy \
+    /root/.cache/antigravity/bin/agy \
+    /usr/local/bin/agy; do
+    if [[ -x "$candidate" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+AGY_BIN="$(find_agy || true)"
+if [[ -z "$AGY_BIN" ]]; then
+  echo
+  echo "Installing Antigravity CLI into isolated container home..."
+  echo "Installer: ${AGY_INSTALL_URL:-https://antigravity.google/cli/install.sh}"
+  curl -fsSL "${AGY_INSTALL_URL:-https://antigravity.google/cli/install.sh}" | bash
+
+  # The installer may update shell startup files, but this non-login script
+  # needs PATH refreshed immediately.
+  export PATH="/root/.local/bin:/root/bin:/root/.antigravity/bin:/root/.cache/antigravity/bin:$PATH"
+  AGY_BIN="$(find_agy || true)"
+fi
+
+if [[ -z "$AGY_BIN" ]]; then
+  echo "Error: Antigravity CLI executable not found after install." >&2
+  echo "Open a shell with: agy-container --shell" >&2
+  echo "Then inspect /root/.local/bin, /root/bin, and installer output." >&2
+  exit 1
+fi
+
+echo
+echo "Antigravity CLI:"
+echo "  $AGY_BIN"
+"$AGY_BIN" --version || true
+
+configure_agy_settings() {
+  local settings_dir settings_file mode sandbox_enabled model alt_screen_mode
+  settings_dir="/root/.gemini/antigravity-cli"
+  settings_file="$settings_dir/settings.json"
+  mode="${AGY_TOOL_PERMISSION:-always-proceed}"
+  sandbox_enabled="${AGY_SANDBOX:-1}"
+  model="${AGY_MODEL:-Gemini 3.6 Flash (High)}"
+  alt_screen_mode="${AGY_ALT_SCREEN_MODE:-default}"
+
+  mkdir -p "$settings_dir"
+
+  python3 - "$settings_file" "$mode" "$sandbox_enabled" "$model" "$alt_screen_mode" <<'PY'
+import json
+import os
+import sys
+from pathlib import Path
+
+settings_file = Path(sys.argv[1])
+mode = sys.argv[2].strip()
+sandbox_enabled = sys.argv[3].strip().lower() not in {"0", "false", "no", "off"}
+model = sys.argv[4].strip()
+alt_screen_mode = sys.argv[5].strip()
+
+known = {"request-review", "proceed-in-sandbox", "always-proceed", "strict"}
+if mode and mode not in known:
+    print(f"Warning: AGY_TOOL_PERMISSION={mode!r} is not one of {sorted(known)}.", file=sys.stderr)
+    print("The setting will still be written in case this agy version supports it.", file=sys.stderr)
+
+known_alt_screen_modes = {"default", "always", "never"}
+if alt_screen_mode not in known_alt_screen_modes:
+    print(
+        f"Warning: AGY_ALT_SCREEN_MODE={alt_screen_mode!r} is not one of "
+        f"{sorted(known_alt_screen_modes)}.",
+        file=sys.stderr,
+    )
+    print("The setting will still be written in case this agy version supports it.", file=sys.stderr)
+
+data = {}
+if settings_file.exists():
+    try:
+        data = json.loads(settings_file.read_text() or "{}")
+        if not isinstance(data, dict):
+            data = {}
+    except Exception as exc:
+        backup = settings_file.with_suffix(".json.bak")
+        backup.write_text(settings_file.read_text(errors="replace"))
+        print(f"Warning: could not parse existing settings.json ({exc}); backed it up to {backup}.", file=sys.stderr)
+        data = {}
+
+if mode:
+    data["toolPermission"] = mode
+
+if model:
+    data["model"] = model
+
+if alt_screen_mode:
+    data["altScreenMode"] = alt_screen_mode
+
+# Keep Antigravity's own terminal sandbox on by default. This is separate from
+# Apple Container isolation and helps proceed-in-sandbox behave as intended.
+data["enableTerminalSandbox"] = sandbox_enabled
+
+tmp = settings_file.with_suffix(".json.tmp")
+tmp.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+os.replace(tmp, settings_file)
+PY
+
+  echo
+  echo "Antigravity container-local fallback settings:"
+  echo "  model: $model"
+  echo "  altScreenMode: $alt_screen_mode"
+  echo "  toolPermission: $mode"
+  echo "  grep: toolPermission=$mode"
+  echo "  enableTerminalSandbox: $sandbox_enabled"
+  echo "  settings: $settings_file"
+  echo "  note: this is inside the isolated container home, not host ~/.gemini"
+}
+
+configure_agy_settings
+
+echo
+echo "Host access boundary:"
+echo "  mounted source tree: /src"
+echo "  isolated Antigravity home: /root"
+echo "  your macOS home is NOT mounted unless you changed this script."
+echo "  agy model is ${AGY_MODEL:-Gemini 3.6 Flash (High)}, passed with agy --model when supported."
+echo "  terminal rendering mode is ${AGY_ALT_SCREEN_MODE:-default} (tmux defaults to never)."
+echo "  default agy mode passes --dangerously-skip-permissions when supported."
+echo "  host ~/.gemini is copied into isolated /root/.gemini for auth, but host files are not modified."
+echo "  safest risky-work mode is: agy-container --copy --sandbox-auto"
+echo
+echo "Auth note:"
+echo "  On first launch, Antigravity may ask you to sign in."
+echo "  In a container/SSH-style environment, it should print a browser URL or code."
+echo "  Credentials/settings are stored under the isolated home mounted from:"
+echo "  $HOME"
+echo
+
+if [[ "${START_AGY:-1}" == "1" ]]; then
+  AGY_CMD=("$AGY_BIN")
+  AGY_HELP="$("$AGY_BIN" --help 2>&1 || true)"
+
+  if [[ -n "${AGY_MODEL:-}" ]]; then
+    if printf '%s\n' "$AGY_HELP" | grep -q -- '--model'; then
+      AGY_CMD+=(--model "$AGY_MODEL")
+    else
+      echo "agy --help does not advertise --model; using container-local settings.json model instead." >&2
+    fi
+  fi
+
+  if [[ "${AGY_SKIP_PERMISSIONS:-1}" != "0" ]]; then
+    if printf '%s\n' "$AGY_HELP" | grep -q -- '--dangerously-skip-permissions'; then
+      AGY_CMD+=(--dangerously-skip-permissions)
+    else
+      echo "Warning: agy --help does not advertise --dangerously-skip-permissions." >&2
+      echo "Falling back to container-local settings.json toolPermission=${AGY_TOOL_PERMISSION:-always-proceed}." >&2
+    fi
+  fi
+
+  if [[ "${AGY_SANDBOX:-1}" != "0" ]]; then
+    if printf '%s\n' "$AGY_HELP" | grep -q -- '--sandbox'; then
+      AGY_CMD+=(--sandbox)
+    else
+      echo "Warning: agy --help does not advertise --sandbox; continuing without that flag." >&2
+    fi
+  fi
+
+  if [[ -n "${AGY_ARGS:-}" ]]; then
+    # Intentional word splitting so AGY_ARGS can contain multiple CLI args.
+    # Example: AGY_ARGS='--help'
+    # shellcheck disable=SC2206
+    EXTRA_ARGS=(${AGY_ARGS})
+    AGY_CMD+=("${EXTRA_ARGS[@]}")
+  fi
+
+  echo "Starting:"
+  printf '  %q' "${AGY_CMD[@]}"
+  echo
+  echo
+
+  exec "${AGY_CMD[@]}"
+else
+  echo "Opening shell instead of Antigravity CLI."
+  exec bash
+fi
+BOOT
+
+chmod +x "$ISOLATED_HOME/.agy-container-entrypoint.sh"
+
+echo
+echo "Launching container..."
+echo "Image:  $IMAGE"
+echo "CPUs:   $CPUS"
+echo "Memory: $MEMORY"
+echo "Mode:   $CONTAINER_MODE"
+echo "Mount:  $MAP_HOST_DIR -> /src"
+echo "Start:  $CONTAINER_WORK_DIR"
+echo
+
+if [[ "$CONTAINER_MODE" == "temporary" ]]; then
+  container run --rm -it \
+    --cpus "$CPUS" \
+    --memory "$MEMORY" \
+    --volume "$MAP_HOST_DIR:/src" \
+    --volume "$ISOLATED_HOME:/root" \
+    --env "TERM=$HOST_TERM" \
+    --env "COLORTERM=$HOST_COLORTERM" \
+    --env "TERM_PROGRAM=$HOST_TERM_PROGRAM" \
+    --env "START_AGY=$START_AGY" \
+    --env "AGY_ARGS=${AGY_ARGS:-}" \
+    --env "AGY_MODEL=$AGY_MODEL" \
+    --env "AGY_ALT_SCREEN_MODE=$AGY_ALT_SCREEN_MODE" \
+    --env "AGY_SKIP_PERMISSIONS=$AGY_SKIP_PERMISSIONS" \
+    --env "AGY_TOOL_PERMISSION=$AGY_TOOL_PERMISSION" \
+    --env "AGY_SANDBOX=$AGY_SANDBOX" \
+    --env "AGY_IMPORT_HOST_AUTH=$AGY_IMPORT_HOST_AUTH" \
+    --env "AGY_COMMAND=$AGY_COMMAND" \
+    --env "AGY_INSTALL_URL=$AGY_INSTALL_URL" \
+    --env "AGY_WORK_DIR=$CONTAINER_WORK_DIR" \
+    "$IMAGE" \
+    bash /root/.agy-container-entrypoint.sh
+else
+  if ! container_exists "$CONTAINER_NAME"; then
+    echo "Creating persistent container: $CONTAINER_NAME"
+    container run --detach \
+      --name "$CONTAINER_NAME" \
+      --cpus "$CPUS" \
+      --memory "$MEMORY" \
+      --volume "$MAP_HOST_DIR:/src" \
+      --volume "$ISOLATED_HOME:/root" \
+      "$IMAGE" \
+      sleep infinity
+  elif ! container_is_running "$CONTAINER_NAME"; then
+    echo "Starting persistent container: $CONTAINER_NAME"
+    container start "$CONTAINER_NAME" >/dev/null
+  else
+    echo "Reusing persistent container: $CONTAINER_NAME"
+  fi
+
+  wait_for_container "$CONTAINER_NAME"
+
+  container exec -it \
+    --workdir "$CONTAINER_WORK_DIR" \
+    --env "TERM=$HOST_TERM" \
+    --env "COLORTERM=$HOST_COLORTERM" \
+    --env "TERM_PROGRAM=$HOST_TERM_PROGRAM" \
+    --env "START_AGY=$START_AGY" \
+    --env "AGY_ARGS=${AGY_ARGS:-}" \
+    --env "AGY_MODEL=$AGY_MODEL" \
+    --env "AGY_ALT_SCREEN_MODE=$AGY_ALT_SCREEN_MODE" \
+    --env "AGY_SKIP_PERMISSIONS=$AGY_SKIP_PERMISSIONS" \
+    --env "AGY_TOOL_PERMISSION=$AGY_TOOL_PERMISSION" \
+    --env "AGY_SANDBOX=$AGY_SANDBOX" \
+    --env "AGY_IMPORT_HOST_AUTH=$AGY_IMPORT_HOST_AUTH" \
+    --env "AGY_COMMAND=$AGY_COMMAND" \
+    --env "AGY_INSTALL_URL=$AGY_INSTALL_URL" \
+    --env "AGY_WORK_DIR=$CONTAINER_WORK_DIR" \
+    "$CONTAINER_NAME" \
+    bash /root/.agy-container-entrypoint.sh
+fi
+
+echo
+if [[ "$MODE" == "copy" ]]; then
+  echo "Antigravity worked in sandbox copy:"
+  echo "  $WORK_DIR"
+  echo
+  echo "Review changes:"
+  echo "  git -C '$WORK_DIR' status --short"
+  echo "  git -C '$WORK_DIR' diff"
+  echo
+  echo "Apply changes back to current repo after review:"
+  echo "  rsync -a --delete '$WORK_DIR/' '$SRC_DIR/'"
+  echo
+  echo "Safer apply without deletions:"
+  echo "  rsync -a '$WORK_DIR/' '$SRC_DIR/'"
+else
+  echo "Antigravity finished. Changes, if any, are already in:"
+  echo "  $SRC_DIR"
+fi
+
+if [[ "$CONTAINER_MODE" != "temporary" ]]; then
+  echo
+  echo "Persistent container retained: $CONTAINER_NAME"
+  echo "Stop it with:   container stop '$CONTAINER_NAME'"
+  echo "Delete it with: container delete '$CONTAINER_NAME'"
+fi

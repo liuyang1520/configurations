@@ -11,11 +11,11 @@ if [[ -d "${HOME}/.oh-my-zsh" ]]; then
     prompt pure
 fi
 
-# path
-export PATH="/opt/homebrew/bin:$PATH"
-
 # dotfiles setup helpers
 export DOTFILES_ROOT="${DOTFILES_ROOT:-$HOME/.liuyang1520-configurations}"
+
+# path
+export PATH="${DOTFILES_ROOT}/bin:/opt/homebrew/bin:$PATH"
 
 dotfiles_install_homebrew() {
     if command -v brew >/dev/null 2>&1; then
