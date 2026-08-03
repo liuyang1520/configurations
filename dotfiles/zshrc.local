@@ -70,7 +70,7 @@ dotfiles_install_dependencies() {
     local -a _formulas
     local -a _casks
     local _pkg
-    _formulas=(node go vim the_silver_searcher fzf bat tmux reattach-to-user-namespace lazygit git-delta)
+    _formulas=(node go vim the_silver_searcher fzf bat tmux lazygit git-delta)
     _casks=(ghostty)
 
     for _pkg in "${_formulas[@]}"; do

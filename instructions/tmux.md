@@ -4,7 +4,6 @@
 ## Installation
 ```bash
 $ brew install tmux
-$ brew install reattach-to-user-namespace --with-wrap-pbcopy-and-pbpaste
 ```
 
 ## Commands
