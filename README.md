@@ -38,13 +38,3 @@ dotfiles-setup
 export DOTFILES_AUTO_SETUP=symlink  # use init|symlink|off
 source ~/.zshrc.local
 ```
-
-## Codex notifications (optional)
-
-Codex can run an external `notify` hook whenever it completes a turn (returns to the prompt). This repo includes `dotfiles/notify.py`, a generic notifier script that sends a desktop notification including the working directory and tmux window info (when available).
-
-Add this to your Codex config:
-
-```toml
-notify = ["/usr/bin/python3", "/Users/marvin/.liuyang1520-configurations/dotfiles/notify.py"]
-```
