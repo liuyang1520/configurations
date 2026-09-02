@@ -143,33 +143,7 @@ require("lazy").setup({ {
     }
     vim.g.fzf_preview_window = { "right:60%:hidden", "?" }
 
-    local ignore_patterns = {
-      ".git",
-      ".terraform",
-      "node_modules",
-      "ios/Pods",
-    }
-    local ag_ignore_options = table.concat(vim.tbl_map(function(pattern)
-      return "--ignore " .. vim.fn.shellescape(pattern)
-    end, ignore_patterns), " ")
-
-    -- Set FZF default command based on availability of 'ag'
-    if vim.fn.executable("ag") == 1 then
-      vim.env.FZF_DEFAULT_COMMAND = table.concat({
-        "ag --ignore-case --hidden",
-        ag_ignore_options,
-        [[-g ""]],
-      }, " ")
-    else
-      vim.env.FZF_DEFAULT_COMMAND = [[
-            find *
-            -path '*/\.*' -prune -o
-            -path 'node_modules/**' -prune -o
-            -path 'target/**' -prune -o
-            -path 'dist/**' -prune -o
-            -type f -print -o -type l -print 2> /dev/null
-        ]]
-    end
+    vim.env.FZF_DEFAULT_COMMAND = [[ag --ignore-case --hidden --ignore .git -g ""]]
 
     local fzf_opts = vim.fn["fzf#vim#with_preview"]("right:60%:hidden", "?")
 
@@ -179,7 +153,7 @@ require("lazy").setup({ {
         '--color-match="31;40"',
         "--ignore-case",
         "--hidden",
-        ag_ignore_options,
+        "--ignore .git",
         "-Q",
         vim.fn.shellescape(query),
       }, " ")
