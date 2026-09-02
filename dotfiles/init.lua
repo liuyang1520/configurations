@@ -291,24 +291,6 @@ require("lazy").setup({ {
     })
   end
 }, {
-  "github/copilot.vim",
-  event = "InsertEnter",
-  init = function()
-    vim.g.copilot_no_tab_map = true
-  end,
-  config = function()
-    vim.keymap.set("i", "<C-l>", 'copilot#Accept("<CR>")', {
-      silent = true,
-      expr = true,
-      script = true,
-      replace_keycodes = false,
-      desc = "Copilot accept"
-    })
-    vim.keymap.set("i", "<C-j>", "<Plug>(copilot-next)", { desc = "Copilot next suggestion" })
-    vim.keymap.set("i", "<C-k>", "<Plug>(copilot-previous)", { desc = "Copilot previous suggestion" })
-    vim.keymap.set("i", "<C-h>", "<Plug>(copilot-dismiss)", { desc = "Copilot dismiss" })
-  end
-}, {
   "rebelot/kanagawa.nvim",
   config = function()
     require("kanagawa").setup({
@@ -359,10 +341,6 @@ require("lazy").setup({ {
       desc = "Toggle autoformat-on-save"
     })
   end
-}, {
-  "MeanderingProgrammer/render-markdown.nvim",
-  ft = { "markdown" },
-  opts = {}
 } })
 
 -- LSP

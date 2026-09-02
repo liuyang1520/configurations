@@ -19,7 +19,7 @@ AGY_COMMAND="${AGY_COMMAND:-agy}"
 
 # Session defaults for agy.
 # These are passed as CLI args when the installed agy supports them.
-AGY_MODEL="${AGY_MODEL:-Gemini 3.6 Flash (High)}"
+AGY_MODEL="${AGY_MODEL:-Gemini 3.8 Flash (High)}"
 AGY_SKIP_PERMISSIONS="${AGY_SKIP_PERMISSIONS:-1}"
 
 # Antigravity CLI 1.1.8's inline renderer can restore the input cursor two
@@ -78,7 +78,7 @@ Options:
                       Known values: request-review, proceed-in-sandbox,
                       always-proceed, strict.
   --model MODEL       Set Antigravity model.
-                      Default: Gemini 3.6 Flash (High)
+                      Default: Gemini 3.8 Flash (High)
 
   --import-host-auth  Copy host ~/.gemini into the isolated container home. Default.
   --no-import-host-auth
@@ -94,7 +94,7 @@ Environment variables:
   AGY_SHARED_SRC_ROOT      Host directory mounted at /src by --shared-container.
                            Default: parent of the current directory.
   AGY_MODEL                Antigravity model.
-                           Default: Gemini 3.6 Flash (High)
+                           Default: Gemini 3.8 Flash (High)
   AGY_ALT_SCREEN_MODE      Antigravity rendering mode: default, always, or never.
                            Default: default
   AGY_SKIP_PERMISSIONS     Pass agy --dangerously-skip-permissions. Default: 1
@@ -116,7 +116,7 @@ Examples:
   agy-container --manual
   agy-container --sandbox-auto
   agy-container --no-import-host-auth
-  AGY_MODEL='Gemini 3.6 Flash (High)' agy-container
+  AGY_MODEL='Gemini 3.8 Flash (High)' agy-container
   AGY_SKIP_PERMISSIONS=0 agy-container
   AGY_ARGS='--help' agy-container
 USAGE
@@ -472,7 +472,7 @@ configure_agy_settings() {
   settings_file="$settings_dir/settings.json"
   mode="${AGY_TOOL_PERMISSION:-always-proceed}"
   sandbox_enabled="${AGY_SANDBOX:-1}"
-  model="${AGY_MODEL:-Gemini 3.6 Flash (High)}"
+  model="${AGY_MODEL:-Gemini 3.8 Flash (High)}"
   alt_screen_mode="${AGY_ALT_SCREEN_MODE:-default}"
 
   mkdir -p "$settings_dir"
@@ -551,7 +551,7 @@ echo "Host access boundary:"
 echo "  mounted source tree: /src"
 echo "  isolated Antigravity home: /root"
 echo "  your macOS home is NOT mounted unless you changed this script."
-echo "  agy model is ${AGY_MODEL:-Gemini 3.6 Flash (High)}, passed with agy --model when supported."
+echo "  agy model is ${AGY_MODEL:-Gemini 3.8 Flash (High)}, passed with agy --model when supported."
 echo "  terminal rendering mode is ${AGY_ALT_SCREEN_MODE:-default}."
 echo "  default agy mode passes --dangerously-skip-permissions when supported."
 echo "  host ~/.gemini is copied into isolated /root/.gemini for auth, but host files are not modified."
