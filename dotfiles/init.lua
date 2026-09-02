@@ -1,31 +1,119 @@
-vim.g.mapleader = ','
+vim.g.mapleader = ","
 
-if vim.loader and vim.loader.enable then
-  vim.loader.enable()
-end
-
-vim.cmd("syntax enable")
-
-local builtin_treesitter = {
-  c = "c",
-  help = "vimdoc",
-  lua = "lua",
-  markdown = "markdown",
-  query = "query",
-  vim = "vim",
+-- Options and filetype behavior must be configured before plugins. Some plugin
+-- managers trigger FileType while the startup buffer is still being opened.
+vim.opt.clipboard = "unnamedplus"
+vim.opt.shortmess:append("mro")
+vim.opt.viewoptions = { "folds", "options", "cursor" }
+vim.opt.updatetime = 1000
+vim.opt.expandtab = true
+vim.opt.backup = true
+vim.opt.undofile = true
+vim.opt.showmode = false
+vim.opt.cursorline = true
+vim.opt.number = true
+vim.opt.showmatch = true
+vim.opt.inccommand = "split"
+vim.opt.winminheight = 0
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.wildmode = { "list:longest", "full" }
+vim.opt.whichwrap:append("h,l,<,>,[,]")
+vim.opt.scrolljump = 5
+vim.opt.scrolloff = 3
+vim.opt.foldlevel = 3
+vim.opt.list = true
+vim.opt.listchars = {
+  tab = "› ",
+  trail = "•",
+  extends = "#",
+  nbsp = ".",
 }
+vim.opt.wrap = false
+vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
+vim.opt.softtabstop = -1 -- Follow 'shiftwidth'.
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+
+local backup_dir = vim.fn.stdpath("state") .. "/backup"
+vim.fn.mkdir(backup_dir, "p")
+vim.opt.backupdir = backup_dir .. "//"
+
+local config_group = vim.api.nvim_create_augroup("user-config", { clear = true })
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = vim.tbl_keys(builtin_treesitter),
+  desc = "Use bundled Tree-sitter parsers",
+  group = config_group,
+  pattern = { "c", "help", "lua", "query", "vim" },
   callback = function(args)
-    local lang = builtin_treesitter[vim.bo[args.buf].filetype]
-    if not lang then
-      return
-    end
+    pcall(vim.treesitter.start, args.buf)
+  end,
+})
 
-    if pcall(vim.treesitter.language.add, lang) then
-      pcall(vim.treesitter.start, args.buf, lang)
-    end
+vim.api.nvim_create_autocmd("FileType", {
+  desc = "Do not continue comments automatically",
+  group = config_group,
+  pattern = "*",
+  callback = function()
+    vim.opt_local.formatoptions:remove({ "c", "r", "o" })
+  end,
+})
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+  desc = "Highlight yanked text",
+  group = config_group,
+  callback = function()
+    vim.highlight.on_yank({ timeout = 200 })
+  end,
+})
+
+local function use_two_space_indent()
+  vim.opt_local.tabstop = 2
+  vim.opt_local.shiftwidth = 2
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+  desc = "Use two-space indentation",
+  group = config_group,
+  pattern = {
+    "css",
+    "eruby",
+    "html",
+    "javascript",
+    "javascriptreact",
+    "json",
+    "lua",
+    "prisma",
+    "ruby",
+    "scss",
+    "terraform",
+    "terraform-vars",
+    "tf",
+    "typescript",
+    "typescriptreact",
+    "vue",
+    "yaml",
+  },
+  callback = use_two_space_indent,
+})
+
+-- These legacy template extensions are not detected by Neovim itself.
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  desc = "Use two-space indentation for template files",
+  group = config_group,
+  pattern = { "*.coffee", "*.eco", "*.ejs", "*.jst" },
+  callback = use_two_space_indent,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  desc = "Wrap Markdown buffers",
+  group = config_group,
+  pattern = "markdown",
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true
+    vim.opt_local.breakindent = true
   end,
 })
 
@@ -37,15 +125,15 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+local init_source = debug.getinfo(1, "S").source:sub(2)
+local config_dir = vim.fs.dirname(assert(vim.uv.fs_realpath(init_source)))
+local lazy_lockfile = vim.fs.joinpath(config_dir, "lazy-lock.json")
+local fzf_executable = assert(vim.uv.fs_realpath(vim.fn.exepath("fzf")), "fzf executable not found")
+local fzf_runtime = vim.fs.dirname(vim.fs.dirname(fzf_executable))
+
 require("lazy").setup({ {
-  'junegunn/fzf.vim',
-  dependencies = {
-    {
-      'junegunn/fzf',
-      build = './install --all',
-      name = "fzf"
-    }
-  },
+  "junegunn/fzf.vim",
+  dependencies = { { dir = fzf_runtime, name = "fzf" } },
   config = function()
     vim.g.fzf_layout = {
       window = {
@@ -55,40 +143,9 @@ require("lazy").setup({ {
     }
     vim.g.fzf_preview_window = { "right:60%:hidden", "?" }
 
-    vim.keymap.set('n', '<C-p>', ':Files<CR>', {
-      noremap = true,
-      silent = true,
-      desc = "FZF: Files"
-    })
-    -- Open files in the current directory
-    vim.keymap.set('n', '<Leader>e', ':Files %:p:h<CR>', {
-      noremap = true,
-      silent = true,
-      desc = "FZF: Files (current dir)"
-    })
-    vim.keymap.set('n', '<Leader>h', ':History<CR>', {
-      noremap = true,
-      silent = true,
-      desc = "FZF: History"
-    })
-    vim.keymap.set('n', '<Leader>r', ':History:<CR>', {
-      noremap = true,
-      silent = true,
-      desc = "FZF: Command history"
-    })
-    vim.keymap.set('n', '<Leader>s', ':S <C-R><C-W><CR>', {
-      noremap = true,
-      silent = true,
-      desc = "FZF: Search word under cursor"
-    })
-    vim.keymap.set('v', '<Leader>s', 'y:S <C-r>=fnameescape(@")<CR><CR>', {
-      noremap = true,
-      desc = "FZF: Search selection"
-    })
-
     -- Set FZF default command based on availability of 'ag'
-    if vim.fn.executable('ag') == 1 then
-      vim.env.FZF_DEFAULT_COMMAND = 'ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""'
+    if vim.fn.executable("ag") == 1 then
+      vim.env.FZF_DEFAULT_COMMAND = [[ag --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -g ""]]
     else
       vim.env.FZF_DEFAULT_COMMAND = [[
             find *
@@ -102,6 +159,32 @@ require("lazy").setup({ {
 
     local fzf_opts = vim.fn["fzf#vim#with_preview"]("right:60%:hidden", "?")
 
+    local function search(query)
+      local ag_options = table.concat({
+        '--color-path="0;34"',
+        '--color-match="31;40"',
+        "--ignore-case",
+        "--hidden",
+        "--ignore .git",
+        "--path-to-ignore ~/.ignore",
+        "-Q",
+        vim.fn.shellescape(query),
+      }, " ")
+      vim.fn["fzf#vim#ag_raw"](ag_options, fzf_opts, 0)
+    end
+
+    vim.keymap.set("n", "<C-p>", "<cmd>Files<cr>", { desc = "FZF: Files" })
+    vim.keymap.set("n", "<Leader>e", "<cmd>Files %:p:h<cr>", { desc = "FZF: Files (current dir)" })
+    vim.keymap.set("n", "<Leader>h", "<cmd>History<cr>", { desc = "FZF: History" })
+    vim.keymap.set("n", "<Leader>r", "<cmd>History:<cr>", { desc = "FZF: Command history" })
+    vim.keymap.set("n", "<Leader>s", function()
+      search(vim.fn.expand("<cword>"))
+    end, { desc = "FZF: Search word under cursor" })
+    vim.keymap.set("x", "<Leader>s", function()
+      local lines = vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = vim.fn.mode() })
+      search(table.concat(lines, "\n"))
+    end, { desc = "FZF: Search selection" })
+
     vim.api.nvim_create_user_command("SRaw", function(opts)
       vim.fn["fzf#vim#ag"](opts.args, fzf_opts, 0)
     end, {
@@ -110,13 +193,9 @@ require("lazy").setup({ {
     })
 
     vim.api.nvim_create_user_command("S", function(opts)
-      local query =
-          '--color-path="0;34" --color-match="31;40" --ignore-case --hidden --ignore .git --path-to-ignore ~/.ignore -Q ' ..
-          opts.args
-      vim.fn["fzf#vim#ag_raw"](query, fzf_opts, 0)
+      search(opts.args)
     end, {
       nargs = "*",
-      complete = "dir",
       desc = "FZF: search"
     })
   end
@@ -133,7 +212,9 @@ require("lazy").setup({ {
         lualine_a = { {
           'tabs',
           tab_max_length = 40,
-          max_length = vim.o.columns,
+          max_length = function()
+            return vim.o.columns
+          end,
           mode = 1,
           path = 0
         } }
@@ -149,7 +230,6 @@ require("lazy").setup({ {
   init = function()
     vim.g.loaded_netrw = 1
     vim.g.loaded_netrwPlugin = 1
-    vim.opt.termguicolors = true
   end,
   config = function()
     require("nvim-tree").setup({
@@ -203,31 +283,14 @@ require("lazy").setup({ {
       },
       git = {
         ignore = false
-      },
-      filesystem_watchers = {
-        enable = false
       }
     })
   end
-}, 'tpope/vim-repeat', 'tpope/vim-commentary', 'terryma/vim-multiple-cursors', {
-  'mbbill/undotree',
-  cmd = "UndotreeToggle",
-  keys = {
-    { "<leader>u", "<cmd>UndotreeToggle<CR>", desc = "Toggle undo tree" }
-  },
-  init = function()
-    vim.g.undotree_SetFocusWhenToggle = 1
-  end,
-}, {
+}, "mg979/vim-visual-multi", {
   'lewis6991/gitsigns.nvim',
   event = { "BufReadPre", "BufNewFile" },
   config = function()
     require('gitsigns').setup({
-      current_line_blame_opts = {
-        virt_text = true,
-        virt_text_pos = 'eol',
-        delay = 100
-      },
       on_attach = function(bufnr)
         local gitsigns = require('gitsigns')
 
@@ -249,7 +312,6 @@ require("lazy").setup({ {
   end
 }, {
   "kdheepak/lazygit.nvim",
-  lazy = true,
   cmd = {
     "LazyGit",
     "LazyGitFilterCurrentFile",
@@ -263,40 +325,17 @@ require("lazy").setup({ {
   }
 }, "mason-org/mason.nvim", "mason-org/mason-lspconfig.nvim", "WhoIsSethDaniel/mason-tool-installer.nvim",
   "neovim/nvim-lspconfig", {
-  "hrsh7th/nvim-cmp",
-  dependencies = { "hrsh7th/cmp-nvim-lsp" },
-  config = function()
-    local cmp = require("cmp")
-    cmp.setup({
-      completion = {
-        autocomplete = false
-      },
-      sources = cmp.config.sources({ {
-        name = 'nvim_lsp'
-      } }),
-      mapping = cmp.mapping.preset.insert({
-        ["<C-n>"] = cmp.mapping({
-          i = function()
-            if cmp.visible() then -- pop-up menu is visible
-              cmp.select_next_item()
-            else
-              cmp.complete() -- open the pop-up menu
-            end
-          end
-        }),
-        ["<C-p>"] = cmp.mapping.select_prev_item({
-          behavior = cmp.SelectBehavior.Insert
-        })
-      })
-    })
-  end
-}, {
   "rebelot/kanagawa.nvim",
   config = function()
     require("kanagawa").setup({
-      theme = "wave", -- "wave" | "dragon" | "lotus"
+      overrides = function()
+        return {
+          LineNr = { bg = "NONE" },
+          SignColumn = { bg = "NONE" },
+        }
+      end,
     })
-    vim.cmd("colorscheme kanagawa-wave")
+    vim.cmd.colorscheme("kanagawa-wave")
   end
 }, {
   "stevearc/conform.nvim",
@@ -307,6 +346,7 @@ require("lazy").setup({ {
 
     vim.api.nvim_create_user_command("ToggleAutoFormat", function()
       vim.g.disable_autoformat = not vim.g.disable_autoformat
+      vim.notify("Autoformat " .. (vim.g.disable_autoformat and "disabled" or "enabled"))
     end, {
       desc = "Toggle autoformat-on-save"
     })
@@ -329,363 +369,124 @@ require("lazy").setup({ {
           return
         end
         return {
-          async = false,
-          lsp_fallback = true,
+          lsp_format = "fallback",
           timeout_ms = 2000
         }
       end
     })
-    vim.keymap.set('n', '<leader>tpf', ':ToggleAutoFormat<CR>', {
-      noremap = true,
-      silent = true,
+    vim.keymap.set('n', '<leader>tpf', '<cmd>ToggleAutoFormat<cr>', {
       desc = "Toggle autoformat-on-save"
     })
   end
-} })
+} }, {
+  lockfile = lazy_lockfile,
+  rocks = { enabled = false },
+})
 
 -- LSP
 local preferred_ts_server = vim.fn.executable("tsgo") == 1 and "tsgo" or "ts_ls"
 local mason_servers = { "pyright", "biome", "lua_ls", "tailwindcss", "ts_ls" }
 local lsp_servers = { "pyright", "biome", "lua_ls", "tailwindcss", preferred_ts_server }
-local ok_cmp_lsp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-local lsp_capabilities = ok_cmp_lsp
-    and cmp_nvim_lsp.default_capabilities()
-    or vim.lsp.protocol.make_client_capabilities()
 
 require('mason').setup()
 require('mason-lspconfig').setup({
   ensure_installed = mason_servers,
   automatic_enable = false,
 })
-for _, server in ipairs(lsp_servers) do
-  vim.lsp.config(server, {
-    capabilities = vim.deepcopy(lsp_capabilities),
-  })
-end
 require('mason-tool-installer').setup({
   ensure_installed = { 'prettier' }
 })
-vim.lsp.enable(lsp_servers)
-vim.keymap.set('n', 'gl', vim.diagnostic.open_float, { desc = "Line diagnostics" })
 
--- General
--- Remove specific format options for all file types
--- Comments will no longer be automatically wrapped.
--- Typing a new line while inside a comment will no longer auto-continue the comment.
--- Starting a new line with o or O will not automatically insert the comment leader.
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "*",
-  callback = function()
-    vim.opt_local.formatoptions:remove({ "c", "r", "o" })
-  end
-})
+vim.api.nvim_create_autocmd("LspAttach", {
+  desc = "Enable native LSP completion",
+  group = config_group,
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if not client or not client:supports_method("textDocument/completion") then
+      return
+    end
 
--- Highlight yanked text
-vim.api.nvim_create_autocmd("TextYankPost", {
-  desc = "Highlight on yank",
-  group = vim.api.nvim_create_augroup("yank-highlight", { clear = true }),
-  callback = function()
-    vim.highlight.on_yank({ timeout = 200 })
+    vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = false })
+
+    vim.keymap.set("i", "<C-n>", function()
+      if vim.fn.pumvisible() == 1 then
+        return "<C-n>"
+      end
+      vim.lsp.completion.get()
+      return ""
+    end, { buffer = args.buf, expr = true, desc = "Open or select next completion" })
+
+    vim.keymap.set("i", "<C-p>", function()
+      return vim.fn.pumvisible() == 1 and "<C-p>" or ""
+    end, { buffer = args.buf, expr = true, desc = "Select previous completion" })
   end,
 })
 
--- Set local tabstop, softtabstop, and shiftwidth for specific file types and patterns
-local set_indent = function()
-  vim.opt_local.tabstop = 2
-  vim.opt_local.softtabstop = 2
-  vim.opt_local.shiftwidth = 2
-end
-
--- Define autocmd for specific file patterns
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-  pattern = { "*.coffee", "*.erb", "*.scss", "*.jst", "*.eco", "*.ejs", "*.yml", "*.vue", "*.js", "*.jsx", "*.ts",
-    "*.tsx", "*.mjs", "*.css", "*.rb", "*.html", "*.json", "*.tf", "*.tfvars", "*.prisma", "*.lua" },
-  callback = set_indent
-})
-
--- Automatically enable mouse usage
-vim.opt.mouse = 'a'
-
--- Configure clipboard settings
-if vim.fn.has('clipboard') == 1 then
-  if vim.fn.has('unnamedplus') == 1 then
-    -- When possible, use + register for copy-paste
-    vim.opt.clipboard = 'unnamed,unnamedplus'
-  else
-    -- On mac and Windows, use * register for copy-paste
-    vim.opt.clipboard = 'unnamed'
-  end
-end
-
--- Abbreviate messages, modifies how Neovim displays and reduces command-line messages.
-vim.opt.shortmess:append('filmnrxoOtT')
-
--- Save folds, local options, and cursor position in views
-vim.opt.viewoptions = { 'folds', 'options', 'cursor' }
-
--- Store a lot of history (default is 20)
-vim.opt.history = 1000
-
--- Set '.' as an end of word designator
-vim.opt.iskeyword:remove('.')
-
--- Set '#' as an end of word designator
-vim.opt.iskeyword:remove('#')
-
--- Set '-' as an end of word designator
-vim.opt.iskeyword:remove('-')
-
--- Disable spell checking
-vim.opt.spell = false
-
--- Set update time
-vim.opt.updatetime = 1000
-
--- Expand tabs to spaces
-vim.opt.expandtab = true
-
--- Enable backups
-vim.opt.backup = true
-local prefix = vim.env.XDG_CONFIG_HOME or vim.fn.expand("~/.config")
-vim.opt.undodir = { prefix .. "/nvim/.undo//" }
-vim.opt.backupdir = { prefix .. "/nvim/.backup//" }
-vim.opt.directory = { prefix .. "/nvim/.swp//" }
-
--- Persistent undo settings
-if vim.fn.has('persistent_undo') == 1 then
-  vim.opt.undofile = true    -- Enable persistent undo
-  vim.opt.undolevels = 1000  -- Maximum number of changes that can be undone
-  vim.opt.undoreload = 10000 -- Maximum number of lines to save for undo on a buffer reload
-end
-
--- Statusline already shows the current mode
-vim.opt.showmode = true
-
--- Highlight current line
-vim.opt.cursorline = true
-
--- SignColumn should match background
-vim.cmd('highlight clear SignColumn')
-
--- Current line number row will have the same background color in relative mode
-vim.cmd('highlight clear LineNr')
-
--- No extra spaces between rows
-vim.opt.linespace = 0
-
--- Line numbers on
-vim.opt.number = true
-
--- Show matching brackets/parenthesis
-vim.opt.showmatch = true
-
--- Find as you type search
-vim.opt.incsearch = true
-
--- Highlight search terms
-vim.opt.hlsearch = true
-
--- Live preview for :substitute
-vim.opt.inccommand = "split"
-
--- Windows can be 0 line high
-vim.opt.winminheight = 0
-
--- Case insensitive search
-vim.opt.ignorecase = true
-
--- Case sensitive when uppercase present
-vim.opt.smartcase = true
-
--- Command <Tab> completion: list matches, then longest common part, then all
-vim.opt.wildmode = { 'list:longest', 'full' }
-
--- Backspace and cursor keys wrap too
-vim.opt.whichwrap:append('b,s,h,l,<,>,[,]')
-
--- Lines to scroll when cursor leaves screen
-vim.opt.scrolljump = 5
-
--- Minimum lines to keep above and below cursor
-vim.opt.scrolloff = 3
-
--- Folding settings
-vim.opt.foldlevel = 3
-vim.opt.foldenable = true
-
--- Highlight problematic whitespace
-vim.opt.list = true
-vim.opt.listchars = {
-  tab = '› ',
-  trail = '•',
-  extends = '#',
-  nbsp = '.'
-}
-
--- Do not wrap long lines
-vim.opt.wrap = false
-
--- Wrap markdown buffers for easier reading.
-local function setup_markdown_buffer()
-  vim.opt_local.wrap = true
-  vim.opt_local.linebreak = true
-  vim.opt_local.breakindent = true
-end
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "markdown",
-  callback = setup_markdown_buffer,
-})
-
--- Use indents of 4 spaces
-vim.opt.shiftwidth = 4
-
--- An indentation every four columns
-vim.opt.tabstop = 4
-
--- Let backspace delete indent
-vim.opt.softtabstop = 4
-
--- Prevents inserting two spaces after punctuation on a join (J)
-vim.opt.joinspaces = false
-
--- Puts new vsplit windows to the right of the current
-vim.opt.splitright = true
-
--- Puts new split windows to the bottom of the current
-vim.opt.splitbelow = true
+vim.lsp.enable(lsp_servers)
+vim.keymap.set('n', 'gl', vim.diagnostic.open_float, { desc = "Line diagnostics" })
 
 -- Easier moving in tabs and windows
-vim.keymap.set('n', '<C-J>', '<C-W>j', {
-  noremap = true,
-  silent = true,
-  desc = "Window down"
-})
-vim.keymap.set('n', '<C-K>', '<C-W>k', {
-  noremap = true,
-  silent = true,
-  desc = "Window up"
-})
-vim.keymap.set('n', '<C-L>', '<C-W>l', {
-  noremap = true,
-  silent = true,
-  desc = "Window right"
-})
-vim.keymap.set('n', '<C-H>', '<C-W>h', {
-  noremap = true,
-  silent = true,
-  desc = "Window left"
-})
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Window down" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Window up" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Window right" })
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Window left" })
 
 -- Wrapped lines go down/up to the next row, rather than the next line in the file
-vim.keymap.set('n', 'j', 'gj', {
-  noremap = true,
-  silent = true,
-  desc = "Down (wrap)"
-})
-vim.keymap.set('n', 'k', 'gk', {
-  noremap = true,
-  silent = true,
-  desc = "Up (wrap)"
-})
+vim.keymap.set("n", "j", function()
+  return vim.v.count == 0 and "gj" or "j"
+end, { expr = true, desc = "Down (wrap)" })
+vim.keymap.set("n", "k", function()
+  return vim.v.count == 0 and "gk" or "k"
+end, { expr = true, desc = "Up (wrap)" })
 
 -- Conflict with moving to top and bottom of the screen
-vim.keymap.set('n', '<S-H>', 'gT', {
-  noremap = true,
-  silent = true,
-  desc = "Previous tab"
-})
-vim.keymap.set('n', '<S-L>', 'gt', {
-  noremap = true,
-  silent = true,
-  desc = "Next tab"
-})
+vim.keymap.set("n", "H", "gT", { desc = "Previous tab" })
+vim.keymap.set("n", "L", "gt", { desc = "Next tab" })
 
 -- Reorder tabs
-vim.keymap.set('n', '<Leader>ml', ':tabm -1<CR>', {
-  noremap = true,
-  silent = true,
-  desc = "Move tab left"
-})
-vim.keymap.set('n', '<Leader>mr', ':tabm +1<CR>', {
-  noremap = true,
-  silent = true,
-  desc = "Move tab right"
-})
-
--- Yank from the cursor to the end of the line, to be consistent with C and D.
-vim.keymap.set('n', 'Y', 'y$', {
-  noremap = true,
-  silent = true,
-  desc = "Yank to end of line"
-})
+vim.keymap.set("n", "<Leader>ml", "<cmd>tabmove -1<cr>", { desc = "Move tab left" })
+vim.keymap.set("n", "<Leader>mr", "<cmd>tabmove +1<cr>", { desc = "Move tab right" })
 
 -- Toggle search highlighting rather than clear the current search results.
-vim.keymap.set('n', '<leader>/', ':nohlsearch<CR>', {
-  noremap = true,
-  silent = true,
-  desc = "Clear search highlight"
-})
+vim.keymap.set("n", "<leader>/", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 
 -- Visual shifting (does not exit Visual mode)
-vim.keymap.set('v', '<', '<gv', {
-  noremap = true,
-  silent = true,
-  desc = "Indent left"
-})
-vim.keymap.set('v', '>', '>gv', {
-  noremap = true,
-  silent = true,
-  desc = "Indent right"
-})
+vim.keymap.set("x", "<", "<gv", { desc = "Indent left" })
+vim.keymap.set("x", ">", ">gv", { desc = "Indent right" })
 
 -- Allow using the repeat operator with a visual selection (!)
 -- http://stackoverflow.com/a/8064607/127816
-vim.keymap.set('v', '.', ':normal .<CR>', {
-  noremap = true,
-  silent = true,
-  desc = "Repeat selection"
-})
+vim.keymap.set("x", ".", ":normal .<cr>", { silent = true, desc = "Repeat selection" })
 
 -- For when you forget to sudo.. Really Write the file.
-vim.keymap.set('c', 'w!!', 'w !sudo tee % >/dev/null', {
-  noremap = true,
-  silent = true,
-  desc = "Write with sudo"
-})
+vim.keymap.set("c", "w!!", "w !sudo tee % >/dev/null", { desc = "Write with sudo" })
 
 -- Toggle cursorcolumn
-vim.keymap.set('n', '<Leader>il', ':set cursorcolumn!<CR>', {
-  noremap = true,
-  silent = true,
-  desc = "Toggle cursorcolumn"
-})
+vim.keymap.set("n", "<Leader>il", "<cmd>set cursorcolumn!<cr>", { desc = "Toggle cursorcolumn" })
+
+-- Open Neovim's bundled undo-tree viewer on demand.
+vim.keymap.set("n", "<leader>u", function()
+  vim.cmd.packadd("nvim.undotree")
+  require("undotree").open()
+end, { desc = "Toggle undo tree" })
 
 -- Copy whole file
-vim.keymap.set('n', '<C-x>', ':%y<CR>', {
-  noremap = true,
-  silent = true,
-  desc = "Yank whole file"
-})
+vim.keymap.set("n", "<C-x>", "<cmd>%y<cr>", { desc = "Yank whole file" })
+
+local function copy_file_name(modifier, label)
+  return function()
+    local value = vim.fn.expand(modifier)
+    vim.fn.setreg("+", value)
+    vim.notify(label .. ": " .. value)
+  end
+end
 
 -- Copy relative path (src/foo.txt)
-vim.keymap.set('n', '<leader>cfr', ':let @*=expand("%")<CR>', {
-  noremap = true,
-  silent = true,
-  desc = "Copy relative path"
-})
+vim.keymap.set("n", "<leader>cfr", copy_file_name("%", "Copied relative path"), { desc = "Copy relative path" })
 -- Copy filename (foo.txt)
-vim.keymap.set('n', '<leader>cff', ':let @*=expand("%:t")<CR>', {
-  noremap = true,
-  silent = true,
-  desc = "Copy filename"
-})
+vim.keymap.set("n", "<leader>cff", copy_file_name("%:t", "Copied filename"), { desc = "Copy filename" })
 
 -- Toggling scrolloff
-vim.keymap.set('n', '<Leader>zz', function()
-  if vim.o.scrolloff == 999 then
-    vim.o.scrolloff = 0
-  else
-    vim.o.scrolloff = 999
-  end
-end, { noremap = true, silent = true, desc = "Toggle scrolloff" })
+vim.keymap.set("n", "<Leader>zz", function()
+  vim.o.scrolloff = vim.o.scrolloff == 999 and 3 or 999
+end, { desc = "Toggle scrolloff" })
