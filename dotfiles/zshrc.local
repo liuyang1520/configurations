@@ -93,7 +93,6 @@ dotfiles_setup_symlinks() {
     fi
 
     ln -sfn "${_dotfiles_dir}/zshrc.local" "${HOME}/.zshrc.local"
-    ln -sfn "${_dotfiles_dir}/ignore.config" "${HOME}/.ignore"
     mkdir -p "${HOME}/.config/nvim"
     ln -sfn "${_dotfiles_dir}/init.lua" "${HOME}/.config/nvim/init.lua"
     ln -sfn "${_dotfiles_dir}/lazy-lock.json" "${HOME}/.config/nvim/lazy-lock.json"
