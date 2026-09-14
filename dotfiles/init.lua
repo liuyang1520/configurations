@@ -143,21 +143,31 @@ require("lazy").setup({ {
     }
     vim.g.fzf_preview_window = { "right:60%:hidden", "?" }
 
-    vim.env.FZF_DEFAULT_COMMAND = [[ag --ignore-case --hidden --ignore .git -g ""]]
+    vim.env.FZF_DEFAULT_COMMAND = [[rg --files --hidden --glob "!.git"]]
 
     local fzf_opts = vim.fn["fzf#vim#with_preview"]("right:60%:hidden", "?")
 
-    local function search(query)
-      local ag_options = table.concat({
-        '--color-path="0;34"',
-        '--color-match="31;40"',
-        "--ignore-case",
-        "--hidden",
-        "--ignore .git",
-        "-Q",
+    local rg_command = table.concat({
+      "rg",
+      "--column",
+      "--line-number",
+      "--no-heading",
+      "--color=always",
+      "--smart-case",
+      "--hidden",
+      "--glob",
+      vim.fn.shellescape("!.git"),
+    }, " ")
+
+    local function search(query, raw)
+      local rg_options = table.concat({
+        rg_command,
+        raw and "" or "--fixed-strings",
+        query:find("\n", 1, true) and "--multiline" or "",
+        "--",
         vim.fn.shellescape(query),
       }, " ")
-      vim.fn["fzf#vim#ag_raw"](ag_options, fzf_opts, 0)
+      vim.fn["fzf#vim#grep"](rg_options, 1, fzf_opts, 0)
     end
 
     vim.keymap.set("n", "<C-p>", "<cmd>Files<cr>", { desc = "FZF: Files" })
@@ -173,10 +183,10 @@ require("lazy").setup({ {
     end, { desc = "FZF: Search selection" })
 
     vim.api.nvim_create_user_command("SRaw", function(opts)
-      vim.fn["fzf#vim#ag"](opts.args, fzf_opts, 0)
+      search(opts.args, true)
     end, {
       nargs = "*",
-      desc = "FZF: search (raw)"
+      desc = "FZF: search (regex)"
     })
 
     vim.api.nvim_create_user_command("S", function(opts)
@@ -289,7 +299,7 @@ require("lazy").setup({ {
 
         map('n', '<leader>gd', gitsigns.diffthis, { desc = "Git diff (this)" })
         map('n', '<leader>gb', gitsigns.blame, { desc = "Git blame (buffer)" })
-        map('n', '<leader>ghb', function()
+        map('n', '<leader>gB', function()
           gitsigns.blame_line {
             full = true
           }
@@ -385,32 +395,108 @@ require('mason-tool-installer').setup({
 })
 
 vim.api.nvim_create_autocmd("LspAttach", {
-  desc = "Enable native LSP completion",
+  desc = "Enable native LSP completion and keymaps",
   group = config_group,
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if not client or not client:supports_method("textDocument/completion") then
+    if not client then
       return
     end
 
-    vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = false })
+    if client:supports_method("textDocument/completion") then
+      vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = false })
 
-    vim.keymap.set("i", "<C-n>", function()
-      if vim.fn.pumvisible() == 1 then
-        return "<C-n>"
-      end
-      vim.lsp.completion.get()
-      return ""
-    end, { buffer = args.buf, expr = true, desc = "Open or select next completion" })
+      vim.keymap.set("i", "<C-n>", function()
+        if vim.fn.pumvisible() == 1 then
+          return "<C-n>"
+        end
+        vim.lsp.completion.get()
+        return ""
+      end, { buffer = args.buf, expr = true, desc = "Open or select next completion" })
 
-    vim.keymap.set("i", "<C-p>", function()
-      return vim.fn.pumvisible() == 1 and "<C-p>" or ""
-    end, { buffer = args.buf, expr = true, desc = "Select previous completion" })
+      vim.keymap.set("i", "<C-p>", function()
+        return vim.fn.pumvisible() == 1 and "<C-p>" or ""
+      end, { buffer = args.buf, expr = true, desc = "Select previous completion" })
+    end
+
+    local map = function(keys, func, desc)
+      vim.keymap.set("n", keys, func, { buffer = args.buf, desc = "LSP: " .. desc })
+    end
+
+    map("gd", vim.lsp.buf.definition, "Goto definition")
+    map("gD", vim.lsp.buf.declaration, "Goto declaration")
+    map("gi", vim.lsp.buf.implementation, "Goto implementation")
+    map("gr", vim.lsp.buf.references, "Goto references")
+    map("K", vim.lsp.buf.hover, "Hover documentation")
   end,
 })
 
 vim.lsp.enable(lsp_servers)
 vim.keymap.set('n', 'gl', vim.diagnostic.open_float, { desc = "Line diagnostics" })
+
+-- Resolve the branch on GitHub so unpushed branches use the default branch.
+vim.keymap.set("n", "<leader>gh", function()
+  local function warn(message)
+    vim.notify("GitHub: " .. message, vim.log.levels.WARN)
+  end
+
+  local file = vim.api.nvim_buf_get_name(0)
+  if vim.bo.buftype ~= "" or file == "" or vim.fn.isdirectory(vim.fs.dirname(file)) == 0 then
+    warn("Open a file in a Git repository first")
+    return
+  end
+  if vim.fn.executable("gh") == 0 or vim.fn.executable("git") == 0 then
+    warn("Install git and GitHub CLI (gh), then run gh auth login")
+    return
+  end
+
+  local cwd = vim.fs.dirname(file)
+  local tracked = vim.system({
+    "git", "--literal-pathspecs", "ls-files", "--full-name", "--error-unmatch", "-z", "--", vim.fs.basename(file),
+  }, { cwd = cwd }):wait(2000)
+  if tracked.code ~= 0 then
+    warn("The current file is not tracked by Git")
+    return
+  end
+  local relative_path = tracked.stdout:match("^(.-)%z")
+  local branch = vim.system({ "git", "branch", "--show-current" }, { cwd = cwd, text = true }):wait(2000)
+  if branch.code ~= 0 then
+    warn(vim.trim(branch.stderr))
+    return
+  end
+
+  local query = [[
+    query($owner: String!, $name: String!, $ref: String!) {
+      repository(owner: $owner, name: $name) {
+        url
+        defaultBranchRef { name }
+        ref(qualifiedName: $ref) { name }
+      }
+    }
+  ]]
+  vim.system({
+    "gh", "api", "graphql",
+    "-F", "owner={owner}", "-F", "name={repo}",
+    "-f", "ref=refs/heads/" .. vim.trim(branch.stdout),
+    "-f", "query=" .. query,
+    "--jq", ".data.repository | {url, branch: (.ref.name // .defaultBranchRef.name)}",
+  }, { cwd = cwd, text = true, timeout = 15000 }, vim.schedule_wrap(function(result)
+    if result.code ~= 0 then
+      warn(vim.trim(result.stderr) ~= "" and vim.trim(result.stderr) or "Could not look up the GitHub repository")
+      return
+    end
+    local ok, repo = pcall(vim.json.decode, result.stdout)
+    if not ok or type(repo) ~= "table" or type(repo.url) ~= "string" or type(repo.branch) ~= "string" then
+      warn("The GitHub repository has no usable branch")
+      return
+    end
+
+    local _, err = vim.ui.open(repo.url .. "/blob/" .. vim.uri_encode(repo.branch) .. "/" .. vim.uri_encode(relative_path))
+    if err then
+      warn(err)
+    end
+  end))
+end, { desc = "Open current file on GitHub" })
 
 -- Easier moving in tabs and windows
 vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Window down" })
@@ -446,7 +532,7 @@ vim.keymap.set("x", ">", ">gv", { desc = "Indent right" })
 vim.keymap.set("x", ".", ":normal .<cr>", { silent = true, desc = "Repeat selection" })
 
 -- For when you forget to sudo.. Really Write the file.
-vim.keymap.set("c", "w!!", "w !sudo tee % >/dev/null", { desc = "Write with sudo" })
+vim.cmd([[cnoreabbrev <expr> w!! (getcmdtype() == ':' && getcmdline() == 'w!!') ? 'w !sudo tee % >/dev/null' : 'w!!']])
 
 -- Toggle cursorcolumn
 vim.keymap.set("n", "<Leader>il", "<cmd>set cursorcolumn!<cr>", { desc = "Toggle cursorcolumn" })

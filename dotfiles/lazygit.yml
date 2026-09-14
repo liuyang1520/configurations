@@ -1,9 +1,7 @@
 promptToReturnFromSubprocess: false
 
 os:
-  edit: "nvim -- {{filename}}"
-  editAtLine: "nvim +{{line}} -- {{filename}}"
-  editInTerminal: true
+  editPreset: nvim-remote
 
 git:
   pagers:

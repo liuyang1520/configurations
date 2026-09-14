@@ -1,14 +1,16 @@
 # zsh
 if [[ -d "${HOME}/.oh-my-zsh" ]]; then
-    [ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-    [ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/pure" ] || git clone https://github.com/sindresorhus/pure.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/pure"
-
-    plugins=(${plugins:#zsh-syntax-highlighting} zsh-syntax-highlighting)
-    ZSH_THEME=""
-    fpath+=("${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/pure")
-    autoload -U promptinit
-    promptinit
-    prompt pure
+    plugins=(${plugins:#zsh-syntax-highlighting})
+    if [[ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]]; then
+        plugins+=(zsh-syntax-highlighting)
+    fi
+    if [[ -f "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/pure/prompt_pure_setup" ]]; then
+        ZSH_THEME=""
+        fpath+=("${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/pure")
+        autoload -U promptinit
+        promptinit
+        prompt pure
+    fi
 fi
 
 # dotfiles setup helpers
@@ -70,7 +72,7 @@ dotfiles_install_dependencies() {
     local -a _formulas
     local -a _casks
     local _pkg
-    _formulas=(node go vim the_silver_searcher fzf bat lazygit git-delta)
+    _formulas=(node go neovim ripgrep fzf bat lazygit git-delta gh)
     _casks=(ghostty)
 
     for _pkg in "${_formulas[@]}"; do
@@ -80,8 +82,6 @@ dotfiles_install_dependencies() {
     for _pkg in "${_casks[@]}"; do
         brew list --cask "$_pkg" >/dev/null 2>&1 || brew install --cask "$_pkg"
     done
-
-    brew link vim >/dev/null 2>&1 || true
 }
 
 dotfiles_setup_symlinks() {
@@ -202,12 +202,18 @@ esac
 # Need to press ctrl-d 10 times to exit current panel, or input exit/logout.
 # This is to prevent mistyping.
 setopt ignoreeof
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt SHARE_HISTORY
 
 # customized aliases
 alias vim='nvim'
 alias v='nvim'
 
 # exports
+export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--preview 'bat --style=numbers --color=always --line-range :300 {}'"
 export FZF_DEFAULT_OPTS="
     --bind ctrl-d:half-page-down,ctrl-u:half-page-up,alt-f:preview-half-page-down,alt-b:preview-half-page-up,ctrl-/:toggle-preview
     --color fg:-1,bg:-1,hl:230,fg+:3,bg+:233,hl+:229
@@ -223,9 +229,24 @@ fi
 
 # git
 git-web() {
-    if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
-        open $(git config remote.origin.url | sed "s/git@\(.*\):\(.*\).git/https:\/\/\1\/\2/")/$1$2
+    if command -v gh >/dev/null 2>&1 && gh repo view --json url >/dev/null 2>&1; then
+        gh browse "$@"
+    elif [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
+        local origin="$(git config remote.origin.url | sed -E 's/git@(.*):(.*)\.git/https:\/\/\1\/\2/; s/\.git$//')"
+        open "${origin}/$1$2"
     fi
 }
 # Open current directory/file in current branch
-alias git-web-file='git-web tree/$(git symbolic-ref --quiet --short HEAD)/$(git rev-parse --show-prefix)'
+git-web-file() {
+    local _ref _prefix _origin
+    _ref=$(git symbolic-ref --quiet --short HEAD) || _ref=$(git rev-parse --verify HEAD) || return 1
+
+    if command -v gh >/dev/null 2>&1 && gh repo view --json url >/dev/null 2>&1; then
+        gh browse --branch "$_ref" -- "${1:-.}"
+    else
+        _prefix=$(git rev-parse --show-prefix) || return 1
+        _origin=$(git config remote.origin.url) || return 1
+        _origin=$(printf '%s\n' "$_origin" | sed -E 's/git@(.*):(.*)\.git/https:\/\/\1\/\2/; s/\.git$//')
+        open "${_origin}/tree/${_ref}/${_prefix}${1}"
+    fi
+}
