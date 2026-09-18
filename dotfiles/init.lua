@@ -381,9 +381,8 @@ require("lazy").setup({ {
 })
 
 -- LSP
-local preferred_ts_server = vim.fn.executable("tsgo") == 1 and "tsgo" or "ts_ls"
-local mason_servers = { "pyright", "biome", "lua_ls", "tailwindcss", "ts_ls" }
-local lsp_servers = { "pyright", "biome", "lua_ls", "tailwindcss", preferred_ts_server }
+local mason_servers = { "pyright", "biome", "lua_ls", "tailwindcss" }
+local lsp_servers = { "pyright", "biome", "lua_ls", "tailwindcss", "tsc" }
 
 require('mason').setup()
 require('mason-lspconfig').setup({
