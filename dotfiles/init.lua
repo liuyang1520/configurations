@@ -381,7 +381,8 @@ require("lazy").setup({ {
 })
 
 -- LSP
-local mason_servers = { "pyright", "biome", "lua_ls", "tailwindcss" }
+-- Install TypeScript 7's native server for projects that still pin TypeScript 6.
+local mason_servers = { "pyright", "biome", "lua_ls", "tailwindcss", "tsc" }
 local lsp_servers = { "pyright", "biome", "lua_ls", "tailwindcss", "tsc" }
 
 require('mason').setup()
