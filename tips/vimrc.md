@@ -3,6 +3,9 @@
 - `cwd` or `cd.` change working directory
 - `:w!!` sudo write
 - `,ff` search word in current file
+- `:S Foo` search project text, ignoring case (matches `Foo`, `foo`, and `FOO`)
+- `:S! Foo` search project text with exact case; `:SRaw` / `:SRaw!` do the same with regex
+- `,s` search the word under the cursor or visual selection, ignoring case; `,S` uses exact case
 - `,q` format current paragraph
 - `,jt` format json
 - `F12` toggle paste mode

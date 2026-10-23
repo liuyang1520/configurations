@@ -145,28 +145,30 @@ require("lazy").setup({ {
 
     vim.env.FZF_DEFAULT_COMMAND = [[rg --files --hidden --glob "!.git"]]
 
-    local fzf_opts = vim.fn["fzf#vim#with_preview"]("right:60%:hidden", "?")
-
     local rg_command = table.concat({
       "rg",
       "--column",
       "--line-number",
       "--no-heading",
       "--color=always",
-      "--smart-case",
       "--hidden",
       "--glob",
       vim.fn.shellescape("!.git"),
     }, " ")
 
-    local function search(query, raw)
+    local function search(query, raw, case_sensitive)
       local rg_options = table.concat({
         rg_command,
+        case_sensitive and "--case-sensitive" or "--ignore-case",
         raw and "" or "--fixed-strings",
         query:find("\n", 1, true) and "--multiline" or "",
         "--",
         vim.fn.shellescape(query),
       }, " ")
+      -- Keep fzf's filtering consistent with ripgrep, even for uppercase queries.
+      local fzf_opts = vim.fn["fzf#vim#with_preview"]({
+        options = { case_sensitive and "--no-ignore-case" or "--ignore-case" },
+      }, "right:60%:hidden", "?")
       vim.fn["fzf#vim#grep"](rg_options, 1, fzf_opts, 0)
     end
 
@@ -181,19 +183,28 @@ require("lazy").setup({ {
       local lines = vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = vim.fn.mode() })
       search(table.concat(lines, "\n"))
     end, { desc = "FZF: Search selection" })
+    vim.keymap.set("n", "<Leader>S", function()
+      search(vim.fn.expand("<cword>"), false, true)
+    end, { desc = "FZF: Search word under cursor (case-sensitive)" })
+    vim.keymap.set("x", "<Leader>S", function()
+      local lines = vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = vim.fn.mode() })
+      search(table.concat(lines, "\n"), false, true)
+    end, { desc = "FZF: Search selection (case-sensitive)" })
 
     vim.api.nvim_create_user_command("SRaw", function(opts)
-      search(opts.args, true)
+      search(opts.args, true, opts.bang)
     end, {
       nargs = "*",
-      desc = "FZF: search (regex)"
+      bang = true,
+      desc = "FZF: Search regex, ignoring case (use ! for case-sensitive)"
     })
 
     vim.api.nvim_create_user_command("S", function(opts)
-      search(opts.args)
+      search(opts.args, false, opts.bang)
     end, {
       nargs = "*",
-      desc = "FZF: search"
+      bang = true,
+      desc = "FZF: Search text, ignoring case (use ! for case-sensitive)"
     })
   end
 }, {
